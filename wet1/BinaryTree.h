@@ -21,19 +21,26 @@ class BinaryTree{
         //Returns the val for the node with the given id
         //If no such node exists, returns nullptr
         shared_ptr<int> get(int id);
-        class Node;
-        shared_ptr<Node> root;
 
+        //Prints the values of all nodes using inorder (left,parent,right)
         void printInOrder();
+
+        //Prints the values of all nodes using postorder (parent,left,right)
         void printPreOrder();
+
+        //Prints the values of all nodes using postorder (left,right,parent)
         void printPostOrder();
         
     private:
+        class Node;
+
         void printInOrder(shared_ptr<Node> node);
         void printPreOrder(shared_ptr<Node> node);
         void printPostOrder(shared_ptr<Node> node);
         void removeNode(shared_ptr<Node> node);
         shared_ptr<Node> findNext(shared_ptr<Node>);
+
+        shared_ptr<Node> root;
 };
 
 class BinaryTree::Node{
