@@ -69,8 +69,11 @@ class BinaryTree::Node{
             }
             
         }
-        void swapVal(shared_ptr<Node> other)
+        void swap(shared_ptr<Node> other)
         {
+            int temp = id;
+            id = other->id;
+            other->id = temp;
             other->val.swap(val);
         }
         shared_ptr<int> getVal() const
@@ -206,7 +209,7 @@ void BinaryTree::removeNode(shared_ptr<Node> node, shared_ptr<Node> parent)
             nextParent = next;
             next=next->getLeft();
         }
-        node->swapVal(next);
+        node->swap(next);
         removeNode(next, nextParent);
     }
             
@@ -220,6 +223,7 @@ ostream& operator<<(ostream& os, const BinaryTree& tree){
     os << endl << "Post: ";
     tree.printPostOrder((tree.root)->getRight());
     os << endl;
+    return os;
 }
 
 
