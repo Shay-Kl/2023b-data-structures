@@ -11,20 +11,29 @@ int main()
 {
     BinaryTree tree = BinaryTree();
     i(tree, 5);
-    i(tree, 4);
-    i(tree, 7);
-    i(tree, 6);
     i(tree, 2);
+    i(tree, 1);
+    i(tree, 3);
+    i(tree, 8);
+    i(tree, 7);
     i(tree, 9);
-    i(tree, 10);
 
     tree.printPreOrder();
     tree.printInOrder();
     tree.printPostOrder();
+    cout << endl;
 
-    tree.remove(9);
-    tree.remove(7);
+    tree.remove(2);
+
     tree.printPreOrder();
     tree.printInOrder();
     tree.printPostOrder();
+    cout << endl;
+
+    tree.remove(5);
+    
+    tree.printPreOrder();
+    tree.printInOrder();
+    tree.printPostOrder();
+    cout << endl;
 }

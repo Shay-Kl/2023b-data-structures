@@ -8,6 +8,8 @@ using namespace std;
 class BinaryTree{
     public:
         //Initializes a new empty tree
+        //Tree is initalized with an empty node, the rest of the tree is to the right of this node
+        //This is to simplify what happens when you remove the first node inserted into the tree
         BinaryTree();
 
         //Inserts a new node into the tree with the given id and val
@@ -37,15 +39,14 @@ class BinaryTree{
         void printInOrder(shared_ptr<Node> node);
         void printPreOrder(shared_ptr<Node> node);
         void printPostOrder(shared_ptr<Node> node);
-        void removeNode(shared_ptr<Node> node);
-        shared_ptr<Node> findNext(shared_ptr<Node>);
+        void removeNode(shared_ptr<Node> node, shared_ptr<Node> parent);
 
         shared_ptr<Node> root;
 };
 
 class BinaryTree::Node{
     public:
-        Node(int id, shared_ptr<int> val, shared_ptr<Node> parent): id(id), val(val), parent(parent) {}
+        Node(int id, shared_ptr<int> val, shared_ptr<Node> parent): id(id), val(val) {}
         shared_ptr<Node> getLeft()
         {
             return left;
@@ -54,10 +55,6 @@ class BinaryTree::Node{
         { 
             return right;
         }
-        shared_ptr<Node> getParent()
-        { 
-            return parent;
-        }
         void setLeft(shared_ptr<Node> left)
         {
             this->left = left;
@@ -65,10 +62,6 @@ class BinaryTree::Node{
         void setRight(shared_ptr<Node> right)
         {
             this->right = right;
-        }
-        void setParent(shared_ptr<Node> parent)
-        {
-            this->parent = parent;
         }
         void replaceSon(shared_ptr<Node> son, shared_ptr<Node> newSon)
         {
@@ -95,24 +88,17 @@ class BinaryTree::Node{
             return id;
         }
 
-
     private:
         int id;
         shared_ptr<int> val;
-        shared_ptr<Node> left, right, parent;
+        shared_ptr<Node> left, right;
 };
 
-BinaryTree::BinaryTree(): root(shared_ptr<Node>()){ }
+BinaryTree::BinaryTree(): root(new Node(-1, shared_ptr<int>(), shared_ptr<Node>())) { }
 
 StatusType BinaryTree::insert(int id, shared_ptr<int> val)
 {
-    if (root == nullptr)
-    {
-        root =  shared_ptr<Node>(new Node(id, val, nullptr));
-        return StatusType::SUCCESS;
-    }
-    
-    shared_ptr<Node> node = root, parent = root;
+    shared_ptr<Node> node = root->getRight(), parent = root;
     while(node)
     {
         parent = node;
@@ -152,7 +138,7 @@ StatusType BinaryTree::insert(int id, shared_ptr<int> val)
 
 StatusType BinaryTree::remove(int id)
 {
-    shared_ptr<Node> node = root;
+    shared_ptr<Node> node = root->getRight(), parent = root;
     while(node)
     {
         int curId = node->getId();
@@ -160,7 +146,7 @@ StatusType BinaryTree::remove(int id)
         {
             try
             {
-                removeNode(node);
+                removeNode(node, parent);
             }
             catch(exception)
             {
@@ -168,7 +154,8 @@ StatusType BinaryTree::remove(int id)
             }
             return StatusType::SUCCESS;
         }
-        else if (curId > id)
+        parent = node;
+        if (curId > id)
         {
             node = node->getLeft();
         }
@@ -204,49 +191,38 @@ shared_ptr<int> BinaryTree::get(int id)
 }
 
 //Removes a node you have a pointer to from the tree
-void BinaryTree::removeNode(shared_ptr<Node> node)
+void BinaryTree::removeNode(shared_ptr<Node> node, shared_ptr<Node> parent)
 {
-    shared_ptr<Node> parent = node->getParent(), left = node->getLeft(), right = node->getRight();
+    shared_ptr<Node> left = node->getLeft(), right = node->getRight();
 
     if (!left && !right)
     {
-        parent->replaceSon(node, shared_ptr<Node>());
-        
+        parent->replaceSon(node, nullptr);
     }
     else if (!left)
     {
         parent->replaceSon(node, right);
-        right->setParent(parent);
     }
     else if(!right){
         parent->replaceSon(node, left);
-        left->setParent(parent);
     }
     else{
-        cout << "it do be";
-        shared_ptr<Node> next = findNext(node);
+        shared_ptr<Node> next = node->getRight(), nextParent = node;
+        while(next->getLeft()!=nullptr)
+        {
+            nextParent = next;
+            next=next->getLeft();
+        }
         node->swapVal(next);
-        removeNode(next);
+        removeNode(next, nextParent);
     }
             
 }
 
-//Finds the node which follows the current node in terms of id (assuming the current node has a right son)
-shared_ptr<BinaryTree::Node> BinaryTree::findNext(shared_ptr<Node> cur)
-{
-    shared_ptr<Node> node = cur->getRight(), parent = cur->getRight();
-    while(node)
-    {
-        parent = node;
-        node = node->getLeft();
-    }
-    return parent;
-}
-
 void BinaryTree::printInOrder()
 {
-    cout << endl;
-    printInOrder(root);   
+    cout << endl << "In:  ";
+    printInOrder(root->getRight());   
 }
 
 void BinaryTree::printInOrder(shared_ptr<Node> node)
@@ -262,8 +238,8 @@ void BinaryTree::printInOrder(shared_ptr<Node> node)
 
 void BinaryTree::printPreOrder()
 {
-    cout << endl;
-    printPreOrder(root);
+    cout << endl << "Pre: ";
+    printPreOrder(root->getRight());
 }
 
 void BinaryTree::printPreOrder(shared_ptr<Node> node)
@@ -279,8 +255,8 @@ void BinaryTree::printPreOrder(shared_ptr<Node> node)
 
 void BinaryTree::printPostOrder()
 {
-    cout << endl;
-    printPostOrder(root);
+    cout << endl << "Post: ";
+    printPostOrder(root->getRight());
 }
 
 void BinaryTree::printPostOrder(shared_ptr<Node> node)
