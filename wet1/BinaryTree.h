@@ -16,13 +16,13 @@ class BinaryTree{
         //Returns StatusType:Success if such a node doesn't exist and StatusType:Failiure otherwise
         StatusType insert(int id, shared_ptr<int> val);
 
-        //Remove the node with the given id
-        //Returns StatusType:Success if such a node exists and StatusType:Failiure otherwise
-        StatusType remove(int id);
-
         //Returns the val for the node with the given id
         //If no such node exists, returns nullptr
         shared_ptr<int> get(int id);
+
+        //Remove the node with the given id
+        //Returns StatusType:Success if such a node exists and StatusType:Failiure otherwise
+        StatusType remove(int id);
 
         //Prints the values of all nodes using inorder (left,parent,right)
         void printInOrder();
@@ -135,6 +135,27 @@ StatusType BinaryTree::insert(int id, shared_ptr<int> val)
     return StatusType::SUCCESS;
 }
 
+shared_ptr<int> BinaryTree::get(int id)
+{
+    shared_ptr<Node> node = root->getRight();
+    while (node)
+    {
+        int curId = node->getId();
+        if (curId == id)
+        {
+            return node->getVal();
+        }
+        else if (curId > id)
+        {
+            node = node->getLeft();
+        }
+        else{
+            node = node->getRight();
+        }
+    }
+    return nullptr;
+    
+}
 
 StatusType BinaryTree::remove(int id)
 {
@@ -166,28 +187,6 @@ StatusType BinaryTree::remove(int id)
     }
     return StatusType::FAILURE;
 
-}
-
-shared_ptr<int> BinaryTree::get(int id)
-{
-    shared_ptr<Node> node = root;
-    while (node)
-    {
-        int curId = node->getId();
-        if (curId == id)
-        {
-            return node->getVal();
-        }
-        else if (curId > id)
-        {
-            node = node->getLeft();
-        }
-        else{
-            node = node->getRight();
-        }
-    }
-    return nullptr;
-    
 }
 
 //Removes a node you have a pointer to from the tree
