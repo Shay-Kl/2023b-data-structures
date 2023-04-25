@@ -18,27 +18,21 @@ class BinaryTree{
 
         //Returns the val for the node with the given id
         //If no such node exists, returns nullptr
-        shared_ptr<int> get(int id);
+        shared_ptr<int> get(int id) const;
 
         //Remove the node with the given id
         //Returns StatusType:Success if such a node exists and StatusType:Failiure otherwise
         StatusType remove(int id);
 
-        //Prints the values of all nodes using inorder (left,parent,right)
-        void printInOrder();
-
-        //Prints the values of all nodes using postorder (parent,left,right)
-        void printPreOrder();
-
-        //Prints the values of all nodes using postorder (left,right,parent)
-        void printPostOrder();
+        //Print the tree's values using all 3 ordering methods
+        friend ostream& operator<<(ostream& os, const BinaryTree& tree);
         
     private:
         class Node;
 
-        void printInOrder(shared_ptr<Node> node);
-        void printPreOrder(shared_ptr<Node> node);
-        void printPostOrder(shared_ptr<Node> node);
+        void printInOrder(shared_ptr<Node> node) const;
+        void printPreOrder(shared_ptr<Node> node) const;
+        void printPostOrder(shared_ptr<Node> node) const;
         void removeNode(shared_ptr<Node> node, shared_ptr<Node> parent);
 
         shared_ptr<Node> root;
@@ -47,11 +41,11 @@ class BinaryTree{
 class BinaryTree::Node{
     public:
         Node(int id, shared_ptr<int> val, shared_ptr<Node> parent): id(id), val(val) {}
-        shared_ptr<Node> getLeft()
+        shared_ptr<Node> getLeft() const
         {
             return left;
         }
-        shared_ptr<Node> getRight()
+        shared_ptr<Node> getRight() const
         { 
             return right;
         }
@@ -79,11 +73,11 @@ class BinaryTree::Node{
         {
             other->val.swap(val);
         }
-        shared_ptr<int> getVal()
+        shared_ptr<int> getVal() const
         {
             return val;
         }
-        int getId()
+        int getId() const
         {
             return id;
         }
@@ -135,7 +129,7 @@ StatusType BinaryTree::insert(int id, shared_ptr<int> val)
     return StatusType::SUCCESS;
 }
 
-shared_ptr<int> BinaryTree::get(int id)
+shared_ptr<int> BinaryTree::get(int id) const
 {
     shared_ptr<Node> node = root->getRight();
     while (node)
@@ -218,13 +212,18 @@ void BinaryTree::removeNode(shared_ptr<Node> node, shared_ptr<Node> parent)
             
 }
 
-void BinaryTree::printInOrder()
-{
-    cout << endl << "In:  ";
-    printInOrder(root->getRight());   
+ostream& operator<<(ostream& os, const BinaryTree& tree){
+    os << endl << "Pre:  ";
+    tree.printPreOrder((tree.root)->getRight());
+    os << endl << "In:   ";
+    tree.printInOrder((tree.root)->getRight());
+    os << endl << "Post: ";
+    tree.printPostOrder((tree.root)->getRight());
+    os << endl;
 }
 
-void BinaryTree::printInOrder(shared_ptr<Node> node)
+
+void BinaryTree::printInOrder(shared_ptr<Node> node) const
 {
     if (node == nullptr)
     {
@@ -235,13 +234,7 @@ void BinaryTree::printInOrder(shared_ptr<Node> node)
     printInOrder(node->getRight());
 }
 
-void BinaryTree::printPreOrder()
-{
-    cout << endl << "Pre: ";
-    printPreOrder(root->getRight());
-}
-
-void BinaryTree::printPreOrder(shared_ptr<Node> node)
+void BinaryTree::printPreOrder(shared_ptr<Node> node) const
 {
     if (node == nullptr)
     {
@@ -252,13 +245,7 @@ void BinaryTree::printPreOrder(shared_ptr<Node> node)
     printPreOrder(node->getRight());
 }
 
-void BinaryTree::printPostOrder()
-{
-    cout << endl << "Post: ";
-    printPostOrder(root->getRight());
-}
-
-void BinaryTree::printPostOrder(shared_ptr<Node> node)
+void BinaryTree::printPostOrder(shared_ptr<Node> node) const
 {
     if (node == nullptr)
     {
