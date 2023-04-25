@@ -18,12 +18,21 @@ int main()
     i(tree, 7);
     i(tree, 9);
 
+    //          5
+    //    2            8
+    // 1     3      7     9
+
     tree.printPreOrder();
     tree.printInOrder();
     tree.printPostOrder();
     cout << endl;
 
+    
     tree.remove(2);
+
+    //          5
+    //    3            8
+    // 1            7     9
 
     tree.printPreOrder();
     tree.printInOrder();
@@ -32,6 +41,10 @@ int main()
 
     tree.remove(5);
     
+    //          7
+    //    3            8
+    // 1                  9
+
     tree.printPreOrder();
     tree.printInOrder();
     tree.printPostOrder();
