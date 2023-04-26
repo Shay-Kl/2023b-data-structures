@@ -35,67 +35,72 @@ class BinaryTree{
         void printPostOrder(shared_ptr<Node> node) const;
         void removeNode(shared_ptr<Node> node, shared_ptr<Node> parent);
 
-        shared_ptr<Node> root;
+        shared_ptr<Node> m_root;
 };
 
 class BinaryTree::Node{
     public:
-        Node(int id, shared_ptr<int> val, shared_ptr<Node> parent): id(id), val(val) {}
+        Node(int id, shared_ptr<int> val, shared_ptr<Node> parent):
+            m_id(id), m_val(val) {}
         shared_ptr<Node> getLeft() const
         {
-            return left;
+            return m_left;
         }
         shared_ptr<Node> getRight() const
         { 
-            return right;
+            return m_right;
         }
         void setLeft(shared_ptr<Node> left)
         {
-            this->left = left;
+            m_left = left;
         }
         void setRight(shared_ptr<Node> right)
         {
-            this->right = right;
-        }
-        void replaceSon(shared_ptr<Node> son, shared_ptr<Node> newSon)
-        {
-            if (son == left)
-            {
-                setLeft(newSon);
-            }
-            else
-            {
-                setRight(newSon);
-            }
-            
-        }
-        void swap(shared_ptr<Node> other)
-        {
-            int temp = id;
-            id = other->id;
-            other->id = temp;
-            other->val.swap(val);
+            m_right = right;
         }
         shared_ptr<int> getVal() const
         {
-            return val;
+            return m_val;
         }
         int getId() const
         {
-            return id;
+            return m_id;
+        }
+
+        //Replaces a child with the same id as son with newSon
+        void replaceSon(shared_ptr<Node> son, shared_ptr<Node> newSon)
+        {
+            if (son->m_id == m_left->m_id)
+            {
+                setLeft(newSon);
+            }
+            else if(son->m_id == m_right->m_id)
+            {
+                setRight(newSon);
+            }
+        }
+
+        //Swap out the values and ids of this node and the other node
+        //Essentialy swaps the 2 node's locations in the tree
+        void swap(shared_ptr<Node> other)
+        {
+            int temp = m_id;
+            m_id = other->m_id;
+            other->m_id = temp;
+            other->m_val.swap(m_val);
         }
 
     private:
-        int id;
-        shared_ptr<int> val;
-        shared_ptr<Node> left, right;
+        int m_id;
+        shared_ptr<int> m_val;
+        shared_ptr<Node> m_left, m_right;
 };
 
-BinaryTree::BinaryTree(): root(new Node(-1, shared_ptr<int>(), shared_ptr<Node>())) { }
+BinaryTree::BinaryTree(): m_root(new Node(-1, shared_ptr<int>(), shared_ptr<Node>())) { }
 
 StatusType BinaryTree::insert(int id, shared_ptr<int> val)
 {
-    shared_ptr<Node> node = root->getRight(), parent = root;
+    shared_ptr<Node> node = m_root->getRight(), parent = m_root;
     while(node)
     {
         parent = node;
@@ -134,7 +139,7 @@ StatusType BinaryTree::insert(int id, shared_ptr<int> val)
 
 shared_ptr<int> BinaryTree::get(int id) const
 {
-    shared_ptr<Node> node = root->getRight();
+    shared_ptr<Node> node = m_root->getRight();
     while (node)
     {
         int curId = node->getId();
@@ -156,7 +161,7 @@ shared_ptr<int> BinaryTree::get(int id) const
 
 StatusType BinaryTree::remove(int id)
 {
-    shared_ptr<Node> node = root->getRight(), parent = root;
+    shared_ptr<Node> node = m_root->getRight(), parent = m_root;
     while(node)
     {
         int curId = node->getId();
@@ -217,11 +222,11 @@ void BinaryTree::removeNode(shared_ptr<Node> node, shared_ptr<Node> parent)
 
 ostream& operator<<(ostream& os, const BinaryTree& tree){
     os << endl << "Pre:  ";
-    tree.printPreOrder((tree.root)->getRight());
+    tree.printPreOrder((tree.m_root)->getRight());
     os << endl << "In:   ";
-    tree.printInOrder((tree.root)->getRight());
+    tree.printInOrder((tree.m_root)->getRight());
     os << endl << "Post: ";
-    tree.printPostOrder((tree.root)->getRight());
+    tree.printPostOrder((tree.m_root)->getRight());
     os << endl;
     return os;
 }
