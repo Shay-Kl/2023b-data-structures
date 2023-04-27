@@ -13,15 +13,15 @@ class BinaryTree{
         BinaryTree();
 
         //Inserts a new node into the tree with the given id and val
-        //Returns StatusType:Success if such a node doesn't exist and StatusType:Failiure otherwise
+        //Throws FailiureException if the given id already exists
         void insert(int id, int& val);
 
         //Returns the val for the node with the given id
-        //If no such node exists, returns nullptr
+        //Throw FailiureException if the given id doesn't exist
         int& get(int id);
 
         //Remove the node with the given id
-        //Returns StatusType:Success if such a node exists and StatusType:Failiure otherwise
+        //Throws FailiureException if the given id doesn't exist
         void remove(int id);
 
         //Print the tree's values using all 3 ordering methods
