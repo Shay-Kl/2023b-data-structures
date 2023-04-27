@@ -5,7 +5,8 @@
 #include "wet1util.h"
 using namespace std;
 
-class BinaryTree{
+class BinaryTree
+{
     public:
         //Initializes a new empty tree
         //Tree is initalized with an empty node, the rest of the tree is to the right of this node
@@ -30,6 +31,7 @@ class BinaryTree{
         class FailiureException{};
     private:
         class Node;
+        class Iterator;
 
         void printInOrder(shared_ptr<Node> node) const;
         void printPreOrder(shared_ptr<Node> node) const;
@@ -39,15 +41,16 @@ class BinaryTree{
         shared_ptr<Node> m_root;
 };
 
-class BinaryTree::Node{
+class BinaryTree::Node
+{
     public:
         //Standard constructor 
-        Node(int id, int& val, shared_ptr<Node> parent):
-            m_id(id), m_val(val) {}
+        Node(int id, shared_ptr<int> val, Node* parent):
+            m_id(id), m_val(val), m_parent(parent) {}
 
         //Default constructor for root
         Node():
-            m_id(-1), m_val(int()) {}
+            m_id(-1), m_val() {}
         shared_ptr<Node> getLeft()
         {
             return m_left;
@@ -56,9 +59,13 @@ class BinaryTree::Node{
         { 
             return m_right;
         }
+        Node* getParent()
+        { 
+            return m_parent;
+        }
         int& getVal()
         {
-            return m_val;
+            return *m_val;
         }
         int getId() const
         {
@@ -76,6 +83,7 @@ class BinaryTree::Node{
             else{
                 m_left = newSon;
             }
+            newSon->m_parent = this;
         }
 
         //Removes a node's given son
@@ -99,16 +107,42 @@ class BinaryTree::Node{
             m_id = other->m_id;
             other->m_id = idTemp;
 
-            int valTemp = m_val;
-            m_val = other->m_val;
-            other->m_val = valTemp;
+            other->m_val.swap(m_val);
         }
 
     private:
         int m_id;
-        int m_val;
+        shared_ptr<int> m_val;
         shared_ptr<Node> m_left, m_right;
+        Node* m_parent;
+        friend class BinaryTree::Iterator;
 };
+
+
+//Iterator that traverses the tree in order
+class BinaryTree::Iterator
+{
+    public:
+        Iterator(Node* current, Node* previous):
+            m_current(current), m_previous(previous) {}
+        Iterator& operator++()
+        {
+            //TODO
+        }
+        int& operator*()
+        {
+            return m_current->getVal();
+        }
+        bool operator!=(const Iterator& other) const
+        {
+            return (m_current->getId() != other.m_current->getId()) || (m_previous->getId() != other.m_previous->getId());
+        }
+        
+    private:
+        Node* m_current, *m_previous;
+
+};
+
 
 BinaryTree::BinaryTree(): m_root(new Node()) { }
 
@@ -132,7 +166,7 @@ void BinaryTree::insert(int id, int& val)
             node = node->getRight();
         }
     }
-    parent->setSon(shared_ptr<Node>(new Node(id, val, parent)));
+    parent->setSon(shared_ptr<Node>(new Node(id, shared_ptr<int>(new int(val)), parent.get())));
 }
 
 int& BinaryTree::get(int id)
