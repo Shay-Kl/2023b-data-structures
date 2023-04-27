@@ -14,19 +14,20 @@ class BinaryTree{
 
         //Inserts a new node into the tree with the given id and val
         //Returns StatusType:Success if such a node doesn't exist and StatusType:Failiure otherwise
-        StatusType insert(int id, shared_ptr<int> val);
+        void insert(int id, int& val);
 
         //Returns the val for the node with the given id
         //If no such node exists, returns nullptr
-        shared_ptr<int> get(int id) const;
+        int& get(int id);
 
         //Remove the node with the given id
         //Returns StatusType:Success if such a node exists and StatusType:Failiure otherwise
-        StatusType remove(int id);
+        void remove(int id);
 
         //Print the tree's values using all 3 ordering methods
         friend ostream& operator<<(ostream& os, const BinaryTree& tree);
         
+        class FailiureException{};
     private:
         class Node;
 
@@ -40,25 +41,22 @@ class BinaryTree{
 
 class BinaryTree::Node{
     public:
-        Node(int id, shared_ptr<int> val, shared_ptr<Node> parent):
+        //Standard constructor 
+        Node(int id, int& val, shared_ptr<Node> parent):
             m_id(id), m_val(val) {}
-        shared_ptr<Node> getLeft() const
+
+        //Default constructor for root
+        Node():
+            m_id(-1), m_val(int()) {}
+        shared_ptr<Node> getLeft()
         {
             return m_left;
         }
-        shared_ptr<Node> getRight() const
+        shared_ptr<Node> getRight()
         { 
             return m_right;
         }
-        void setLeft(shared_ptr<Node> left)
-        {
-            m_left = left;
-        }
-        void setRight(shared_ptr<Node> right)
-        {
-            m_right = right;
-        }
-        shared_ptr<int> getVal() const
+        int& getVal()
         {
             return m_val;
         }
@@ -67,16 +65,29 @@ class BinaryTree::Node{
             return m_id;
         }
 
-        //Replaces a child with the same id as son with newSon
-        void replaceSon(shared_ptr<Node> son, shared_ptr<Node> newSon)
+        //Sets one of the node's children as newSon
+        //Choice of which son to replace is based on the id of newSon relative to the node
+        void setSon(shared_ptr<Node> newSon)
         {
-            if (son->m_id == m_left->m_id)
+            if(newSon->m_id > m_id)
             {
-                setLeft(newSon);
+                m_right = newSon;
             }
-            else if(son->m_id == m_right->m_id)
+            else{
+                m_left = newSon;
+            }
+        }
+
+        //Removes a node's given son
+        void removeSon(shared_ptr<Node> son)
+        {
+            if(m_left->m_id == son->m_id)
             {
-                setRight(newSon);
+                m_left = nullptr;
+            }
+            else if(m_right->m_id = son->m_id)
+            {
+                m_right = nullptr;
             }
         }
 
@@ -84,21 +95,24 @@ class BinaryTree::Node{
         //Essentialy swaps the 2 node's locations in the tree
         void swap(shared_ptr<Node> other)
         {
-            int temp = m_id;
+            int idTemp = m_id;
             m_id = other->m_id;
-            other->m_id = temp;
-            other->m_val.swap(m_val);
+            other->m_id = idTemp;
+
+            int valTemp = m_val;
+            m_val = other->m_val;
+            other->m_val = valTemp;
         }
 
     private:
         int m_id;
-        shared_ptr<int> m_val;
+        int m_val;
         shared_ptr<Node> m_left, m_right;
 };
 
-BinaryTree::BinaryTree(): m_root(new Node(-1, shared_ptr<int>(), shared_ptr<Node>())) { }
+BinaryTree::BinaryTree(): m_root(new Node()) { }
 
-StatusType BinaryTree::insert(int id, shared_ptr<int> val)
+void BinaryTree::insert(int id, int& val)
 {
     shared_ptr<Node> node = m_root->getRight(), parent = m_root;
     while(node)
@@ -107,7 +121,7 @@ StatusType BinaryTree::insert(int id, shared_ptr<int> val)
         int curId = node->getId();
         if (curId == id)
         {
-            return StatusType::FAILURE;
+            throw BinaryTree::FailiureException();
         }
         else if (curId > id)
         {
@@ -118,26 +132,10 @@ StatusType BinaryTree::insert(int id, shared_ptr<int> val)
             node = node->getRight();
         }
     }
-    try
-    {
-        Node* newNode = new Node(id, val, parent);
-        if (parent->getId() > id)
-        {
-            parent->setLeft(shared_ptr<Node>(new Node(id, val, parent)));
-        }
-        else
-        {
-            parent->setRight(shared_ptr<Node>(new Node(id, val, parent)));
-        }
-    }
-    catch(exception)
-    {
-        return StatusType::ALLOCATION_ERROR;
-    }
-    return StatusType::SUCCESS;
+    parent->setSon(shared_ptr<Node>(new Node(id, val, parent)));
 }
 
-shared_ptr<int> BinaryTree::get(int id) const
+int& BinaryTree::get(int id)
 {
     shared_ptr<Node> node = m_root->getRight();
     while (node)
@@ -155,11 +153,11 @@ shared_ptr<int> BinaryTree::get(int id) const
             node = node->getRight();
         }
     }
-    return nullptr;
+    throw BinaryTree::FailiureException();
     
 }
 
-StatusType BinaryTree::remove(int id)
+void BinaryTree::remove(int id)
 {
     shared_ptr<Node> node = m_root->getRight(), parent = m_root;
     while(node)
@@ -167,15 +165,8 @@ StatusType BinaryTree::remove(int id)
         int curId = node->getId();
         if (curId == id)
         {
-            try
-            {
-                removeNode(node, parent);
-            }
-            catch(exception)
-            {
-                return StatusType::ALLOCATION_ERROR;
-            }
-            return StatusType::SUCCESS;
+            removeNode(node, parent);
+            return;
         }
         parent = node;
         if (curId > id)
@@ -187,7 +178,7 @@ StatusType BinaryTree::remove(int id)
             node = node->getRight();
         }
     }
-    return StatusType::FAILURE;
+    throw BinaryTree::FailiureException();
 
 }
 
@@ -198,14 +189,14 @@ void BinaryTree::removeNode(shared_ptr<Node> node, shared_ptr<Node> parent)
 
     if (!left && !right)
     {
-        parent->replaceSon(node, nullptr);
+        parent->removeSon(node);
     }
     else if (!left)
     {
-        parent->replaceSon(node, right);
+        parent->setSon(right);
     }
     else if(!right){
-        parent->replaceSon(node, left);
+        parent->setSon(left);
     }
     else{
         shared_ptr<Node> next = node->getRight(), nextParent = node;
@@ -239,7 +230,7 @@ void BinaryTree::printInOrder(shared_ptr<Node> node) const
         return;
     }
     printInOrder(node->getLeft());
-    cout << *node->getVal() << ", ";
+    cout << node->getVal() << ", ";
     printInOrder(node->getRight());
 }
 
@@ -249,7 +240,7 @@ void BinaryTree::printPreOrder(shared_ptr<Node> node) const
     {
         return;
     }
-    cout << *node->getVal() << ", ";
+    cout << node->getVal() << ", ";
     printPreOrder(node->getLeft());
     printPreOrder(node->getRight());
 }
@@ -262,6 +253,6 @@ void BinaryTree::printPostOrder(shared_ptr<Node> node) const
     }
     printPostOrder(node->getLeft());
     printPostOrder(node->getRight());
-    cout << *node->getVal() << ", ";
+    cout << node->getVal() << ", ";
 }
 #endif // __BINARYTREE_H__

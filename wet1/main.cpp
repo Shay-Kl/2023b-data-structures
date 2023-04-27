@@ -3,20 +3,17 @@
 #include <iostream>
 using namespace std;
 
-void i(BinaryTree &tree, int i){
-    tree.insert(i, shared_ptr<int>(new int(i)));
-}
-
 int main()
 {
     BinaryTree tree = BinaryTree();
-    i(tree, 5);
-    i(tree, 2);
-    i(tree, 1);
-    i(tree, 3);
-    i(tree, 8);
-    i(tree, 7);
-    i(tree, 9);
+    int a = 5, b = 2, c = 1, d = 3, e = 8, f = 7, g = 9;
+    tree.insert(a, a);
+    tree.insert(b, b);
+    tree.insert(c, c);
+    tree.insert(d, d);
+    tree.insert(e, e);
+    tree.insert(f, f);
+    tree.insert(g, g);
 
     //          5
     //    2            8
