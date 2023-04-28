@@ -1,7 +1,7 @@
 #include "Movie.h"
 
 Movie::Movie(Genre genre, int views, bool vipOnly):
-    genre(genre),views(views),vipOnly(vipOnly) {}
+    m_genre(genre),m_views(views),m_vipOnly(vipOnly) {}
 
 Genre Movie::getGenre() const
 {
@@ -23,12 +23,12 @@ int Movie::getRating() const
     return m_ratingAverage;
 }
 
-void Movie::view(int viewers)
+void Movie::view()
 {
-    m_views+=viewers;
+    m_views++;
 }
 
 void Movie::rate(int rating)
 {
-    m_ratingAverage = ((m_ratingAverage * m_ratingCount) + m_rating) / ++m_ratingCount;
+    m_ratingAverage = ((m_ratingAverage * m_ratingCount) + rating) / ++m_ratingCount;
 }

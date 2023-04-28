@@ -25,13 +25,15 @@ class BinaryTree
         //Throws FailiureException if the given id doesn't exist
         void remove(int id);
 
+        //Returns the number of elements in the tree
+        int getSize();
+
         //Print the tree's values using all 3 ordering methods
         friend ostream& operator<<(ostream& os, const BinaryTree& tree);
         
-        class FailiureException{};
+        class FailureException{};
     private:
         class Node;
-        class Iterator;
 
         void printInOrder(shared_ptr<Node> node) const;
         void printPreOrder(shared_ptr<Node> node) const;
@@ -39,6 +41,7 @@ class BinaryTree
         void removeNode(shared_ptr<Node> node, shared_ptr<Node> parent);
 
         shared_ptr<Node> m_root;
+        int m_size = 0;
 };
 
 class BinaryTree::Node
@@ -115,32 +118,6 @@ class BinaryTree::Node
         shared_ptr<int> m_val;
         shared_ptr<Node> m_left, m_right;
         Node* m_parent;
-        friend class BinaryTree::Iterator;
-};
-
-
-//Iterator that traverses the tree in order
-class BinaryTree::Iterator
-{
-    public:
-        Iterator(Node* current, Node* previous):
-            m_current(current), m_previous(previous) {}
-        Iterator& operator++()
-        {
-            //TODO
-        }
-        int& operator*()
-        {
-            return m_current->getVal();
-        }
-        bool operator!=(const Iterator& other) const
-        {
-            return (m_current->getId() != other.m_current->getId()) || (m_previous->getId() != other.m_previous->getId());
-        }
-        
-    private:
-        Node* m_current, *m_previous;
-
 };
 
 
@@ -155,7 +132,7 @@ void BinaryTree::insert(int id, int& val)
         int curId = node->getId();
         if (curId == id)
         {
-            throw BinaryTree::FailiureException();
+            throw BinaryTree::FailureException();
         }
         else if (curId > id)
         {
@@ -167,6 +144,7 @@ void BinaryTree::insert(int id, int& val)
         }
     }
     parent->setSon(shared_ptr<Node>(new Node(id, shared_ptr<int>(new int(val)), parent.get())));
+    m_size++;
 }
 
 int& BinaryTree::get(int id)
@@ -187,7 +165,7 @@ int& BinaryTree::get(int id)
             node = node->getRight();
         }
     }
-    throw BinaryTree::FailiureException();
+    throw BinaryTree::FailureException();
     
 }
 
@@ -212,8 +190,8 @@ void BinaryTree::remove(int id)
             node = node->getRight();
         }
     }
-    throw BinaryTree::FailiureException();
-
+    throw BinaryTree::FailureException();
+    m_size--;
 }
 
 //Removes a node you have a pointer to from the tree
@@ -243,6 +221,11 @@ void BinaryTree::removeNode(shared_ptr<Node> node, shared_ptr<Node> parent)
         removeNode(next, nextParent);
     }
             
+}
+
+int BinaryTree::getSize()
+{
+    return m_size;
 }
 
 ostream& operator<<(ostream& os, const BinaryTree& tree){

@@ -1,37 +1,100 @@
 #include "StreamingDBa1.h"
+#include <new>
+#include "wet1util.h"
 
-streaming_database::streaming_database()
-{
-	// TODO: Your code goes here
-}
+streaming_database::streaming_database():
+	movies(), users(), groups()
+	{}
 
 streaming_database::~streaming_database()
 {
-	// TODO: Your code goes here
+	//Every tree's default destructor does the job
 }
 
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)
 {
-	// TODO: Your code goes here
+	if(movieId<=0 || genre==Genre::NONE || views<0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{
+		Movie movie(genre, views, vipOnly);
+		movies.insert(movie, movieId);
+	}
+	catch(const std::bad_alloc& e)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(BinaryTree::FailureException)
+	{
+		return StatusType::FAILURE;
+	}
 	return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_movie(int movieId)
 {
-	// TODO: Your code goes here
+	if(movieId<=0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{
+		movies.remove(movieId);
+	}
+	catch(const std::bad_alloc& e)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(BinaryTree::FailureException)
+	{
+		return StatusType::FAILURE;
+	}
 	return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user(int userId, bool isVip)
 {
-	// TODO: Your code goes here
+	if(userId<=0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{
+		User user(isVip);
+		users.insert(user, userId);
+	}
+	catch(const std::bad_alloc& e)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(BinaryTree::FailureException)
+	{
+		return StatusType::FAILURE;
+	}
 	return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_user(int userId)
 {
-	// TODO: Your code goes here
+	if(userId<=0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{
+		users.remove(userId);
+	}
+	catch(const std::bad_alloc& e)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(BinaryTree::FailureException)
+	{
+		return StatusType::FAILURE;
+	}
 	return StatusType::SUCCESS;
 }
 

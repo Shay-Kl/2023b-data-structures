@@ -3,7 +3,8 @@
 
 #include "wet1util.h"
 
-class Movie{
+class Movie
+{
     public:
         Movie(Genre genre, int views, bool vipOnly);
 
@@ -16,12 +17,11 @@ class Movie{
         //Return true if movie is only for vip users
         bool isVipOnly() const;
 
-        //Returns the movie's average rating
+        //Returns the movie's average rating    
         int getRating() const;
 
-        //View the movie increasing its view count by the number of viewers
-        //Default is 1, more is for groups
-        void view(int viewers = 1);
+        //Increment the movie's view count
+        void view();
 
         //Rate the movie with a given rating 0-100
         //Updates the average rating accordingly
@@ -31,9 +31,9 @@ class Movie{
 
     private:
         Genre m_genre;
-        int m_views;
         bool m_vipOnly;
-        int m_ratingAverage = 0; //TODO: Not sure if movie with no rating is considered to have average of 0
+        int m_views;
+        double m_ratingAverage = 0; //TODO: Not sure if movie with no rating is considered to have average of 0
         int m_ratingCount = 0;
 };
 #endif // __MOVIE_H__

@@ -16,12 +16,17 @@
 #define STREAMINGDBA1_H_
 
 #include "wet1util.h"
+#include "Movie.h"
+#include "User.h"
+#include "Group.h"
+#include "BinaryTree.h"
 
 class streaming_database {
 private:
-	//
-	// Here you may add anything you want
-	//
+	BinaryTree<Movie> movies;
+	BinaryTree<User> users;
+	BinaryTree<Group> groups;
+
 	
 public:
 	// <DO-NOT-MODIFY> {
