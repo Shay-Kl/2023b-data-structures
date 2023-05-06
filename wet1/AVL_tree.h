@@ -272,7 +272,7 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
     }
     *new_ptr = new Node(key, value, parent);
 
-    // ASSUMES the Type hase < operator
+    // ASSUMES the Type has operator <
     if((this->m_min_node == nullptr) || key < this->m_min_node->m_key){
         this->m_min_node = *new_ptr;
     }
@@ -333,7 +333,7 @@ void AVLtree<Key,Value>::remove(const Key &key)
         }
     }
     else{
-        // removed_node has has only one son
+        // removed_node has only one son
         Node** only_one_son = nullptr;
         if (removed_node->m_right != nullptr){
             only_one_son = &(removed_node->m_right);
