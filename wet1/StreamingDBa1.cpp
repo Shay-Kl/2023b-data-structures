@@ -3,12 +3,12 @@
 #include "wet1util.h"
 
 streaming_database::streaming_database():
-	movies(), users(), groups()
+	movies(), users(), groups(), genreMovies()
 	{}
 
 streaming_database::~streaming_database()
 {
-	//Every tree's default destructor does the job
+	//Every tree's destructor does the job
 }
 
 
@@ -21,13 +21,15 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 	try
 	{
 		Movie movie(genre, views, vipOnly);
-		movies.insert(movie, movieId);
+		movies.insert(movieId, movie);
+		genreMovies[(int)genre].insert(movie, 0);
+		genreMovies[(int)Genre::NONE].insert(movie, 0);
 	}
-	catch(const std::bad_alloc& e)
+	catch(std::bad_alloc)
 	{
 		return StatusType::ALLOCATION_ERROR;
 	}
-	catch(BinaryTree::FailureException)
+	catch(std::exception)
 	{
 		return StatusType::FAILURE;
 	}
@@ -42,13 +44,13 @@ StatusType streaming_database::remove_movie(int movieId)
 	}
 	try
 	{
-		movies.remove(movieId);
+		//to do
 	}
-	catch(const std::bad_alloc& e)
+	catch(std::bad_alloc)
 	{
 		return StatusType::ALLOCATION_ERROR;
 	}
-	catch(BinaryTree::FailureException)
+	catch(std::exception)
 	{
 		return StatusType::FAILURE;
 	}
@@ -64,13 +66,13 @@ StatusType streaming_database::add_user(int userId, bool isVip)
 	try
 	{
 		User user(isVip);
-		users.insert(user, userId);
+		users.insert(userId, user);
 	}
 	catch(const std::bad_alloc& e)
 	{
 		return StatusType::ALLOCATION_ERROR;
 	}
-	catch(BinaryTree::FailureException)
+	catch(std::exception)
 	{
 		return StatusType::FAILURE;
 	}
@@ -91,7 +93,7 @@ StatusType streaming_database::remove_user(int userId)
 	{
 		return StatusType::ALLOCATION_ERROR;
 	}
-	catch(BinaryTree::FailureException)
+	catch(std::exception)
 	{
 		return StatusType::FAILURE;
 	}

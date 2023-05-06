@@ -19,13 +19,15 @@
 #include "Movie.h"
 #include "User.h"
 #include "Group.h"
-#include "BinaryTree.h"
+#include "AVL_tree.h"
 
 class streaming_database {
 private:
-	BinaryTree<Movie> movies;
-	BinaryTree<User> users;
-	BinaryTree<Group> groups;
+	AVLtree<int, Movie> movies;
+	AVLtree<int, User> users;
+	AVLtree<int, Group> groups;
+
+	AVLtree<Movie, int> genreMovies[5];
 
 	
 public:

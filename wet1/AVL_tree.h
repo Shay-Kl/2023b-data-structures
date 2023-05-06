@@ -4,19 +4,18 @@
 #include <iostream>
 
 #include "exceptions.h"
+#include <memory>
 
-namespace Webflix
-{
-
+using namespace std;
 //===================================================================
 //                              Node
 //===================================================================
 template <class Key, class Value>
 class Node //NTM:change to class?
-{
+{ 
 public:
     Key m_key;
-    Value m_value;
+    shared_ptr<Value> m_value;
     Node *m_left, *m_right, *m_parent;
     int m_height;
 
@@ -36,7 +35,7 @@ public:
 
     // tbd : more constructors
     Node(const Key &key,const Value &value, Node *parent = nullptr)
-                    : m_key(key), m_value(value), m_left(nullptr),
+                    : m_key(key), m_value(new Value(value)), m_left(nullptr),
                         m_right(nullptr), m_parent(parent), m_height(0){};
     Node(const Node& node) = default;
     virtual ~Node() = default;
@@ -57,12 +56,10 @@ public:
     /// TBD we assumed T has assign operator , to check later with new structs
     void swapNodes(Node* node1, Node* node2)
     {
+        node2->m_value.swap(node1->m_value);
         const Key temp_k = node1->m_key;
-        const Value temp_v = node1->m_value;
         node1->m_key = node2->m_key;
-        node1->m_value = node2->m_value;
         node2->m_key = temp_k;
-        node2->m_value = temp_v;
     }
 };
 
@@ -395,5 +392,4 @@ Node<Key,Value>* AVLtree<Key,Value>::getRoot() const
 }
 //===================================================================
 
-}
 #endif

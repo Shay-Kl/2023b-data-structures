@@ -1,9 +1,6 @@
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 #include <stdexcept>
-
-namespace Webflix
-{
     class nodeExists : public std::exception
     {
     };
@@ -17,5 +14,4 @@ namespace Webflix
     {
     };
 
-}
 #endif
