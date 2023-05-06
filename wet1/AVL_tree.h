@@ -11,7 +11,7 @@ using namespace std;
 //                              Node
 //===================================================================
 template <class Key, class Value>
-class Node //NTM:change to class?
+class Node
 { 
 public:
     Key m_key;
