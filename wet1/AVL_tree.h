@@ -119,11 +119,13 @@ public:
     Value& get(const Key& key);
 
     //Removes the key,value pair asscoiated with the key from the tree
+    //Throws an exception if the key doesn't exist
     void remove(const Key& key);
 
     //Returns the number of nodes in the tree
     int getNodeCount() const {return m_num_of_nodes;}
 
+    //Print out all of the tree's keys in order
     template <class k,class v>
     friend ostream& operator<< (ostream& os, AVLtree<k,v>& tree);
 
