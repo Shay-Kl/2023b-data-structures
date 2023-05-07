@@ -7,11 +7,5 @@
     class nodeNotExists : public std::exception
     {
     };
-    class allocationError : public std::exception
-    {
-    };
-    class invalidInput : public std::exception
-    {
-    };
 
 #endif
