@@ -33,5 +33,29 @@ int main()
     //    3            8
     // 1                  9
     cout << tree;
+
+
+
+    tree.remove(1);
+    tree.remove(3);
+    //          8
+    //    7            9
+    //                    
+    cout << tree;
+
+
+    tree.insert(15, 150);
+    tree.insert(25, 250);
+    tree.insert(35, 350);
+    tree.insert(40, 400);
+    //          8
+    //    7            9
+    //                     15
+    //                          25
+    //                               35
+
+    //    
+    cout<< tree;
+
     
 }

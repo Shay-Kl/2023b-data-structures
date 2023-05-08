@@ -270,13 +270,30 @@ void AVLtree<Key,Value>::remove(const Key &key)
 template <class Key ,class Value>
 ostream& operator<<(ostream& os, AVLtree<Key, Value>& tree)
 {
-    for (Key& key: tree)
+    cout<< "Inorder: ";
+    
+    for(const Key& key: tree)
     {
         cout << key << ", ";
     }
     
-    cout << endl;
+    cout << endl << "Preorder: ";
+    printPreOrder(tree.m_root);
+    cout << endl << endl;
     return os;
+}
+
+
+template <class Key ,class Value>
+void printPreOrder(Node<Key,Value>* node)
+{
+    if (node)
+    {
+        cout << node->m_key << ", ";
+        printPreOrder(node->m_left);
+        printPreOrder(node->m_right);
+    }
+    
 }
 
 template <class Key ,class Value>
@@ -413,11 +430,10 @@ public:
 
     Iterator& operator++()
     {
-        //Go right
+        //Go right subtree if it exists and hasn't been visited.
         if(m_current->m_right && m_current->m_right != m_last)
         {
             m_current = m_current->m_right;
-            //Loop until leftmost
             while (m_current->m_left)
             {
                 m_current = m_current->m_left;
@@ -425,12 +441,11 @@ public:
             m_last = m_current->m_parent;
             
         }
-        //Go up
+        //Move up the tree until a non-visited right subtree is found or the root is reached
         else
         {
             m_last = m_current;
             m_current = m_current->m_parent;
-            //Loop until going up and to the right
             while (m_current && m_current->m_right == m_last)
             {
                 m_last = m_current;
@@ -445,13 +460,17 @@ public:
         return m_current!=other.m_current;
     }
 
-    Key& operator*()
+    const Key& key() const
     {
         return m_current->m_key;
     }
-    Value& getValue()
+    Value& value()
     {
         return m_current->m_value;
+    }
+    Value& operator*()
+    {
+        return m_current->m_key;
     }
 };
 
