@@ -1,61 +1,42 @@
 #include "AVL_tree.h"
 #include "wet1util.h"
+#include "Movie.h"
+#include "StreamingDBa1.h"
 #include <iostream>
 using namespace std;
-
+int st(StatusType s)
+{
+    switch (s)
+    {
+    case StatusType::SUCCESS:
+        cout << "1,";
+        break;
+    case StatusType::FAILURE:
+        cout << "2,";
+        break;
+    case StatusType::INVALID_INPUT:
+        cout << "3,";
+        break;
+    case StatusType::ALLOCATION_ERROR:
+        cout << "4,";
+        break;
+    }
+}
 int main()
 {
-    AVLtree<int, int> tree = AVLtree<int, int>();
-    tree.insert(5, 50);
-    tree.insert(2, 20);
-    tree.insert(1, 10);
-    tree.insert(3, 30);
-    tree.insert(8, 80);
-    tree.insert(7, 70);
-    tree.insert(9, 90);
-    //          5
-    //    2            8
-    // 1     3      7     9
-    cout << tree;
+    streaming_database db = streaming_database();
 
+    //Testing various scenarios, every other command is an intended error of some kind
 
-
-    tree.remove(2);
-    //          5
-    //    3            8
-    // 1            7     9
-    cout << tree;
-
-
-
-    tree.remove(5);
-    //          7
-    //    3            8
-    // 1                  9
-    cout << tree;
-
-
-
-    tree.remove(1);
-    tree.remove(3);
-    //          8
-    //    7            9
-    //                    
-    cout << tree;
-
-
-    tree.insert(15, 150);
-    tree.insert(25, 250);
-    tree.insert(35, 350);
-    tree.insert(40, 400);
-    //          8
-    //    7            9
-    //                     15
-    //                          25
-    //                               35
-
-    //    
-    cout<< tree;
-
+    st(db.add_movie(234, Genre::COMEDY, 30, true));
+    st(db.add_movie(234, Genre::COMEDY, 30, true)); // Movie already exists, prints 2
+    st(db.add_movie(123, Genre::ACTION, 20, false));
+    st(db.add_movie(-2, Genre::ACTION, 20, false)); //Invalid id, prints 3
+    st(db.remove_movie(123));
+    st(db.remove_movie(12)); // No such movie exists, prints 2
+    st(db.add_user(101, false));
+    st(db.add_user(101, false)); //User already exists, prints 2
+    st(db.remove_user(101));
+    st(db.remove_user(101)); // No such user exists, prints 2
     
 }

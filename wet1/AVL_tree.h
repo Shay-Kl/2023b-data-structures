@@ -158,7 +158,7 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
             new_ptr = &(it->m_right);
             it = it->m_right;
         }
-        else if (it->m_key > key)
+        else if (key < it->m_key)
         {
             new_ptr = &(it->m_left);
             it = it->m_left;
@@ -167,7 +167,7 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
     *new_ptr = new Node(key, value, parent);
 
     // ASSUMES the Type has operator <
-    if(!(m_min_node.m_current) || key < *m_min_node){
+    if(!(m_min_node.m_current) || (key < m_min_node.key())){
         m_min_node = Iterator(*new_ptr);
     }
     this->m_num_of_nodes++;
@@ -196,7 +196,7 @@ void AVLtree<Key,Value>::remove(const Key &key)
     }
 
 
-    if(removed_node->m_key == *m_min_node)
+    if(!(removed_node->m_key != m_min_node.key()))
     {
         ++m_min_node;
     }
@@ -468,7 +468,7 @@ public:
     {
         return m_current->m_value;
     }
-    Value& operator*()
+    const Key& operator*() const
     {
         return m_current->m_key;
     }

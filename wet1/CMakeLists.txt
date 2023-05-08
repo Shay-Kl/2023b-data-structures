@@ -18,7 +18,6 @@ set(CMAKE_CPP_FLAGS ${MTM_FLAGS_DEBUG})
 
 
 # Add the names of your source files here
-# set(CPP_FILES "gitTesting/UnitTestsMain.cpp")
-set(CPP_FILES "main.cpp")
+set(CPP_FILES "main.cpp" "Movie.cpp" "StreamingDBa1.cpp" "User.cpp")
 
 add_executable(game ${CPP_FILES})

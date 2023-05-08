@@ -20,7 +20,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 	}
 	try
 	{
-		Movie movie(genre, views, vipOnly);
+		Movie movie(genre, views, vipOnly, movieId);
 		movies.insert(movieId, movie);
 		genreMovies[(int)genre].insert(movie, 0);
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
@@ -44,7 +44,12 @@ StatusType streaming_database::remove_movie(int movieId)
 	}
 	try
 	{
-		//to do
+		Movie& movie = movies.get(movieId);
+		Genre genre = movie.getGenre();
+		
+		genreMovies[(int)genre].remove(movie);
+		genreMovies[(int)Genre::NONE].remove(movie);
+		movies.remove(movieId);
 	}
 	catch(std::bad_alloc)
 	{

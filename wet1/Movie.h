@@ -6,7 +6,7 @@
 class Movie
 {
     public:
-        Movie(Genre genre, int views, bool vipOnly);
+        Movie(Genre genre, int views, bool vipOnly, int id);
 
         //Returns the movie's genre
         Genre getGenre() const;
@@ -20,6 +20,9 @@ class Movie
         //Returns the movie's average rating    
         int getRating() const;
 
+        //Returns the movie's id
+        int getId() const;
+
         //Increment the movie's view count
         void view();
 
@@ -27,13 +30,19 @@ class Movie
         //Updates the average rating accordingly
         void rate(int rating);
 
+        //Compares 2 movies, with the "lower" one being whichever is higher rated/higher viewed/lower id in that order
 
+        friend bool operator!=(const Movie& movie1, const Movie& movie2);
+        friend bool operator<(const Movie& movie1, const Movie& movie2);
 
     private:
         Genre m_genre;
         bool m_vipOnly;
         int m_views;
-        double m_ratingAverage = 0; //TODO: Not sure if movie with no rating is considered to have average of 0
+        int m_id;
+        double m_ratingAverage = 0;
         int m_ratingCount = 0;
 };
-#endif // __MOVIE_H__
+
+
+#endif
