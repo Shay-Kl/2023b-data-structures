@@ -133,7 +133,7 @@ public:
     Iterator& begin() { return m_min_node;}
 
     //Returns the Iterator right after the last one (which happens to be nullptr)
-    Iterator end() {return nullptr;}
+    Iterator end() {return m_max_node;}
 
 };
 
@@ -167,7 +167,7 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
     *new_ptr = new Node(key, value, parent);
 
     // ASSUMES the Type has operator <
-    if(!(m_min_node.m_current) || (key < m_min_node.key())){
+    if(!(m_min_node.m_node) || (key < m_min_node.key())){
         m_min_node = Iterator(*new_ptr);
     }
     this->m_num_of_nodes++;
@@ -421,56 +421,52 @@ Node<Key,Value>* AVLtree<Key,Value>::find(const Key &key) const
 template <class Key, class Value>
 class AVLtree<Key, Value>::Iterator
 {
-    Node* m_current, *m_last;
+    Node* m_node;
     friend class AVLtree;
 public:
-    Iterator(Node* node): m_current(node), m_last(node) {}
+    Iterator(Node* node): m_node(node) {}
 
-    Iterator(): m_current(nullptr), m_last(nullptr) {}
+    Iterator(): m_node(nullptr){}
 
     Iterator& operator++()
     {
-        //Go right subtree if it exists and hasn't been visited.
-        if(m_current->m_right && m_current->m_right != m_last)
+        //If right exists, go there and then go left after you find the next node
+        if(m_node->m_right)
         {
-            m_current = m_current->m_right;
-            while (m_current->m_left)
+            m_node = m_node->m_right;
+            while (m_node->m_left)
             {
-                m_current = m_current->m_left;
+                m_node = m_node->m_left;
             }
-            m_last = m_current->m_parent;
             
         }
-        //Move up the tree until a non-visited right subtree is found or the root is reached
+        //If right doesn't exist, go up until you find the next node
         else
         {
-            m_last = m_current;
-            m_current = m_current->m_parent;
-            while (m_current && m_current->m_right == m_last)
+            while (m_node->m_parent && m_node->m_parent->m_right==m_node)
             {
-                m_last = m_current;
-                m_current = m_current->m_parent;
+                m_node = m_node->m_parent;
             }
+            m_node = m_node->m_parent;
         }
         return *this;
     }
-
     bool operator!=(const Iterator& other)
     {
-        return m_current!=other.m_current;
+        return m_node!=other.m_node;
     }
 
     const Key& key() const
     {
-        return m_current->m_key;
+        return m_node->m_key;
     }
     Value& value()
     {
-        return m_current->m_value;
+        return m_node->m_value;
     }
     const Key& operator*() const
     {
-        return m_current->m_key;
+        return m_node->m_key;
     }
 };
 
