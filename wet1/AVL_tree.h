@@ -362,7 +362,7 @@ template <class Key ,class Value>
 void AVLtree<Key,Value>::correctTreeUp(Node* it, const bool is_insert)
 {
     bool valid_node = false;
-    while ((it != nullptr) && ((is_insert == false) || (valid_node = false)))
+    while ((it != nullptr) && ((is_insert == false) || (!valid_node)))
     {
         it->setCurrHeight();
         int balance_factor = it->BalanceFactor();
