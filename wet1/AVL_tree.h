@@ -430,7 +430,7 @@ public:
 
     Iterator& operator++()
     {
-        //If right exists, go there and then go left after you find the next node
+        //If right exists, go there and then go left until you find the next node
         if(m_node->m_right)
         {
             m_node = m_node->m_right;

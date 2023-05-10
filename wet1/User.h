@@ -19,11 +19,13 @@ class User
         void removeFromGroup();
 
         //Watch a movie, increasing its viewCount and the user's viewcount of that genre
-        //Returns FailiureException if the user isn't vip and can't watch it
-        void watch(Movie& movie);
+        void watch(Genre genre);
 
         //Returns the number of views by the user of movies in the genre
         int getGenreViewCount(Genre genre);
+
+        //Returns true if the user is a vip
+        bool isVip();
 
 
     private:

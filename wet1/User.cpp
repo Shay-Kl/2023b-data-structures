@@ -1,7 +1,7 @@
 #include "User.h"
 #include "BinaryTree.h"
 
-User::User(bool isVip): m_isVip(isVip) { }
+User::User(bool isVip): m_isVip(isVip), m_genreViewCount() {}
 
 Group* User::getGroup()
 {
@@ -23,17 +23,22 @@ void User::removeFromGroup()
     m_group = nullptr;
 }
 
-void User::watch(Movie& movie)
+void User::watch(Genre genre)
 {
-    if(movie.isVipOnly() && !m_isVip)
-    {
-        throw BinaryTree::FailureException();
-    }
-    movie.view();
-    m_genreViewCount[(int) movie.getGenre()]++;
+    m_genreViewCount[(int) genre]++;
 }
 
 int User::getGenreViewCount(Genre genre)
 {
+    if (genre==Genre::NONE)
+    {
+        return m_genreViewCount[0]+m_genreViewCount[1]+m_genreViewCount[2]+m_genreViewCount[3];
+    }
+    
     return m_genreViewCount[(int) genre];
+}
+
+bool User::isVip()
+{
+    return m_isVip;
 }
