@@ -70,7 +70,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)
 	}
 	try
 	{
-		User user(isVip);
+		User user(userId, isVip);
 		users.insert(userId, user);
 		return StatusType::SUCCESS;
 	}
@@ -92,8 +92,13 @@ StatusType streaming_database::remove_user(int userId)
 	}
 	try
 	{
+		User& user = users.get(userId);
+		Group* group_ptr = user.getGroup();
+		if (group_ptr)
+		{
+			group_ptr->removeUser(user);
+		}
 		users.remove(userId);
-		//TODO: remove user from group maybe?
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -108,19 +113,82 @@ StatusType streaming_database::remove_user(int userId)
 
 StatusType streaming_database::add_group(int groupId)
 {
-	// TODO: Your code goes here
-	return StatusType::SUCCESS;
+	if(groupId <= 0 )
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{
+		Group group(groupId);
+		groups.insert(groupId, group);
+		return StatusType::SUCCESS;
+	}
+	catch(bad_alloc)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(exception)
+	{
+		return StatusType::FAILURE;
+	}
 }
 
 StatusType streaming_database::remove_group(int groupId)
 {
-	// TODO: Your code goes here
+	if (groupId <= 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{	
+		for (AVLtree<int, User>::Iterator it = users.begin();
+			it != users.end(); ++it)
+		{
+			User& user = it.value();
+			int user_group = user.getGroupId();
+			if(user_group == groupId)
+			{
+				user.removeFromGroup();
+			}
+		}
+
+		groups.remove(groupId);
+		
+		return StatusType::SUCCESS;
+	}
+	catch(bad_alloc)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(exception)
+	{
+		return StatusType::FAILURE;
+	}
 	return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)
 {
-	// TODO: Your code goes here
+	if (groupId <= 0 || userId <= 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{
+		User& user = users.get(userId);
+		Group& group = groups.get(groupId);
+		group.addUser(user);
+		user.addToGroup(&group, groupId);
+	}
+	catch(bad_alloc)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(exception)
+	{
+		return StatusType::FAILURE;
+	}
+	
     return StatusType::SUCCESS;
 }
 
@@ -142,7 +210,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 		
 		genreMovies[(int)genre].remove(movie);
 		genreMovies[(int)Genre::NONE].remove(movie);
-		user.watch(movie.getGenre());
+		user.watch(genre);
+
 		movie.view();
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
 		genreMovies[(int)genre].insert(movie, 0);
@@ -160,8 +229,42 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 
 StatusType streaming_database::group_watch(int groupId,int movieId)
 {
-	// TODO: Your code goes here
-	return StatusType::SUCCESS;
+	if (groupId <= 0 || movieId <= 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	try
+	{
+		Movie& movie = movies.get(movieId);
+		Genre genre = movie.getGenre();
+		Group& group = groups.get(groupId);
+		int members_in_group = group.getUsersCount();
+		if (members_in_group == 0 || (movie.isVipOnly() && !group.isVip()))
+		{
+			return StatusType::FAILURE;
+		}
+		else
+		{
+			genreMovies[(int)genre].remove(movie);
+			genreMovies[(int)Genre::NONE].remove(movie);
+			movie.view(members_in_group);
+			genreMovies[(int)genre].insert(movie, 0);
+			genreMovies[(int)Genre::NONE].insert(movie, 0);
+
+			group.updateViews(genre, members_in_group);
+			group.incGroupWatch(genre);
+
+			return StatusType::SUCCESS;
+		}
+	}
+	catch(bad_alloc)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(exception)
+	{
+		return StatusType::FAILURE;
+	}
 }
 
 output_t<int> streaming_database::get_all_movies_count(Genre genre)
@@ -210,11 +313,10 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 	{
 		return StatusType::INVALID_INPUT;
 	}
-	
 	try
 	{
 		User& user = users.get(userId);
-		return user.getGenreViewCount(genre);
+		return user.getEffectiveViews(genre);
 	}
 	catch(bad_alloc)
 	{
@@ -263,8 +365,44 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 
 output_t<int> streaming_database::get_group_recommendation(int groupId)
 {
-	// TODO: Your code goes here
-	return 0;
+	try
+	{
+		if (groupId <= 0)
+		{
+			return StatusType::INVALID_INPUT;
+		}
+		Group& group = groups.get(groupId);
+		if (group.getUsersCount() == 0)
+		{
+			return StatusType::FAILURE;
+		}
+		Genre favorit_genre = Genre::COMEDY;
+		int favorit_genre_views = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			int temp = group.getGenreViewCount((Genre)i);
+			if(temp > favorit_genre_views)
+			{
+				favorit_genre = (Genre)i;
+				favorit_genre_views = temp;
+			}
+		}
+		if (genreMovies[(int)favorit_genre].getNodeCount() == 0)
+		{
+			return StatusType::FAILURE;
+		}
+		int favorit_movie_id = (*(genreMovies[(int)favorit_genre].begin())).getId();
+		
+		return favorit_movie_id;
+	}
+	catch(bad_alloc)
+	{
+		return StatusType::ALLOCATION_ERROR;
+	}
+	catch(exception)
+	{
+		return StatusType::FAILURE;
+	}
 }
 
 

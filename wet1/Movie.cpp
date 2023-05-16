@@ -28,10 +28,10 @@ int Movie::getRating() const
     return m_ratingAverage;
 }
 
-void Movie::view()
+void Movie::view(int views)
 {
-    m_views++;
-}
+    m_views += views;
+} 
 
 void Movie::rate(int rating)
 {

@@ -88,24 +88,8 @@ class AVLtree
 {
     typedef Node<Key, Value> Node;
 
-private:
-    class Iterator;
-    Node* m_root;
-    Iterator m_min_node;
-    Iterator m_max_node;
-    int m_num_of_nodes;
-    void rotate(Node* root, Node* new_root, Node** new_root_son, Node** root_son);
-    void rotateLeft(Node* root);
-    void rotateRight(Node* root);
-    Node* iterate_to_next(Node* root) const;
-    void correctTreeUp(Node* it, const bool is_insert = true);
-    void destroy_tree(Node* root);
-    void printTreeAux(Node* root) const;
-    Node* getRoot() const;
-    Node* find(const Key& key) const;
-
 public:
-
+    class Iterator;
     AVLtree() : m_root(nullptr) ,m_min_node(), m_max_node(), m_num_of_nodes(0){};
     ~AVLtree() { destroy_tree(this->m_root); }
 
@@ -134,6 +118,22 @@ public:
 
     //Returns the Iterator right after the last one (which happens to be nullptr)
     Iterator end() {return m_max_node;}
+
+private:
+
+    Node* m_root;
+    Iterator m_min_node;
+    Iterator m_max_node;
+    int m_num_of_nodes;
+    void rotate(Node* root, Node* new_root, Node** new_root_son, Node** root_son);
+    void rotateLeft(Node* root);
+    void rotateRight(Node* root);
+    Node* iterate_to_next(Node* root) const;
+    void correctTreeUp(Node* it, const bool is_insert = true);
+    void destroy_tree(Node* root);
+    void printTreeAux(Node* root) const;
+    Node* getRoot() const;
+    Node* find(const Key& key) const;
 
 };
 

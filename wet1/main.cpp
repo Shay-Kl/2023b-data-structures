@@ -32,10 +32,11 @@ void dbTest()
     st(db.add_user(101, false)); //User already exists, prints 2
     st(db.remove_user(101));
     st(db.remove_user(101)); // No such user exists, prints 2
-    st(db.user_watch(101, 123));
+    st(db.user_watch(101, 123)); // prints 2
+    st(db.add_user(101, false));
     st(db.user_watch(101, 234)); //User isn't vip, prints 2
 
-    cout << endl;
+    cout << endl << endl;
 
     //Line 2 - printing number of movies in each genre
     db = streaming_database();
@@ -43,25 +44,28 @@ void dbTest()
     db.add_movie(2, Genre::COMEDY, 5, false);
     db.add_movie(3, Genre::COMEDY, 10, false);
     db.add_movie(4, Genre::ACTION, 5, false);
-    db.add_movie(5, Genre::DRAMA, 5, false);
+    db.add_movie(5, Genre::DRAMA, 5, true);
     cout << "Comedy: " << db.get_all_movies_count(Genre::COMEDY).ans();
     cout << ", Drama: " << db.get_all_movies_count(Genre::DRAMA).ans();
     cout << ", Action: " << db.get_all_movies_count(Genre::ACTION).ans();
     cout << ", Fantasy: " << db.get_all_movies_count(Genre::FANTASY).ans();
     cout << ", Total: " << db.get_all_movies_count(Genre::NONE).ans();
 
-    cout << endl;
+    cout << endl << endl;
+    
 
     //line 3 - user view count
-    db.add_user(10, true);
-    db.user_watch(10, 1);
-    db.user_watch(10, 2);
-    db.user_watch(10, 5);
+    st(db.add_user(10, true));//
+    st(db.add_user(100, false));//
+    st(db.user_watch(10, 1));//
+    st(db.user_watch(10, 2));//
+    st(db.user_watch(10, 5));//
+    st(db.user_watch(100, 5));// user not VIP print 2
     cout << "User 10 - Comedy: " << db.get_num_views(10, Genre::COMEDY).ans();
     cout << ", Drama: " << db.get_num_views(10, Genre::DRAMA).ans();
     cout << ", Total: " << db.get_num_views(10, Genre::NONE).ans();
 
-    cout << endl;
+    cout << endl << endl;
 
     //line 4 - rating and then printing all movies in a genre, sorted
 
@@ -88,8 +92,66 @@ void dbTest()
     {
         cout << output[i] << ",";
     }
-    
 
+    cout << endl << endl;
+ 
+    //------------------------
+
+    db = streaming_database();
+    db.add_movie(1, Genre::COMEDY, 0, false);
+    db.add_movie(2, Genre::COMEDY, 0, false);
+    db.add_movie(3, Genre::COMEDY, 0, false);
+    db.add_movie(4, Genre::ACTION, 0, false);
+    db.add_movie(5, Genre::DRAMA, 0, true);
+
+    db.add_user(1, false);
+    db.add_user(2, false);
+    db.add_user(3, true);
+    db.add_user(4, true);
+
+    //line 5 - add groups
+    st(db.add_group(1));//
+    st(db.add_group(1)); //already exists, print 2
+    st(db.add_group(-1)); // print 3
+    st(db.add_group(2));//
+    st(db.add_group(3));//
+    st(db.add_group(4));//
+    
+    cout << endl << endl;
+
+    //line 6 - add users to groups
+    st(db.add_user_to_group(-1,1)); // print 3
+    st(db.add_user_to_group(1,-1)); // print 3
+    st(db.add_user_to_group(1,1)); //
+    st(db.add_user_to_group(1,1)); //already exists, print 2
+    st(db.add_user_to_group(1,2)); //user already has a group, print 2
+    st(db.add_user_to_group(2,2));//
+    st(db.add_user_to_group(3,3));//
+
+    cout << endl << endl;
+
+    //line 7 - group watches
+    st(db.group_watch(1,-1)); //print 3
+    st(db.group_watch(-1,1)); //print 3
+    st(db.group_watch(1,1));
+    st(db.group_watch(4,5)); // empty group, print 2
+    st(db.group_watch(2,5)); // VIP movie not VIP group, print 2
+    st(db.group_watch(3,5));
+    st(db.group_watch(3,5));
+    st(db.group_watch(3,5));
+
+    db.user_watch(3,5);
+
+    cout << " num views: " << db.get_num_views(3,Genre::DRAMA).ans(); // num views: 4
+
+    cout << endl << endl;
+
+    //line 8 - get_group_recommendation
+    cout << "recommended movie (or Satus): " << db.get_group_recommendation(3).ans();//should print 5
+    cout << " ,";
+    st(db.get_group_recommendation(100).status()); //no such group, print 2
+    cout << " ,";
+    st(db.get_group_recommendation(4).status()); //empty group, print 2
 }
 
 

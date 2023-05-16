@@ -1,44 +1,100 @@
 #include "User.h"
-#include "BinaryTree.h"
 
-User::User(bool isVip): m_isVip(isVip), m_genreViewCount() {}
+User::User(int id, bool isVip): m_id(id), m_isVip(isVip), m_groupId(0),
+                        m_group(nullptr), m_genreViewCount() {}
 
-Group* User::getGroup()
+Group* User::getGroup() const
 {
     return m_group;
 }
 
-void User::addToGroup(Group* group)
+int User::getId() const
 {
-    if(m_group)
+    return m_id;
+}
+
+int User::getGroupId() const
+{
+    return m_groupId;
+}
+
+void User::addToGroup(Group* group, int groupId)
+{
+    if (m_groupId)
     {
-        throw BinaryTree::FailureException();
+        throw std::exception();
+    }
+    if(group == nullptr)
+    {
+        throw std::bad_alloc();
     }
     m_group = group;
+    m_groupId = groupId;
 
+    m_genreViewCount[0] -= group->getGroupViews(Genre::COMEDY);
+    m_genreViewCount[1] -= group->getGroupViews(Genre::DRAMA);
+    m_genreViewCount[2] -= group->getGroupViews(Genre::ACTION);
+    m_genreViewCount[3] -= group->getGroupViews(Genre::FANTASY);
 }
 
 void User::removeFromGroup()
 {
+    m_genreViewCount[0] += getGroup()->getGroupViews(Genre::COMEDY);
+    m_genreViewCount[1] += getGroup()->getGroupViews(Genre::DRAMA);
+    m_genreViewCount[2] += getGroup()->getGroupViews(Genre::ACTION);
+    m_genreViewCount[3] += getGroup()->getGroupViews(Genre::FANTASY);
     m_group = nullptr;
+    m_groupId = 0;
 }
 
 void User::watch(Genre genre)
 {
     m_genreViewCount[(int) genre]++;
+    if (this->getGroup())
+    {
+        (this->getGroup())->updateViews(genre, 1);
+    }
 }
 
-int User::getGenreViewCount(Genre genre)
+bool User::isVip() const
+{
+    return m_isVip;
+}
+
+void User::addToGenreViews(Genre genre, int num)
+{
+    m_genreViewCount[(int) genre] += num;
+}
+
+int User::getGenreViewCount(Genre genre) const
 {
     if (genre==Genre::NONE)
     {
-        return m_genreViewCount[0]+m_genreViewCount[1]+m_genreViewCount[2]+m_genreViewCount[3];
+        return (m_genreViewCount[0] + m_genreViewCount[1] + m_genreViewCount[2]
+                 + m_genreViewCount[3]);
     }
     
     return m_genreViewCount[(int) genre];
 }
 
-bool User::isVip()
+int User::getEffectiveViews(Genre genre) const
 {
-    return m_isVip;
+    if (this->getGroup() == nullptr)
+    {
+        return (this->getGenreViewCount(genre));
+    }
+    else
+    {
+        if (genre == Genre::NONE)
+        {
+            int total = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                total += m_genreViewCount[i] + (this->getGroup())->getGroupViews((Genre)i);
+            }
+            return total;
+        }
+        
+        return (m_genreViewCount[(int)genre] + (this->getGroup())->getGroupViews(genre));
+    }
 }

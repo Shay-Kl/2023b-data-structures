@@ -21,6 +21,9 @@
 #include "Group.h"
 #include "AVL_tree.h"
 
+class User;
+class Group;
+
 class streaming_database {
 private:
 	AVLtree<int, Movie> movies;

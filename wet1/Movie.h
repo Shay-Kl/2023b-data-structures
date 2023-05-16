@@ -5,44 +5,43 @@
 
 class Movie
 {
-    public:
-        Movie(Genre genre, int views, bool vipOnly, int id);
+public:
+    //C'tor
+    Movie(Genre genre, int views, bool vipOnly, int id);
 
-        //Returns the movie's genre
-        Genre getGenre() const;
+    //Returns the movie's genre
+    Genre getGenre() const;
 
-        //Returns the movie's view count
-        int getViews() const;
+    //Returns the movie's view count
+    int getViews() const;
 
-        //Return true if movie is only for vip users
-        bool isVipOnly() const;
+    //Return true if movie is only for vip users
+    bool isVipOnly() const;
 
-        //Returns the movie's average rating    
-        int getRating() const;
+    //Returns the movie's average rating    
+    int getRating() const;
 
-        //Returns the movie's id
-        int getId() const;
+    //Returns the movie's id
+    int getId() const;
 
-        //Increment the movie's view count
-        void view();
+    //Increment the movie's view count
+    void view(int views = 1);
 
-        //Rate the movie with a given rating 0-100
-        //Updates the average rating accordingly
-        void rate(int rating);
+    //Rate the movie with a given rating 0-100
+    //Updates the average rating accordingly
+    void rate(int rating);
 
-        //Compares 2 movies, with the "lower" one being whichever is higher rated/higher viewed/lower id in that order
+    //Compares 2 movies, with the "lower" one being whichever is
+    // higher rated/higher viewed/lower id in that order
+    friend bool operator!=(const Movie& movie1, const Movie& movie2);
+    friend bool operator<(const Movie& movie1, const Movie& movie2);
 
-        friend bool operator!=(const Movie& movie1, const Movie& movie2);
-        friend bool operator<(const Movie& movie1, const Movie& movie2);
-
-    private:
-        Genre m_genre;
-        bool m_vipOnly;
-        int m_views;
-        int m_id;
-        double m_ratingAverage = 0;
-        int m_ratingCount = 0;
+private:
+    Genre m_genre;
+    bool m_vipOnly;
+    int m_views;
+    int m_id;
+    double m_ratingAverage = 0;
+    int m_ratingCount = 0;
 };
-
-
-#endif
+#endif //__MOVIE_H__
