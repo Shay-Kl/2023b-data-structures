@@ -90,7 +90,7 @@ class AVLtree
 
 public:
     class Iterator;
-    AVLtree() : m_root(nullptr) ,m_min_node(), m_max_node(), m_num_of_nodes(0){};
+    AVLtree() : m_root(nullptr), m_num_of_nodes(0){};
     ~AVLtree() { destroy_tree(this->m_root); }
 
 
@@ -114,16 +114,22 @@ public:
     friend ostream& operator<< (ostream& os, AVLtree<k,v>& tree);
 
     //Returns the first Iterator (min node)
-    Iterator& begin() { return m_min_node;}
+    Iterator begin()
+    {
+        Node* node = m_root;
+        while (node->m_left)
+        {
+            node = node->m_left;
+        }
+         return node;
+    }
 
     //Returns the Iterator right after the last one (which happens to be nullptr)
-    Iterator end() {return m_max_node;}
+    Iterator end() {return nullptr;}
 
 private:
 
     Node* m_root;
-    Iterator m_min_node;
-    Iterator m_max_node;
     int m_num_of_nodes;
     void rotate(Node* root, Node* new_root, Node** new_root_son, Node** root_son);
     void rotateLeft(Node* root);
@@ -166,12 +172,8 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
     }
     *new_ptr = new Node(key, value, parent);
 
-    // ASSUMES the Type has operator <
-    if(!(m_min_node.m_node) || (key < m_min_node.key())){
-        m_min_node = Iterator(*new_ptr);
-    }
     this->m_num_of_nodes++;
-    correctTreeUp(parent); //////paste here the func
+    correctTreeUp(parent);
 
 }
 
@@ -193,12 +195,6 @@ void AVLtree<Key,Value>::remove(const Key &key)
     Node* removed_node = find(key);
     if (removed_node == nullptr){
         throw nodeNotExists();
-    }
-
-
-    if(!(removed_node->m_key != m_min_node.key()))
-    {
-        ++m_min_node;
     }
 
 

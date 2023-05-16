@@ -39,7 +39,6 @@ void Group::addUser(User& user)
 
 void Group::removeUser(User& user)
 {
-    //groupUsers.remove(user.getId());
     m_usersCount--;
     if (user.isVip())
     {
@@ -49,10 +48,10 @@ void Group::removeUser(User& user)
             m_isVip = false;
         }
     }
-    this->updateViews(Genre::COMEDY, -1*(user.getEffectiveViews(Genre::COMEDY)));
-    this->updateViews(Genre::DRAMA, -1*(user.getEffectiveViews(Genre::DRAMA)));
-    this->updateViews(Genre::ACTION, -1*(user.getEffectiveViews(Genre::ACTION)));
-    this->updateViews(Genre::FANTASY, -1*(user.getEffectiveViews(Genre::FANTASY)));
+    this->updateViews(Genre::COMEDY, -(user.getEffectiveViews(Genre::COMEDY)));
+    this->updateViews(Genre::DRAMA, -(user.getEffectiveViews(Genre::DRAMA)));
+    this->updateViews(Genre::ACTION, -(user.getEffectiveViews(Genre::ACTION)));
+    this->updateViews(Genre::FANTASY, -(user.getEffectiveViews(Genre::FANTASY)));
 }
 
 void Group::updateViews(Genre genre, int views)

@@ -33,7 +33,7 @@ public:
     //Remove user's reference to group, should only be called by the group when it gets destroyed
     void removeFromGroup();
 
-    //Watch a movie, ??increasing its viewCount?? and the user's viewcount of that genre
+    //Watch a movie and increase the user's viewcount of that genre
     void watch(Genre genre);
 
     //Add num of views to the user's genre ViewsCount
