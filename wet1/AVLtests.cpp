@@ -37,9 +37,9 @@ using namespace std;
 
 
 
-void Test2()
+void Test1()
 {
-  AVLTree<int, int> tree;
+  AVLtree<int, int> tree;
   tree.insert(15,-15);
   tree.insert(10,-10);
   tree.insert(20,-20);
@@ -88,7 +88,7 @@ void Test2()
     // this triggers an RL rotation on key 2 and then RR rotation on key 5.
 void Test2()
 {
-  AVLTree<int, int> tree;
+  AVLtree<int, int> tree;
   tree.insert(5,-5);
   tree.insert(2,-2);
   tree.insert(8,-8);
@@ -112,11 +112,11 @@ void Test2()
 //Valgrind tests
 void Test3()
 {
-  AVLTree<int, int> tree;
+  AVLtree<int, int> tree;
   try
   {
     cout << "-----------Valgrind 1-------------" << endl;
-    AVLTree<int, int> tree;
+    AVLtree<int, int> tree;
     for(int i = 1; i <= 10000; ++i)
     {
       tree.insert(i,-i);
@@ -136,22 +136,22 @@ void Test3()
     cout << "-----------------------------------" << endl;
     cout << "-----------Valgrind 2-------------" << endl;
 
-    tree = AVLTree<int, int>;
+    AVLtree<int, int> tree2;
     for(int i = 1; i <= 100000; i*=2)
     {
-      tree.insert(i,-i);
+      tree2.insert(i,-i);
     }
     for(int i = 1; i <= 100000; i*=2)
     {
       cout << "tree contains " << i << ": ";
-      if (tree.get(i) == i)
+      if (tree2.get(i) == i)
       {
         cout << "True" << endl;
       }
     }
     for(int i = 1; i <= 10000; i*=2)
     {
-      tree.remove(i);
+      tree2.remove(i);
     }
     cout << "-----------------------------------" << endl;
 

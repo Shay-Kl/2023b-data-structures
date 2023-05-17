@@ -13,6 +13,8 @@ int main()
 {
     //treeTest();
     dbTest();
+    
+    return 0;
 }
 
 void dbTest()
