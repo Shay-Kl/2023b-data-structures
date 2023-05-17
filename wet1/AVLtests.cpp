@@ -1,6 +1,5 @@
-
+#include "AVL_Tree.h"
 #include <iostream>
-#include "AVL_tree.h"
 using namespace std;
 
 
@@ -38,7 +37,7 @@ using namespace std;
 
 
 
-void Test1()
+void Test2()
 {
   AVLTree<int, int> tree;
   tree.insert(15,-15);
@@ -137,7 +136,7 @@ void Test3()
     cout << "-----------------------------------" << endl;
     cout << "-----------Valgrind 2-------------" << endl;
 
-    tree = AVLTree<int, int> t;
+    tree = AVLTree<int, int>;
     for(int i = 1; i <= 100000; i*=2)
     {
       tree.insert(i,-i);
@@ -163,12 +162,3 @@ void Test3()
   }
 }
 //============================================
-
-int main()
-{
-  //Test1();
-  //Test2();
-  //Test3();
-
-  return 0;
-}

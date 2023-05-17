@@ -3,6 +3,7 @@
 
 #include "StreamingDBa1.h"
 #include "User.h"
+#include "AVL_tree.h"
 
 class User;
 
@@ -16,6 +17,9 @@ public:
 
     //Returns the number of users in the group
     int getUsersCount() const;
+
+    //Returns the tree that holds all group's users
+    AVLtree<int, User*>& getUsers();
 
     //Returns true if the group has VIP member in it
     bool isVip() const;
@@ -38,6 +42,8 @@ public:
     //Add one group watch to the groupWatchCounter
     void incGroupWatch(Genre genre);
 
+
+
 private:
     int m_id;
     bool m_isVip;
@@ -45,6 +51,7 @@ private:
     int m_usersCount;
     int m_genreTotalViews[4] = {0};
     int m_genreGroupViews[4] = {0};
+    AVLtree<int, User*> users;
 };
 
 #endif // __GROUP_H__

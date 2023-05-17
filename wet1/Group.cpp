@@ -34,6 +34,7 @@ void Group::addUser(User& user)
     this->updateViews(Genre::DRAMA, user.getEffectiveViews(Genre::DRAMA));
     this->updateViews(Genre::ACTION, user.getEffectiveViews(Genre::ACTION));
     this->updateViews(Genre::FANTASY, user.getEffectiveViews(Genre::FANTASY));
+    users.insert(user.getId(), &user);
 
 }
 
@@ -52,6 +53,7 @@ void Group::removeUser(User& user)
     this->updateViews(Genre::DRAMA, -(user.getEffectiveViews(Genre::DRAMA)));
     this->updateViews(Genre::ACTION, -(user.getEffectiveViews(Genre::ACTION)));
     this->updateViews(Genre::FANTASY, -(user.getEffectiveViews(Genre::FANTASY)));
+    users.remove(user.getId());
 }
 
 void Group::updateViews(Genre genre, int views)
@@ -72,4 +74,9 @@ int Group::getGroupViews(Genre genre) const
 void Group::incGroupWatch(Genre genre)
 {
     m_genreGroupViews[(int)genre]++;
+}
+
+AVLtree<int, User*>& Group::getUsers()
+{
+    return users;
 }

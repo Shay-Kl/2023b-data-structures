@@ -140,18 +140,16 @@ StatusType streaming_database::remove_group(int groupId)
 		return StatusType::INVALID_INPUT;
 	}
 	try
-	{	
-		for (AVLtree<int, User>::Iterator it = users.begin();
-			it != users.end(); ++it)
+	{
+		Group& group = groups.get(groupId);
+		AVLtree<int, User*> group_users = group.getUsers();
+		for (AVLtree<int, User*>::Iterator it = group_users.begin();
+			it != group_users.end(); ++it)
 		{
-			User& user = it.value();
-			int user_group = user.getGroupId();
-			if(user_group == groupId)
-			{
-				user.removeFromGroup();
-			}
+			User& user = *(it.value());
+			group.removeUser(user);
+			user.removeFromGroup();
 		}
-
 		groups.remove(groupId);
 		
 		return StatusType::SUCCESS;
