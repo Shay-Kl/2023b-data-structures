@@ -93,10 +93,12 @@ public:
     class Iterator;
     AVLtree() : m_root(nullptr), m_num_of_nodes(0){};
     ~AVLtree() { destroy_tree(this->m_root); }
-    AVLtree(const AVLtree& other) : m_root(nullptr), m_num_of_nodes(other.m_num_of_nodes) {
+    AVLtree(const AVLtree& other): m_root(nullptr), m_num_of_nodes(other.m_num_of_nodes)
+    {
         m_root = copyNodes(other.m_root);
     }
-    AVLtree& operator=(const AVLtree& other) {
+    AVLtree& operator=(const AVLtree& other)
+    {
         if (this != &other) {
             destroy_tree(m_root);
             m_root = copyNodes(other.m_root);
@@ -129,6 +131,10 @@ public:
     Iterator begin()
     {
         Node<Key,Value>* node = m_root;
+        if(!node)
+        {
+            return node;
+        }
         while (node->m_left)
         {
             node = node->m_left;
@@ -155,28 +161,29 @@ private:
 
 };
 template <class Key ,class Value>
-Node<Key, Value>* copyNodes(const Node<Key,Value>* node) {
-        if (node == nullptr)
-        {
-            return nullptr;
-        }
-        else 
-        {
-            Node<Key,Value>* newNode = new Node<Key,Value>(node->m_key, node->m_value);
-            newNode->m_height = node->m_height;
-            newNode->m_left = copyNodes(node->m_left);
-            if(newNode->m_left != nullptr)
-            {
-                newNode->m_left->m_parent = newNode;
-            }
-            newNode->m_right = copyNodes(node->m_right);
-            if(newNode->m_right != nullptr)
-            {
-                newNode->m_right->m_parent = newNode;
-            }
-            return newNode;
-        }
+Node<Key, Value>* copyNodes(const Node<Key,Value>* node)
+{
+    if (node == nullptr)
+    {
+        return nullptr;
     }
+    else 
+    {
+        Node<Key,Value>* newNode = new Node<Key,Value>(node->m_key, node->m_value);
+        newNode->m_height = node->m_height;
+        newNode->m_left = copyNodes(node->m_left);
+        if(newNode->m_left != nullptr)
+        {
+            newNode->m_left->m_parent = newNode;
+        }
+        newNode->m_right = copyNodes(node->m_right);
+        if(newNode->m_right != nullptr)
+        {
+            newNode->m_right->m_parent = newNode;
+        }
+        return newNode;
+    }
+}
 
 
 template <class Key ,class Value>
