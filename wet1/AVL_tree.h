@@ -21,15 +21,18 @@ public:
 
     int getHeight(const Node* node)
     {
-        if (node == nullptr){
+        if (node == nullptr)
+        {
             return -1;
         }
-        else{
+        else
+        {
             return node->m_height;
         }
     }
 
-    int BalanceFactor(){
+    int BalanceFactor()
+    {
         return (getHeight(m_left) - getHeight(m_right));
     }
 
@@ -37,25 +40,25 @@ public:
     Node(const Key &key,const Value &value, Node *parent = nullptr)
                     : m_key(key), m_value(value), m_left(nullptr),
                         m_right(nullptr), m_parent(parent), m_height(0){};
-    Node(const Node& node) :m_key(node.m_key), m_value(node.m_value)
-    {
-    }
+    Node(const Node& node) :m_key(node.m_key), m_value(node.m_value) { }
     virtual ~Node() = default;
 
     Node &operator=(const Node &node) = default;
 
-    void setCurrHeight(){
+    void setCurrHeight()
+    {
         int l_height = getHeight(m_left);
         int r_height = getHeight(m_right);
-        if (l_height > r_height){
+        if (l_height > r_height)
+        {
             m_height = l_height + 1;
         }
-        else{
+        else
+        {
             m_height = r_height + 1;
         }
     }
-
-    /// TBD we assumed T has assign operator , to check later with new structs
+    
     void swapNodes(Node* other)
     {
         const Key temp_k = this->m_key;
@@ -155,8 +158,6 @@ private:
     Node<Key, Value>* iterate_to_next(Node<Key, Value>* root) const;
     void correctTreeUp(Node<Key, Value>* it, const bool is_insert = true);
     void destroy_tree(Node<Key, Value>* root);
-    void printTreeAux(Node<Key, Value>* root) const;
-    Node<Key, Value>* getRoot() const;
     Node<Key, Value>* find(const Key& key) const;
 
 };
@@ -215,7 +216,7 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
     }
     *new_ptr = new Node<Key, Value>(key, value, parent);
     this->m_num_of_nodes++;
-    correctTreeUp(parent); //////paste here the func
+    correctTreeUp(parent);
 
 }
 
