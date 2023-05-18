@@ -91,10 +91,19 @@ class AVLtree
 
 public:
     class Iterator;
-    AVLtree() : m_root(nullptr) ,m_min_node(), m_max_node(), m_num_of_nodes(0){};
+    AVLtree() : m_root(nullptr), m_num_of_nodes(0){};
     ~AVLtree() { destroy_tree(this->m_root); }
-    AVLtree(const AVLtree& tree);
-    AVLtree& operator= (const AVLtree& tree);
+    AVLtree(const AVLtree& other) : m_root(nullptr), m_num_of_nodes(other.m_num_of_nodes) {
+        m_root = copyNodes(other.m_root);
+    }
+    AVLtree& operator=(const AVLtree& other) {
+        if (this != &other) {
+            destroy_tree(m_root);
+            m_root = copyNodes(other.m_root);
+            m_num_of_nodes = other.m_num_of_nodes;
+        }
+        return *this;
+    }
 
 
     //Insert a key,value pair into the tree
@@ -117,16 +126,22 @@ public:
     friend ostream& operator<< (ostream& os, AVLtree<k,v>& tree);
 
     //Returns the first Iterator (min node)
-    Iterator& begin() { return m_min_node;}
+    Iterator begin()
+    {
+        Node<Key,Value>* node = m_root;
+        while (node->m_left)
+        {
+            node = node->m_left;
+        }
+         return node;
+    }
 
     //Returns the Iterator right after the last one (which happens to be nullptr)
-    Iterator end() {return m_max_node;}
+    Iterator end() {return nullptr;}
 
 private:
 
     Node<Key, Value>* m_root;
-    Iterator m_min_node;
-    Iterator m_max_node;
     int m_num_of_nodes;
     void rotate(Node<Key, Value>* root, Node<Key, Value>* new_root, Node<Key, Value>** new_root_son, Node<Key, Value>** root_son);
     void rotateLeft(Node<Key, Value>* root);
@@ -139,36 +154,29 @@ private:
     Node<Key, Value>* find(const Key& key) const;
 
 };
-/*
 template <class Key ,class Value>
-void AVLtree<Key, Value>::copyTree(AVLtree& node)
-{
-    
-}
-*/
-template <class Key ,class Value>
-AVLtree::AVLtree(const AVLtree<Key, Value>& tree)
-{
-        copyTree(tree.getRoot(), this->getRoot());
-}
-
-template <class Key ,class Value>
-AVLtree<Key, Value>& AVLtree::operator= (const AVLtree<Key, Value>& tree)
-{
-    destroy_tree(this->m_root);
-    copyTree(tree.getRoot(), this->getRoot());
-    return *this;
-}
-template <class Key ,class Value>
-void copyTree(Node<Key, Value>* source, Node<Key, Value>* target)
-{
-    if (source == nullptr){
-        return;
+Node<Key, Value>* copyNodes(const Node<Key,Value>* node) {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+        else 
+        {
+            Node<Key,Value>* newNode = new Node<Key,Value>(node->m_key, node->m_value);
+            newNode->m_height = node->m_height;
+            newNode->m_left = copyNodes(node->m_left);
+            if(newNode->m_left != nullptr)
+            {
+                newNode->m_left->m_parent = newNode;
+            }
+            newNode->m_right = copyNodes(node->m_right);
+            if(newNode->m_right != nullptr)
+            {
+                newNode->m_right->m_parent = newNode;
+            }
+            return newNode;
+        }
     }
-    target = new Node<Key, Value>(*source);
-    copyTree(source->m_left, target->m_left);
-    copyTree(source->m_right, target->m_right);
-}
 
 
 template <class Key ,class Value>
@@ -199,11 +207,6 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
         }
     }
     *new_ptr = new Node<Key, Value>(key, value, parent);
-
-    // ASSUMES the Type has operator <
-    if(!(m_min_node.m_node) || (key < m_min_node.key())){
-        m_min_node = Iterator(*new_ptr);
-    }
     this->m_num_of_nodes++;
     correctTreeUp(parent); //////paste here the func
 
@@ -227,12 +230,6 @@ void AVLtree<Key,Value>::remove(const Key &key)
     Node<Key, Value>* removed_node = find(key);
     if (removed_node == nullptr){
         throw nodeNotExists();
-    }
-
-
-    if(!(removed_node->m_key != m_min_node.key()))
-    {
-        ++m_min_node;
     }
 
 
