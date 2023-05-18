@@ -30,6 +30,8 @@ public:
     //Remove user from group
     void removeUser(User& user);
 
+    void closeGroup();
+
     //Add num of views to the total genre views count
     void updateViews(Genre genre, int views);
 
@@ -46,9 +48,7 @@ public:
 
 private:
     int m_id;
-    bool m_isVip;
     int m_vipCount;
-    int m_usersCount;
     int m_genreTotalViews[4] = {0};
     int m_genreGroupViews[4] = {0};
     AVLtree<int, User*> users;

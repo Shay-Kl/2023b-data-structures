@@ -142,14 +142,7 @@ StatusType streaming_database::remove_group(int groupId)
 	try
 	{
 		Group& group = groups.get(groupId);
-		AVLtree<int, User*> group_users = group.getUsers();
-		for (AVLtree<int, User*>::Iterator it = group_users.begin();
-			it != group_users.end(); ++it)
-		{
-			User& user = *(it.value());
-			group.removeUser(user);
-			user.removeFromGroup();
-		}
+		group.closeGroup();
 		groups.remove(groupId);
 		
 		return StatusType::SUCCESS;

@@ -18,9 +18,6 @@ public:
     //Returns the user's ID
     int getId() const;
 
-    //Returns the user's group ID
-    int getGroupId() const;
-
     //Returns the number of views by the user of movies in a genre
     int getEffectiveViews(Genre genre) const;
 
@@ -45,7 +42,6 @@ public:
 private:
     int m_id;
     bool m_isVip;
-    int m_groupId;
     Group* m_group;
     int m_genreViewCount[4];
 };
