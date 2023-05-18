@@ -24,9 +24,10 @@ void dbTest()
 
     //Line 1 - Printing StatusType for various basic functions, every other command is an intended error of some kind
 
+
+    st(db.add_movie(123, Genre::ACTION, 20, false));
     st(db.add_movie(234, Genre::COMEDY, 30, true));
     st(db.add_movie(234, Genre::COMEDY, 30, true)); // Movie already exists, prints 2
-    st(db.add_movie(123, Genre::ACTION, 20, false));
     st(db.add_movie(-2, Genre::ACTION, 20, false)); //Invalid id, prints 3
     st(db.remove_movie(123));
     st(db.remove_movie(12)); // No such movie exists, prints 2
@@ -39,9 +40,8 @@ void dbTest()
     st(db.user_watch(101, 234)); //User isn't vip, prints 2
 
     cout << endl << endl;
-
+    
     //Line 2 - printing number of movies in each genre
-    db = streaming_database();
     db.add_movie(1, Genre::COMEDY, 5, false);
     db.add_movie(2, Genre::COMEDY, 5, false);
     db.add_movie(3, Genre::COMEDY, 10, false);
@@ -86,15 +86,16 @@ void dbTest()
     {
         cout << output[i] << ", ";
     }
+    delete[] output;
     count = db.get_all_movies_count(Genre::COMEDY).ans();
-    output = new int[count];
-    db.get_all_movies(Genre::COMEDY, output);
+    int* output2 = new int[count];
+    db.get_all_movies(Genre::COMEDY, output2);
     cout << "  Comedy: ";
     for(int i = 0; i < count; i++)
     {
-        cout << output[i] << ",";
+        cout << output2[i] << ",";
     }
-
+    delete[] output2;
     cout << endl << endl;
  
     //------------------------
@@ -154,6 +155,7 @@ void dbTest()
     st(db.get_group_recommendation(100).status()); //no such group, print 2
     cout << " ,";
     st(db.get_group_recommendation(4).status()); //empty group, print 2
+    cout << endl;
 }
 
 

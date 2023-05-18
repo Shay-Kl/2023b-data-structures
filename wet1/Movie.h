@@ -37,11 +37,11 @@ public:
     friend bool operator<(const Movie& movie1, const Movie& movie2);
 
 private:
-    Genre m_genre;
-    bool m_vipOnly;
     int m_views;
+    bool m_vipOnly;
     int m_id;
-    double m_ratingAverage = 0;
-    int m_ratingCount = 0;
+    double m_ratingAverage;
+    int m_ratingCount;
+    Genre m_genre;
 };
 #endif //__MOVIE_H__

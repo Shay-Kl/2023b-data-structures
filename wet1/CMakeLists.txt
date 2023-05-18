@@ -10,14 +10,16 @@ project(HW1_1 VERSION 0.1.0 LANGUAGES CXX)
 # set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Define variables containing compiler flags for gcc
-set(MTM_FLAGS_DEBUG "-std=c++11 --pedantic-errors -Wall -Werror")
+set(MTM_FLAGS_DEBUG "g++ -std=c++11 --pedantic-errors -Wall -Werror")
 set(MTM_FLAGS_RELEASE "${MTM_FLAGS_DEBUG} -DNDEBUG")
+
+#g++ -std=c++11 --pedantic-errors -Wall -Werror -DNDEBUG *.cpp -o prog
 
 # Set the flags for gcc
 set(CMAKE_CPP_FLAGS ${MTM_FLAGS_DEBUG})
 
 
 # Add the names of your source files here
-set(CPP_FILES "AVLtests.cpp" "User.cpp" "Movie.cpp" "Group.cpp" "StreamingDBa1.cpp")
+set(CPP_FILES "main2.cpp" "User.cpp" "Movie.cpp" "Group.cpp" "StreamingDBa1.cpp")
 
-add_executable(game2 ${CPP_FILES})
+add_executable(game1 ${CPP_FILES})
