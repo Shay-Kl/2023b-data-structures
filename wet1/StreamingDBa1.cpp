@@ -280,9 +280,9 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 	try
 	{
 		int i = 0;
-		for (const Movie& movie: genreMovies[(int)genre])
+		for (AVLtree<Movie, int>::Iterator it = genreMovies[(int)genre].begin(); it!=genreMovies[(int)genre].end(); ++it)
 		{
-			output[i] = movie.getId();
+			output[i] = (*it).getId();
 			i++;
 		}
 		if (i == 0)

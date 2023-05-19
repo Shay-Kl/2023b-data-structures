@@ -12,6 +12,10 @@ class Group
 public:
     //C'tor
     Group(int id);
+
+    //Dummy element for tree
+    Group();
+
     //Returns the group's ID
     int getId() const;
 

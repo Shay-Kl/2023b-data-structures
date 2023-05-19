@@ -2,6 +2,8 @@
 
 Group::Group(int id): m_id(id),m_vipCount(0), m_genreTotalViews(), m_genreGroupViews() {}
 
+Group::Group() {}
+
 int Group::getId() const
 {
     return m_id;

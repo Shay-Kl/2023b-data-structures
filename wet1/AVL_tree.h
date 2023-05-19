@@ -41,6 +41,7 @@ public:
                     : m_key(key), m_value(value), m_left(nullptr),
                         m_right(nullptr), m_parent(parent), m_height(0){};
     Node(const Node& node) :m_key(node.m_key), m_value(node.m_value) { }
+    Node() :m_key(), m_value(), m_left(nullptr), m_right(nullptr), m_parent(nullptr) { }
     virtual ~Node() = default;
 
     Node &operator=(const Node &node) = default;
@@ -69,6 +70,32 @@ public:
         this->m_value = other->m_value;
         other->m_value = temp_v;
     }
+    //Sets one of the node's children as newSon
+    //Choice of which son to replace is based on the id of newSon relative to the node
+    void setSon(Node<Key,Value>* newSon)
+    {
+        if(m_key < newSon->m_key)
+        {
+            m_right = newSon;
+        }
+        else{
+            m_left = newSon;
+        }
+        newSon->m_parent = this;
+    }
+
+    //Removes a node's given son
+    void removeSon(Node<Key,Value>* son)
+    {
+        if(!(m_left == son))
+        {
+            m_left = nullptr;
+        }
+        else if(m_right == son)
+        {
+            m_right = nullptr;
+        }
+    }
 };
 
 
@@ -94,18 +121,18 @@ class AVLtree
 
 public:
     class Iterator;
-    AVLtree() : m_root(nullptr), m_min(nullptr), m_num_of_nodes(0){};
+    AVLtree() : m_root(new Node<Key,Value>()), m_min(nullptr), m_num_of_nodes(0){};
     ~AVLtree() { destroy_tree(this->m_root); }
-    AVLtree(const AVLtree& other): m_root(nullptr), m_min(nullptr), m_num_of_nodes(other.m_num_of_nodes)
+    AVLtree(const AVLtree& other): m_root(new Node<Key,Value>()), m_min(), m_num_of_nodes(other.m_num_of_nodes)
     {
-        m_root = copyNodes(other.m_root);
-        if(!m_root)
+        m_root->m_right = copyNodes(other.m_root->m_right);
+        if(!m_root->m_right)
         {
             m_min = nullptr;
         }
         else
         {
-            m_min = m_root;
+            m_min = m_root->m_right;
             while (m_min.m_node->m_left)
             {
                 m_min = m_min.m_node->m_left;
@@ -119,13 +146,13 @@ public:
             destroy_tree(m_root);
             m_root = copyNodes(other.m_root);
             m_num_of_nodes = other.m_num_of_nodes;
-            if(!m_root)
+            if(!m_root->m_right)
             {
                 m_min = nullptr;
             }
             else
             {
-                m_min = m_root;
+                m_min = m_root->m_right;
                 while (m_min.m_node->m_left)
                 {
                     m_min = m_min.m_node->m_left;
@@ -209,29 +236,35 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
         throw nodeExists();
     }
 
-    Node<Key, Value>* it = this->m_root;         // this node can be added because we checked above
-    Node<Key, Value>** new_ptr = &(this->m_root);
-    Node<Key, Value>* parent = nullptr;         // no root?, parent will be null
+    Node<Key, Value>* node = m_root->m_right;         // this node can be added because we checked above
+    Node<Key, Value>* parent = m_root;         // no root?, parent will be null
 
-    while (it != nullptr) // find the node for insertion
+    while (node) // find the node for insertion
     {
-        parent = it;
-        if (it->m_key < key)
+        parent = node;
+        if (node->m_key < key)
         {
-            new_ptr = &(it->m_right);
-            it = it->m_right;
+            node = node->m_right;
         }
-        else if (key < it->m_key)
+        else if (key < node->m_key)
         {
-            new_ptr = &(it->m_left);
-            it = it->m_left;
+            node = node->m_left;
         }
     }
-    *new_ptr = new Node<Key, Value>(key, value, parent);
+    Node<Key, Value>* newNode = new Node<Key,Value>(key, value, parent);
+    if (parent==m_root)
+    {
+        m_root->m_right = newNode;
+    }
+    else
+    {
+        parent->setSon(newNode);
+    }
+
     if(!(m_min.m_node) || (key < m_min.key())){
-        m_min = Iterator(*new_ptr);
+        m_min = newNode;
     }
-    this->m_num_of_nodes++;
+    m_num_of_nodes++;
     correctTreeUp(parent);
 
 }
@@ -247,7 +280,71 @@ Value& AVLtree<Key,Value>::get(const Key& key)
     return node->m_value;
 }
 
+template <class Key ,class Value>
+void AVLtree<Key,Value>::remove(const Key& key)
+{
+    Node<Key,Value>* node = find(key);
+    if (!node)
+    {
+        throw nodeNotExists();
+    }
+    Node<Key,Value>* parent = node->m_parent;
+    if (!(node->m_key != m_min.key()))
+    {
+        if (m_min.m_node->m_right)
+        {
+            m_min = m_min.m_node->m_right;
+        }
+        else
+        {
+            m_min = parent;
+        }
+    }
+    removeNode(node);
+    m_num_of_nodes--;
 
+    Node<Key,Value>* it = parent;
+    while (it)
+    {
+        it->setCurrHeight();
+        it = it->m_parent;
+    }
+
+    correctTreeUp(parent, false);
+}
+
+//Removes a node you have a pointer to from the tree
+template <class Key ,class Value>
+void removeNode(Node<Key,Value>* node)
+{
+    Node<Key,Value>* left = node->m_left, *right = node->m_right;
+
+    if (!left && !right)
+    {
+        node->m_parent->removeSon(node);
+        delete node;
+    }
+    else if (!left)
+    {
+        node->m_parent->setSon(right);
+        delete node;
+    }
+    else if(!right){
+        node->m_parent->setSon(left);
+        delete node;
+    }
+    else{
+        Node<Key,Value>* next = node->m_right;
+        while(next->m_left)
+        {
+            next=next->m_left;
+        }
+        node->swapNodes(next);
+        removeNode(next);
+    }
+            
+}
+/*
 template <class Key ,class Value>
 void AVLtree<Key,Value>::remove(const Key &key)
 {
@@ -323,7 +420,7 @@ void AVLtree<Key,Value>::remove(const Key &key)
     }
     correctTreeUp(parent, false);
 
-}
+}*/
 
 
 template <class Key ,class Value>
@@ -337,7 +434,7 @@ ostream& operator<<(ostream& os, AVLtree<Key, Value>& tree)
     }
     
     cout << endl << "Preorder: ";
-    printPreOrder(tree.m_root);
+    printPreOrder(tree.m_root->m_right);
     cout << endl << endl;
     return os;
 }
@@ -421,7 +518,7 @@ template <class Key ,class Value>
 void AVLtree<Key,Value>::correctTreeUp(Node<Key, Value>* it, const bool is_insert)
 {
     bool valid_node = false;
-    while ((it != nullptr) && ((is_insert == false) || (!valid_node)))
+    while ((it != m_root) && ((is_insert == false) || (!valid_node)))
     {
         it->setCurrHeight();
         int balance_factor = it->BalanceFactor();
@@ -461,17 +558,17 @@ void AVLtree<Key,Value>::destroy_tree(Node<Key, Value>* root)
 template <class Key ,class Value>
 Node<Key,Value>* AVLtree<Key,Value>::find(const Key &key) const
 {
-    Node<Key, Value>* it = this->m_root;
-    while (it  && (it->m_key != key))
+    Node<Key, Value>* node = m_root->m_right;
+    while (node  && (node->m_key != key))
     {
-        if (it->m_key < key){
-            it = it->m_right;
+        if (node->m_key < key){
+            node = node->m_right;
         }
         else{
-            it = it->m_left;
+            node = node->m_left;
         }
     }
-    return it;
+    return node;
 }
 
 //===================================================================

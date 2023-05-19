@@ -2,12 +2,16 @@
 #define __MOVIE_H__
 
 #include "wet1util.h"
+#include "iostream"
 
 class Movie
 {
 public:
     //C'tor
     Movie(Genre genre, int views, bool vipOnly, int id);
+
+    //Dummy element for tree
+    Movie();
 
     //Returns the movie's genre
     Genre getGenre() const;
@@ -35,6 +39,12 @@ public:
     // higher rated/higher viewed/lower id in that order
     friend bool operator!=(const Movie& movie1, const Movie& movie2);
     friend bool operator<(const Movie& movie1, const Movie& movie2);
+
+    friend std::ostream& operator<<(std::ostream& os, const Movie& movie)
+    {
+        std::cout << (movie.m_id);
+        return os;
+    }
 
 private:
     int m_views;

@@ -3,6 +3,8 @@
 User::User(int id, bool isVip): m_id(id), m_isVip(isVip),
                         m_group(nullptr), m_genreViewCount() {}
 
+User::User() {}
+
 Group* User::getGroup() const
 {
     return m_group;

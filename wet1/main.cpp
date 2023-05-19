@@ -13,7 +13,6 @@ int main()
 {
     //treeTest();
     dbTest();
-    
     return 0;
 }
 
@@ -24,9 +23,9 @@ void dbTest()
 
     //Line 1 - Printing StatusType for various basic functions, every other command is an intended error of some kind
 
-
     st(db.add_movie(123, Genre::ACTION, 20, false));
     st(db.add_movie(234, Genre::COMEDY, 30, true));
+
     st(db.add_movie(234, Genre::COMEDY, 30, true)); // Movie already exists, prints 2
     st(db.add_movie(-2, Genre::ACTION, 20, false)); //Invalid id, prints 3
     st(db.remove_movie(123));
@@ -40,13 +39,19 @@ void dbTest()
     st(db.user_watch(101, 234)); //User isn't vip, prints 2
 
     cout << endl << endl;
-    
+    db = streaming_database();
     //Line 2 - printing number of movies in each genre
+    cout << 00 << endl;
     db.add_movie(1, Genre::COMEDY, 5, false);
+    cout << 11 << endl;
     db.add_movie(2, Genre::COMEDY, 5, false);
+    cout << 22 << endl;
     db.add_movie(3, Genre::COMEDY, 10, false);
+    cout << 33 << endl;
     db.add_movie(4, Genre::ACTION, 5, false);
+    cout << 44 << endl;
     db.add_movie(5, Genre::DRAMA, 5, true);
+    cout << 99 << endl;
     cout << "Comedy: " << db.get_all_movies_count(Genre::COMEDY).ans();
     cout << ", Drama: " << db.get_all_movies_count(Genre::DRAMA).ans();
     cout << ", Action: " << db.get_all_movies_count(Genre::ACTION).ans();
@@ -181,24 +186,12 @@ void treeTest()
 {
     AVLtree<int, int> tree = AVLtree<int, int>();
     tree.insert(5, 0);
-    tree.insert(3, 0);
+    tree.insert(3, 30);
     tree.insert(1, 0);
-    tree.insert(0, 0);
-    tree.insert(20, 0);
-    tree.insert(15, 0);
-    tree.insert(40, 0);
-    tree.insert(35, 0);
-    tree.remove(1);
-    tree.remove(0);
-    tree.remove(20);
-    tree.remove(3);
-    tree.remove(5);
-    tree.insert(50, 0);
-    tree.insert(5, 0);
-    tree.insert(-1, 0);
-    tree.insert(70, 0);
-    tree.insert(47, 0);
-    tree.insert(23, 0);
-
+    tree.insert(2, 0);
+    tree.insert(4, 0);
     cout << tree;
+    tree.remove(1);
+    cout << tree;
+    cout << tree.get(2);
 }

@@ -12,6 +12,9 @@ class User
 public:
     User(int id, bool isVip);
 
+    //Dummy element for tree
+    User();
+
     //Returns pointer to group
     Group* getGroup() const;
 
