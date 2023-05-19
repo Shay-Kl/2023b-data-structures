@@ -70,32 +70,6 @@ public:
         this->m_value = other->m_value;
         other->m_value = temp_v;
     }
-    //Sets one of the node's children as newSon
-    //Choice of which son to replace is based on the id of newSon relative to the node
-    void setSon(Node<Key,Value>* newSon)
-    {
-        if(m_key < newSon->m_key)
-        {
-            m_right = newSon;
-        }
-        else{
-            m_left = newSon;
-        }
-        newSon->m_parent = this;
-    }
-
-    //Removes a node's given son
-    void removeSon(Node<Key,Value>* son)
-    {
-        if(!(m_left == son))
-        {
-            m_left = nullptr;
-        }
-        else if(m_right == son)
-        {
-            m_right = nullptr;
-        }
-    }
 };
 
 
@@ -236,30 +210,24 @@ void AVLtree<Key,Value>::insert(const Key &key,const Value &value)
         throw nodeExists();
     }
 
-    Node<Key, Value>* node = m_root->m_right;         // this node can be added because we checked above
-    Node<Key, Value>* parent = m_root;         // no root?, parent will be null
+    Node<Key, Value>* node = m_root->m_right, *parent = m_root, **parentPtrToNode = &(m_root->m_right);
 
     while (node) // find the node for insertion
     {
         parent = node;
         if (node->m_key < key)
         {
+            parentPtrToNode = &(node->m_right);
             node = node->m_right;
         }
         else if (key < node->m_key)
         {
+            parentPtrToNode = &(node->m_left);
             node = node->m_left;
         }
     }
     Node<Key, Value>* newNode = new Node<Key,Value>(key, value, parent);
-    if (parent==m_root)
-    {
-        m_root->m_right = newNode;
-    }
-    else
-    {
-        parent->setSon(newNode);
-    }
+    *(parentPtrToNode) = newNode;
 
     if(!(m_min.m_node) || (key < m_min.key())){
         m_min = newNode;
@@ -288,7 +256,17 @@ void AVLtree<Key,Value>::remove(const Key& key)
     {
         throw nodeNotExists();
     }
-    Node<Key,Value>* parent = node->m_parent;
+    
+    Node<Key,Value>** parentPtrToNode;
+    if (node->m_parent->m_right = node)
+    {
+        parentPtrToNode = &(node->m_parent->m_right);
+    }
+    else
+    {
+        parentPtrToNode = &(node->m_parent->m_left);
+    }
+    
     if (!(node->m_key != m_min.key()))
     {
         if (m_min.m_node->m_right)
@@ -297,10 +275,11 @@ void AVLtree<Key,Value>::remove(const Key& key)
         }
         else
         {
-            m_min = parent;
+            m_min = node->m_parent;
         }
     }
-    removeNode(node);
+    Node<Key,Value>* parent = node->m_parent;
+    removeNode(node, parentPtrToNode);
     m_num_of_nodes--;
 
     Node<Key,Value>* it = parent;
@@ -315,32 +294,33 @@ void AVLtree<Key,Value>::remove(const Key& key)
 
 //Removes a node you have a pointer to from the tree
 template <class Key ,class Value>
-void removeNode(Node<Key,Value>* node)
+void removeNode(Node<Key,Value>* node, Node<Key,Value>** parentPtrToNode)
 {
     Node<Key,Value>* left = node->m_left, *right = node->m_right;
 
     if (!left && !right)
     {
-        node->m_parent->removeSon(node);
+        *(parentPtrToNode) = nullptr;
         delete node;
     }
     else if (!left)
     {
-        node->m_parent->setSon(right);
+        *(parentPtrToNode) = left;
         delete node;
     }
     else if(!right){
-        node->m_parent->setSon(left);
+        *(parentPtrToNode) = right;
         delete node;
     }
     else{
-        Node<Key,Value>* next = node->m_right;
+        Node<Key,Value>* next = node->m_right, **nextParent = &(node->m_right);
         while(next->m_left)
         {
+            nextParent = &(node->m_left);
             next=next->m_left;
         }
         node->swapNodes(next);
-        removeNode(next);
+        removeNode(next, nextParent);
     }
             
 }

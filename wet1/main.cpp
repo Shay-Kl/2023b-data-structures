@@ -41,17 +41,11 @@ void dbTest()
     cout << endl << endl;
     db = streaming_database();
     //Line 2 - printing number of movies in each genre
-    cout << 00 << endl;
     db.add_movie(1, Genre::COMEDY, 5, false);
-    cout << 11 << endl;
     db.add_movie(2, Genre::COMEDY, 5, false);
-    cout << 22 << endl;
     db.add_movie(3, Genre::COMEDY, 10, false);
-    cout << 33 << endl;
     db.add_movie(4, Genre::ACTION, 5, false);
-    cout << 44 << endl;
     db.add_movie(5, Genre::DRAMA, 5, true);
-    cout << 99 << endl;
     cout << "Comedy: " << db.get_all_movies_count(Genre::COMEDY).ans();
     cout << ", Drama: " << db.get_all_movies_count(Genre::DRAMA).ans();
     cout << ", Action: " << db.get_all_movies_count(Genre::ACTION).ans();
@@ -60,12 +54,13 @@ void dbTest()
 
     cout << endl << endl;
     
-
+    
     //line 3 - user view count
     st(db.add_user(10, true));//
     st(db.add_user(100, false));//
     st(db.user_watch(10, 1));//
-    st(db.user_watch(10, 2));//
+    cout << db;
+    st(db.user_watch(10, 1));//
     st(db.user_watch(10, 5));//
     st(db.user_watch(100, 5));// user not VIP print 2
     cout << "User 10 - Comedy: " << db.get_num_views(10, Genre::COMEDY).ans();
@@ -77,6 +72,7 @@ void dbTest()
     //line 4 - rating and then printing all movies in a genre, sorted
 
     db.rate_movie(10, 3, 80);
+    cout << "howdy";
     db.rate_movie(10, 3, 100); // Movie 3 - average rating of 90, high view count
     db.rate_movie(10, 2, 90); // Movie 2 - average rating of 90
     db.rate_movie(10, 5, 100); // Movie 5 - average rating of 100

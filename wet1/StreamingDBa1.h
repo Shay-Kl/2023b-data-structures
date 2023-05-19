@@ -69,6 +69,14 @@ public:
 	output_t<int> get_group_recommendation(int groupId);
 	
 	// } </DO-NOT-MODIFY>
+
+	friend ostream& operator<<(ostream& os, streaming_database& db)
+	{
+		cout << endl << "Users:" << endl << db.users;
+		cout << "Movies:" << endl << db.movies;
+		cout << "Groups:" << endl << db.groups;
+		return os;
+	}
 };
 
 #endif // STREAMINGDBA1_H_
