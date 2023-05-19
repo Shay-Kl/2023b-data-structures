@@ -59,7 +59,6 @@ void dbTest()
     st(db.add_user(10, true));//
     st(db.add_user(100, false));//
     st(db.user_watch(10, 1));//
-    cout << db;
     st(db.user_watch(10, 1));//
     st(db.user_watch(10, 5));//
     st(db.user_watch(100, 5));// user not VIP print 2
@@ -72,7 +71,6 @@ void dbTest()
     //line 4 - rating and then printing all movies in a genre, sorted
 
     db.rate_movie(10, 3, 80);
-    cout << "howdy";
     db.rate_movie(10, 3, 100); // Movie 3 - average rating of 90, high view count
     db.rate_movie(10, 2, 90); // Movie 2 - average rating of 90
     db.rate_movie(10, 5, 100); // Movie 5 - average rating of 100
@@ -189,5 +187,4 @@ void treeTest()
     cout << tree;
     tree.remove(1);
     cout << tree;
-    cout << tree.get(2);
 }

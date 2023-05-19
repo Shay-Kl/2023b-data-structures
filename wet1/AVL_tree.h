@@ -258,7 +258,7 @@ void AVLtree<Key,Value>::remove(const Key& key)
     }
     
     Node<Key,Value>** parentPtrToNode;
-    if (node->m_parent->m_right = node)
+    if (node->m_parent->m_right == node)
     {
         parentPtrToNode = &(node->m_parent->m_right);
     }
@@ -279,9 +279,8 @@ void AVLtree<Key,Value>::remove(const Key& key)
         }
     }
     Node<Key,Value>* parent = node->m_parent;
-    removeNode(node, parentPtrToNode);
+    removeNode(parentPtrToNode);
     m_num_of_nodes--;
-
     Node<Key,Value>* it = parent;
     while (it)
     {
@@ -294,33 +293,36 @@ void AVLtree<Key,Value>::remove(const Key& key)
 
 //Removes a node you have a pointer to from the tree
 template <class Key ,class Value>
-void removeNode(Node<Key,Value>* node, Node<Key,Value>** parentPtrToNode)
+void removeNode(Node<Key,Value>** ptr_node)
 {
-    Node<Key,Value>* left = node->m_left, *right = node->m_right;
-
+    Node<Key,Value>* left = (*ptr_node)->m_left;
+    Node<Key,Value>* right = (*ptr_node)->m_right;
+    Node<Key,Value>* parent = (*ptr_node)->m_parent;
+    
     if (!left && !right)
     {
-        *(parentPtrToNode) = nullptr;
-        delete node;
+        delete (*ptr_node);
+        (*ptr_node) = nullptr;
     }
     else if (!left)
     {
-        *(parentPtrToNode) = left;
-        delete node;
+        delete (*ptr_node);
+        (*ptr_node) = right;
+        right->m_parent = parent;
     }
     else if(!right){
-        *(parentPtrToNode) = right;
-        delete node;
+        delete (*ptr_node);
+        (*ptr_node) = left;
+        left->m_parent = parent;
     }
     else{
-        Node<Key,Value>* next = node->m_right, **nextParent = &(node->m_right);
-        while(next->m_left)
+        Node<Key,Value>** ptr_next = &((*ptr_node)->m_right);
+        while((*ptr_next)->m_left)
         {
-            nextParent = &(node->m_left);
-            next=next->m_left;
+            ptr_next = &((*ptr_next)->m_left);
         }
-        node->swapNodes(next);
-        removeNode(next, nextParent);
+        (*ptr_node)->swapNodes(*ptr_next);
+        removeNode(ptr_next);
     }
             
 }

@@ -198,7 +198,6 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 		{
 			return StatusType::FAILURE;
 		}
-		
 		genreMovies[(int)genre].remove(movie);
 		genreMovies[(int)Genre::NONE].remove(movie);
 		user.watch(genre);
