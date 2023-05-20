@@ -99,7 +99,7 @@ StatusType streaming_database::remove_user(int userId)
 		Group* group_ptr = user.getGroup();
 		if (group_ptr)
 		{
-			group_ptr->removeUser(user);
+			group_ptr->removeUser(userId);
 		}
 		users.remove(userId);
 		return StatusType::SUCCESS;

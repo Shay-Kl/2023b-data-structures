@@ -1,6 +1,6 @@
 #include "Group.h"
 
-Group::Group(int id): m_id(id),m_vipCount(0), m_genreTotalViews(), m_genreGroupViews() {}
+Group::Group(int id): m_id(id),m_vipCount(0), m_genreTotalViews(), m_genreGroupViews(), users() {}
 
 Group::Group() {}
 
@@ -19,7 +19,7 @@ int Group::getUsersCount() const
     return users.getNodeCount();
 }
 
-void Group::addUser(User& user)
+void Group::addUser(User user)
 {
     if (user.getGroup())
     {
@@ -37,8 +37,9 @@ void Group::addUser(User& user)
 
 }
 
-void Group::removeUser(User& user)
+void Group::removeUser(int userId)
 {
+    User& user = *(users.get(userId));
     if (user.isVip())
     {
         m_vipCount--;
@@ -47,7 +48,7 @@ void Group::removeUser(User& user)
     this->updateViews(Genre::DRAMA, -(user.getEffectiveViews(Genre::DRAMA)));
     this->updateViews(Genre::ACTION, -(user.getEffectiveViews(Genre::ACTION)));
     this->updateViews(Genre::FANTASY, -(user.getEffectiveViews(Genre::FANTASY)));
-    users.remove(user.getId());
+    users.remove(userId);
 }
 
 void Group::closeGroup()

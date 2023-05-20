@@ -29,10 +29,10 @@ public:
     bool isVip() const;
 
     //Add new user to the group
-    void addUser(User& user);
+    void addUser(User user);
 
     //Remove user from group
-    void removeUser(User& user);
+    void removeUser(int userId);
 
     void closeGroup();
 
