@@ -267,11 +267,13 @@ void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
         {
             node->left->parent = parent;
             parent->right = move(node->left);
+            node->left = nullptr;
         }
         else
         {
             node->left->parent = parent;
             parent->left = move(node->left);
+            node->left = nullptr;
         }
     }
     else if(!node->left)
@@ -280,11 +282,13 @@ void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
         {
             node->right->parent = parent;
             parent->right = move(node->right);
+            node->right = nullptr;
         }
         else
         {
             node->right->parent = parent;
             parent->left = move(node->right);
+            node->right = nullptr;
         }
     }
     else
