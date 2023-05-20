@@ -43,8 +43,9 @@ public:
         return *this;
     }
     void insert(const Key& key, const Val& val);
+    void update(const Key& oldKey, const Key& newKey);
     void remove(const Key& key);
-    Val& get(Key& key);
+    Val& get(const Key& key) const;
     int getNodeCount() const {  return m_count; }
     class Node
     {
@@ -174,8 +175,16 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& value)
     }
     m_count++;
 }
+
 template <class Key, class Val>
-Val& AVLtree<Key,Val>::get(Key& key)
+void AVLtree<Key,Val>::update(const Key& oldKey, const Key& newKey)
+{
+    const Val& val = get(oldKey);
+    remove(oldKey);
+    insert(newKey, val);
+}
+template <class Key, class Val>
+Val& AVLtree<Key,Val>::get(const Key& key) const
 {
     Node* node = m_root.get();
     while (node && node->key != key)

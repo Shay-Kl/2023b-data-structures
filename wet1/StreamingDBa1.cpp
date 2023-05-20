@@ -195,18 +195,18 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 	{
 		Movie& movie = movies.get(movieId);
 		User& user = users.get(userId);
-		Genre genre = movie.getGenre();
 		if (movie.isVipOnly() && !user.isVip())
 		{
 			return StatusType::FAILURE;
 		}
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+		Movie updatedMovie = movie;
+		Genre genre = movie.getGenre();
+		
 		user.watch(genre);
+		updatedMovie.view();
 
-		movie.view();
-		genreMovies[(int)Genre::NONE].insert(movie, 0);
-		genreMovies[(int)genre].insert(movie, 0);
+		genreMovies[(int)genre].update(movie, updatedMovie);
+		genreMovies[(int)Genre::NONE].update(movie, updatedMovie);
     	return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
