@@ -13,7 +13,6 @@ int main()
 {
     //treeTest();
     dbTest();
-
     return 0;
 }
 
@@ -32,6 +31,7 @@ void dbTest()
     st(db.remove_movie(123));
     st(db.remove_movie(12)); // No such movie exists, prints 2
     st(db.add_user(101, false));
+    cout << db;
     st(db.add_user(101, false)); //User already exists, prints 2
     st(db.remove_user(101));
     st(db.remove_user(101)); // No such user exists, prints 2
