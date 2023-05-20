@@ -294,8 +294,14 @@ void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
         {
             next = next->left.get();
         }
-        node->key = next->key;
-        node->val = next->val;
+        unique_ptr<Node>& node_ptr = (parent->right.get() == node) ? node->parent->right : node->parent->left;
+        unique_ptr<Node>& next_ptr = (parent->right.get() == next) ? next->parent->right : next->parent->left;
+        node_ptr.swap(next_ptr);
+        node->right.swap(next->right);
+        node->left.swap(next->right);
+        Node* temp = node->parent;
+        node->parent = next->parent;
+        next->parent = temp;
         removeNode(next);
     }
 }
