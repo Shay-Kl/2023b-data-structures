@@ -1,6 +1,6 @@
 #include "Group.h"
 
-Group::Group(int id): m_id(id),m_vipCount(0), m_genreTotalViews(), m_genreGroupViews(), users() {}
+Group::Group(int id): m_id(id),m_vipCount(0), users() {}
 
 Group::Group() {}
 
