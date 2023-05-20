@@ -1,4 +1,4 @@
-#include "Tree2.h"
+#include "AVLtree.h"
 #include "StreamingDBa1.h"
 #include "wet1util.h"
 #include "Movie.h"
@@ -13,6 +13,7 @@ int main()
 {
     //treeTest();
     dbTest();
+
     return 0;
 }
 
@@ -68,7 +69,6 @@ void dbTest()
     cout << endl << endl;
 
     //line 4 - rating and then printing all movies in a genre, sorted
-
     db.rate_movie(10, 3, 80);
     db.rate_movie(10, 3, 100); // Movie 3 - average rating of 90, high view count
     db.rate_movie(10, 2, 90); // Movie 2 - average rating of 90
@@ -108,7 +108,8 @@ void dbTest()
     db.add_user(2, false);
     db.add_user(3, true);
     db.add_user(4, true);
-/*
+
+
     //line 5 - add groups
     st(db.add_group(1));//
     st(db.add_group(1)); //already exists, print 2
@@ -153,7 +154,7 @@ void dbTest()
     cout << " ,";
     st(db.get_group_recommendation(4).status()); //empty group, print 2
     cout << endl;
-*/
+
 }
 
 void st(StatusType s)

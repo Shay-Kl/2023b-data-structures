@@ -52,9 +52,9 @@ void Group::removeUser(User& user)
 
 void Group::closeGroup()
 {
-    for (AVLtree<int, User*>::Iterator it = users.begin(); it != users.end(); ++it)
+    for (const AVLtree<int, User*>::Node& node: users)
 		{
-            User& user = *(it.value());
+            User& user = *(node.val);
 			user.removeFromGroup();
         }
 }

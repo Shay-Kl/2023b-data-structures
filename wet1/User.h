@@ -1,11 +1,11 @@
 #ifndef __USER_H__
 #define __USER_H__
 
-//#include "Group.h"
+#include "Group.h"
 #include "Movie.h"
 #include "wet1util.h"
 
-//class Group;
+class Group;
 
 class User
 {
@@ -16,7 +16,7 @@ public:
     User();
 
     //Returns pointer to group
-    //Group* getGroup() const;
+    Group* getGroup() const;
 
     //Returns the user's ID
     int getId() const;
@@ -28,7 +28,7 @@ public:
     int getGenreViewCount(Genre genre) const;
 
     //Adds user to group, if user is already in a group, returns FailureException
-    //void addToGroup(Group* group, int groupId);
+    void addToGroup(Group* group, int groupId);
 
     //Remove user's reference to group, should only be called by the group when it gets destroyed
     void removeFromGroup();
@@ -45,7 +45,7 @@ public:
 private:
     int m_id;
     bool m_isVip;
-    //Group* m_group;
+    Group* m_group;
     int m_genreViewCount[4];
 };
 #endif // __USER_H__

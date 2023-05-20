@@ -3,7 +3,7 @@
 #include "wet1util.h"
 
 streaming_database::streaming_database():
-	movies(), users(), genreMovies()
+	movies(), users(), groups(), genreMovies()
 	{}
 
 streaming_database::~streaming_database()
@@ -28,6 +28,9 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 	}
 	catch(bad_alloc)
 	{
+		//movies.remove(movieId); TODO FIGURE THIS OUT
+		//genreMovies[(int)genre].remove(movie, 0);
+
 		return StatusType::ALLOCATION_ERROR;
 	}
 	catch(exception)
@@ -93,12 +96,11 @@ StatusType streaming_database::remove_user(int userId)
 	try
 	{
 		User& user = users.get(userId);
-		/*Group* group_ptr = user.getGroup();
+		Group* group_ptr = user.getGroup();
 		if (group_ptr)
 		{
 			group_ptr->removeUser(user);
 		}
-		*/
 		users.remove(userId);
 		return StatusType::SUCCESS;
 	}
@@ -111,7 +113,6 @@ StatusType streaming_database::remove_user(int userId)
 		return StatusType::FAILURE;
 	}
 }
-/*
 StatusType streaming_database::add_group(int groupId)
 {
 	if(groupId <= 0 )
@@ -182,7 +183,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
 	}
 	
     return StatusType::SUCCESS;
-}*/
+}
 
 StatusType streaming_database::user_watch(int userId, int movieId)
 {
@@ -217,7 +218,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 		return StatusType::FAILURE;
 	}
 }
-/*
+
 StatusType streaming_database::group_watch(int groupId,int movieId)
 {
 	if (groupId <= 0 || movieId <= 0)
@@ -257,7 +258,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 		return StatusType::FAILURE;
 	}
 }
-*/
+
 output_t<int> streaming_database::get_all_movies_count(Genre genre)
 {
 	try
@@ -280,7 +281,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 	try
 	{
 		int i = 0;
-		for (typename AVLtree<Movie, int>::Node& node: genreMovies[(int)genre])
+		for (const AVLtree<Movie, int>::Node& node: genreMovies[(int)genre])
 		{
 			output[i] = node.key.getId();
 			i++;
@@ -289,7 +290,6 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 		{
 			return StatusType::FAILURE;
 		}
-		
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -341,7 +341,6 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 		movie.rate(rating);
 		genreMovies[(int)genre].insert(movie, 0);
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
-
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -353,7 +352,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 		return StatusType::FAILURE;
 	}
 }
-/*
+
 output_t<int> streaming_database::get_group_recommendation(int groupId)
 {
 	try
@@ -382,7 +381,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 		{
 			return StatusType::FAILURE;
 		}
-		int favorit_movie_id = (*(genreMovies[(int)favorit_genre].begin())).getId();
+		int favorit_movie_id = (*(genreMovies[(int)favorit_genre].begin())).key.getId();
 		
 		return favorit_movie_id;
 	}
@@ -396,4 +395,4 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 	}
 }
 
-*/
+

@@ -3,6 +3,7 @@
 
 #include "StreamingDBa1.h"
 #include "User.h"
+#include "AVLtree.h"
 
 class User;
 
