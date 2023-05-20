@@ -77,12 +77,58 @@ public:
     /// TBD we assumed T has assign operator , to check later with new structs
     void swapNodes(Node* node1, Node* node2)
     {
-        const Key temp_k = node1->m_key;
-        const Value temp_v = node1->m_value;
-        node1->m_key = node2->m_key;
-        node1->m_value = node2->m_value;
-        node2->m_key = temp_k;
-        node2->m_value = temp_v;
+        Node* tempRight = node1->m_right;
+        Node* tempLeft = node1->m_left;
+        Node* tempParent = node1->m_parent;
+        cout << "left 1: " << node1->m_left << " left 2: " << node2->m_left;
+        node1->m_left = node2->m_left;
+        node1->m_right = node2->m_right;
+        node1->m_parent = node2->m_parent;
+        node2->m_left = tempLeft;
+        node2->m_right = tempRight;
+        node2->m_parent = tempParent;
+
+        if (node1->m_right)
+        {
+            node1->m_right->m_parent = node1;
+        }
+        if (node1->m_left)
+        {
+            node1->m_left->m_parent = node1;
+        }
+        if (node2->m_right)
+        {
+            node2->m_right->m_parent = node2;
+        }
+        if (node2->m_left)
+        {
+            node2->m_left->m_parent = node2;
+        }
+        if (node1->m_parent)
+        {
+            if (node1->m_parent->m_right && node1->m_parent->m_right == node2)
+            {
+                node1->m_parent->m_right = node1;
+            }
+            else
+            {
+                node1->m_parent->m_left = node1;
+            }
+        }
+        if (node2->m_parent)
+        {
+            if (node2->m_parent->m_right && node2->m_parent->m_right == node1)
+            {
+                node2->m_parent->m_right = node2;
+            }
+            else
+            {
+                node2->m_parent->m_left = node2;
+            }
+        }
+        
+        
+        
     }
 };
 
@@ -444,7 +490,25 @@ void AVLtree<Key,Value>::remove(const Key &key)
     if ((removed_node->m_left != nullptr) && (removed_node->m_right != nullptr))
     {
         Node<Key, Value>* next = iterate_to_next(removed_node);
-        next->swapNodes(removed_node, next); // we need to swap nodes?
+        cout << endl << "removed: left:" << removed_node->m_left << ", right: " << removed_node->m_right << ", parent: " << removed_node->m_parent;
+        cout << endl << "next   : left:" << next->m_left << ", right: " << next->m_right << ", parent: " << next->m_parent << endl << endl;
+        if(next!=removed_node->m_right)
+        {
+            next->swapNodes(removed_node, next); // we need to swap nodes?
+        }
+        else
+        {
+            next->m_left = removed_node->m_left;
+            next->m_parent = removed_node->m_parent;
+            removed_node->m_left = nullptr;
+            removed_node->m_parent = next;
+
+            removed_node->m_right =  next->m_right;
+            next->m_right = removed_node;
+        }
+        
+        cout << "removed: left:" << removed_node->m_left << ", right: " << removed_node->m_right << ", parent: " << removed_node->m_parent;
+        cout << endl << "next   : left:" << next->m_left << ", right: " << next->m_right << ", parent: " << next->m_parent << endl << endl;
         removed_node = next;
     }
     Node<Key, Value>* parent = removed_node->m_parent;
