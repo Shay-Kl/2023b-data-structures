@@ -1,20 +1,19 @@
 #include "User.h"
 
-User::User(int id, bool isVip): m_id(id), m_isVip(isVip),
-                        m_group(nullptr), m_genreViewCount() {}
+User::User(int id, bool isVip): m_id(id), m_isVip(isVip), m_genreViewCount() {}
 
 User::User() {}
-
+/*
 Group* User::getGroup() const
 {
     return m_group;
 }
-
+*/
 int User::getId() const
 {
     return m_id;
 }
-
+/*
 void User::addToGroup(Group* group, int groupId)
 {
     if (m_group)
@@ -26,13 +25,13 @@ void User::addToGroup(Group* group, int groupId)
         throw std::bad_alloc();
     }
     m_group = group;
-
+    /*
     m_genreViewCount[0] -= group->getGroupViews(Genre::COMEDY);
     m_genreViewCount[1] -= group->getGroupViews(Genre::DRAMA);
     m_genreViewCount[2] -= group->getGroupViews(Genre::ACTION);
     m_genreViewCount[3] -= group->getGroupViews(Genre::FANTASY);
+    
 }
-
 void User::removeFromGroup()
 {
     m_genreViewCount[0] += getGroup()->getGroupViews(Genre::COMEDY);
@@ -41,14 +40,17 @@ void User::removeFromGroup()
     m_genreViewCount[3] += getGroup()->getGroupViews(Genre::FANTASY);
     m_group = nullptr;
 }
+*/
 
 void User::watch(Genre genre)
 {
     m_genreViewCount[(int) genre]++;
+    /*
     if (this->getGroup())
     {
         (this->getGroup())->updateViews(genre, 1);
     }
+    */
 }
 
 bool User::isVip() const
@@ -74,22 +76,24 @@ int User::getGenreViewCount(Genre genre) const
 
 int User::getEffectiveViews(Genre genre) const
 {
+    /*
     if (this->getGroup() == nullptr)
     {
         return (this->getGenreViewCount(genre));
     }
-    else
+    */
     {
         if (genre == Genre::NONE)
         {
             int total = 0;
             for (int i = 0; i < 4; i++)
             {
-                total += m_genreViewCount[i] + (this->getGroup())->getGroupViews((Genre)i);
+                //total += m_genreViewCount[i] + (this->getGroup())->getGroupViews((Genre)i);
             }
             return total;
         }
         
-        return (m_genreViewCount[(int)genre] + (this->getGroup())->getGroupViews(genre));
+        //return (m_genreViewCount[(int)genre] + (this->getGroup())->getGroupViews(genre));
     }
+    return 0;
 }

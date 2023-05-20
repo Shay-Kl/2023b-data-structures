@@ -1,7 +1,7 @@
-#include "AVL_tree.h"
+#include "Tree2.h"
+#include "StreamingDBa1.h"
 #include "wet1util.h"
 #include "Movie.h"
-#include "StreamingDBa1.h"
 #include <iostream>
 using namespace std;
 
@@ -19,7 +19,7 @@ int main()
 void dbTest()
 {
 
-    streaming_database db = streaming_database();
+    streaming_database db;
 
     //Line 1 - Printing StatusType for various basic functions, every other command is an intended error of some kind
 
@@ -39,7 +39,6 @@ void dbTest()
     st(db.user_watch(101, 234)); //User isn't vip, prints 2
 
     cout << endl << endl;
-    db = streaming_database();
     //Line 2 - printing number of movies in each genre
     db.add_movie(1, Genre::COMEDY, 5, false);
     db.add_movie(2, Genre::COMEDY, 5, false);
@@ -99,7 +98,6 @@ void dbTest()
  
     //------------------------
 
-    db = streaming_database();
     db.add_movie(1, Genre::COMEDY, 0, false);
     db.add_movie(2, Genre::COMEDY, 0, false);
     db.add_movie(3, Genre::COMEDY, 0, false);
@@ -110,7 +108,7 @@ void dbTest()
     db.add_user(2, false);
     db.add_user(3, true);
     db.add_user(4, true);
-
+/*
     //line 5 - add groups
     st(db.add_group(1));//
     st(db.add_group(1)); //already exists, print 2
@@ -155,8 +153,8 @@ void dbTest()
     cout << " ,";
     st(db.get_group_recommendation(4).status()); //empty group, print 2
     cout << endl;
+*/
 }
-
 
 void st(StatusType s)
 {
@@ -175,16 +173,4 @@ void st(StatusType s)
         cout << "4,";
         break;
     }
-}
-void treeTest()
-{
-    AVLtree<int, int> tree = AVLtree<int, int>();
-    tree.insert(5, 0);
-    tree.insert(3, 30);
-    tree.insert(1, 0);
-    tree.insert(2, 0);
-    tree.insert(4, 0);
-    cout << tree;
-    tree.remove(1);
-    cout << tree;
 }

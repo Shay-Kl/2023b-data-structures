@@ -18,17 +18,17 @@
 #include "wet1util.h"
 #include "Movie.h"
 #include "User.h"
-#include "Group.h"
-#include "AVL_tree.h"
+//#include "Group.h"
+#include "Tree2.h"
 
 class User;
-class Group;
+//class Group;
 
 class streaming_database {
 private:
 	AVLtree<int, Movie> movies;
 	AVLtree<int, User> users;
-	AVLtree<int, Group> groups;
+	//AVLtree<int, Group> groups;
 
 	AVLtree<Movie, int> genreMovies[5];
 
@@ -48,15 +48,15 @@ public:
 	
 	StatusType remove_user(int userId);
 	
-	StatusType add_group(int groupId);
+	//StatusType add_group(int groupId);
 	
-	StatusType remove_group(int groupId);
+	//StatusType remove_group(int groupId);
 
-	StatusType add_user_to_group(int userId, int groupId);
+	//StatusType add_user_to_group(int userId, int groupId);
 	
 	StatusType user_watch(int userId, int movieId);
 
-    StatusType group_watch(int groupId,int movieId);
+    //StatusType group_watch(int groupId,int movieId);
 
     output_t<int> get_all_movies_count(Genre genre);
 
@@ -66,7 +66,7 @@ public:
 
     StatusType rate_movie(int userId, int movieId, int rating);
 	
-	output_t<int> get_group_recommendation(int groupId);
+	//output_t<int> get_group_recommendation(int groupId);
 	
 	// } </DO-NOT-MODIFY>
 
@@ -74,7 +74,7 @@ public:
 	{
 		cout << endl << "Users:" << endl << db.users;
 		cout << "Movies:" << endl << db.movies;
-		cout << "Groups:" << endl << db.groups;
+		//cout << "Groups:" << endl << db.groups;
 		return os;
 	}
 };

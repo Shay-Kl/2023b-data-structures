@@ -3,7 +3,7 @@
 #include "wet1util.h"
 
 streaming_database::streaming_database():
-	movies(), users(), groups(), genreMovies()
+	movies(), users(), genreMovies()
 	{}
 
 streaming_database::~streaming_database()
@@ -93,11 +93,12 @@ StatusType streaming_database::remove_user(int userId)
 	try
 	{
 		User& user = users.get(userId);
-		Group* group_ptr = user.getGroup();
+		/*Group* group_ptr = user.getGroup();
 		if (group_ptr)
 		{
 			group_ptr->removeUser(user);
 		}
+		*/
 		users.remove(userId);
 		return StatusType::SUCCESS;
 	}
@@ -110,7 +111,7 @@ StatusType streaming_database::remove_user(int userId)
 		return StatusType::FAILURE;
 	}
 }
-
+/*
 StatusType streaming_database::add_group(int groupId)
 {
 	if(groupId <= 0 )
@@ -181,7 +182,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
 	}
 	
     return StatusType::SUCCESS;
-}
+}*/
 
 StatusType streaming_database::user_watch(int userId, int movieId)
 {
@@ -216,7 +217,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 		return StatusType::FAILURE;
 	}
 }
-
+/*
 StatusType streaming_database::group_watch(int groupId,int movieId)
 {
 	if (groupId <= 0 || movieId <= 0)
@@ -256,7 +257,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 		return StatusType::FAILURE;
 	}
 }
-
+*/
 output_t<int> streaming_database::get_all_movies_count(Genre genre)
 {
 	try
@@ -279,9 +280,9 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 	try
 	{
 		int i = 0;
-		for (AVLtree<Movie, int>::Iterator it = genreMovies[(int)genre].begin(); it!=genreMovies[(int)genre].end(); ++it)
+		for (typename AVLtree<Movie, int>::Node& node: genreMovies[(int)genre])
 		{
-			output[i] = (*it).getId();
+			output[i] = node.key.getId();
 			i++;
 		}
 		if (i == 0)
@@ -352,7 +353,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 		return StatusType::FAILURE;
 	}
 }
-
+/*
 output_t<int> streaming_database::get_group_recommendation(int groupId)
 {
 	try
@@ -395,4 +396,4 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 	}
 }
 
-
+*/
