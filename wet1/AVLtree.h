@@ -132,7 +132,7 @@ private:
     void removeNode(AVLtree::Node* node);
     void removeRoot();
     void preOrder(Node* node);
-    Node* copyNodes(Node* other_node, Node* parent);
+    unique_ptr<Node> copyNodes(Node* other_node, Node* parent);
 
     int getBalanceFactor(Node* node);
 };
@@ -376,20 +376,24 @@ ostream& operator<<(ostream& os, AVLtree<Key, Val>& tree)
 }
 
 template <class Key, class Val>
-typename AVLtree<Key, Val>::Node* AVLtree<Key, Val>::copyNodes(Node* other_node, Node* parent)
+unique_ptr<typename AVLtree<Key, Val>::Node> AVLtree<Key, Val>::copyNodes(Node* other_node, Node* parent)
 {
     if (other_node == nullptr)
     {
         return nullptr;
     }
-    Node* new_node = new Node(other_node->key, other_node->val);
+    
+    // Use unique_ptr for new_node
+    std::unique_ptr<Node> new_node = unique_ptr<Node>(new Node(other_node->key, other_node->val));
     new_node->parent = parent;
     new_node->height = other_node->height;
-    new_node->left = unique_ptr<Node>(copyNodes(other_node->left.get(), new_node));
-    new_node->right = unique_ptr<Node>(copyNodes(other_node->right.get(), new_node));
+    new_node->left = copyNodes(other_node->left.get(), new_node.get());
+    new_node->right = copyNodes(other_node->right.get(), new_node.get());
 
+    // Return unique_ptr to ensure memory management
     return new_node;
 }
+
 
 
 #endif
