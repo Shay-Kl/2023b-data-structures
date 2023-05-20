@@ -488,10 +488,7 @@ void AVLtree<Key,Value>::remove(const Key &key)
 
     if ((removed_node->m_left != nullptr) && (removed_node->m_right != nullptr))
     {
-        Node<Key, Value>* next = iterate_to_next(removed_node);
-        cout << endl << "removed: left:" << removed_node->m_left << ", right: " << removed_node->m_right << ", parent: " << removed_node->m_parent;
-        cout << endl << "next   : left:" << next->m_left << ", right: " << next->m_right << ", parent: " << next->m_parent << endl << endl;
-        if(next!=removed_node->m_right)
+        Node<Key, Value>* next = iterate_to_next(removed_node);if(next!=removed_node->m_right)
         {
             next->swapNodes(removed_node, next); // we need to swap nodes?
         }
