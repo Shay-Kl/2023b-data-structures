@@ -80,7 +80,6 @@ public:
         Node* tempRight = node1->m_right;
         Node* tempLeft = node1->m_left;
         Node* tempParent = node1->m_parent;
-        cout << "left 1: " << node1->m_left << " left 2: " << node2->m_left;
         node1->m_left = node2->m_left;
         node1->m_right = node2->m_right;
         node1->m_parent = node2->m_parent;
@@ -505,10 +504,26 @@ void AVLtree<Key,Value>::remove(const Key &key)
 
             removed_node->m_right =  next->m_right;
             next->m_right = removed_node;
+            if (removed_node->m_right)
+            {
+                removed_node->m_right->m_parent = removed_node;
+            }
+            if (next->m_parent && next->m_parent->m_right == removed_node)
+            {
+                next->m_parent->m_right = next;
+            }
+            if (next->m_parent && next->m_parent->m_left == removed_node)
+            {
+                next->m_parent->m_left = next;
+            }
+            if(next->m_left)
+            {
+                next->m_left->m_parent = next;
+            }
+            
+            
+
         }
-        
-        cout << "removed: left:" << removed_node->m_left << ", right: " << removed_node->m_right << ", parent: " << removed_node->m_parent;
-        cout << endl << "next   : left:" << next->m_left << ", right: " << next->m_right << ", parent: " << next->m_parent << endl << endl;
         removed_node = next;
     }
     Node<Key, Value>* parent = removed_node->m_parent;
