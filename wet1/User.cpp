@@ -1,11 +1,9 @@
 #include "User.h"
 
-User::User(int id, bool isVip): m_id(id), m_isVip(isVip),
+User::User(int id, bool isVip): m_id(id), m_isVip(isVip), m_groupId(0),
                         m_group(nullptr), m_genreViewCount() {}
 
-User::User() {}
-
-Group* User::getGroup() const
+shared_ptr<Group> User::getGroup() const
 {
     return m_group;
 }
@@ -15,9 +13,14 @@ int User::getId() const
     return m_id;
 }
 
-void User::addToGroup(Group* group, int groupId)
+int User::getGroupId() const
 {
-    if (m_group)
+    return m_groupId;
+}
+
+void User::addToGroup(shared_ptr<Group>& group, int groupId)
+{
+    if (m_groupId)
     {
         throw std::exception();
     }
@@ -26,6 +29,7 @@ void User::addToGroup(Group* group, int groupId)
         throw std::bad_alloc();
     }
     m_group = group;
+    m_groupId = groupId;
 
     m_genreViewCount[0] -= group->getGroupViews(Genre::COMEDY);
     m_genreViewCount[1] -= group->getGroupViews(Genre::DRAMA);
@@ -40,12 +44,13 @@ void User::removeFromGroup()
     m_genreViewCount[2] += getGroup()->getGroupViews(Genre::ACTION);
     m_genreViewCount[3] += getGroup()->getGroupViews(Genre::FANTASY);
     m_group = nullptr;
+    m_groupId = 0;
 }
 
 void User::watch(Genre genre)
 {
     m_genreViewCount[(int) genre]++;
-    if (this->getGroup())
+    if (this->getGroup() && this->getGroupId())
     {
         (this->getGroup())->updateViews(genre, 1);
     }

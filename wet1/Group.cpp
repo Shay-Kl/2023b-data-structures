@@ -1,8 +1,7 @@
 #include "Group.h"
 
-Group::Group(int id): m_id(id),m_vipCount(0), m_genreTotalViews(), m_genreGroupViews() {}
-
-Group::Group() {}
+Group::Group(int id): m_id(id), m_isVip(false), m_vipCount(0),
+                    m_usersCount(0), m_genreTotalViews(), m_genreGroupViews() {}
 
 int Group::getId() const
 {
@@ -11,52 +10,50 @@ int Group::getId() const
 
 bool Group::isVip() const
 {
-    return m_vipCount;
+    return m_isVip;
 }
 
 int Group::getUsersCount() const
 {
-    return users.getNodeCount();
+    return m_usersCount;
 }
 
-void Group::addUser(User& user)
+void Group::addUser(shared_ptr<User> user)
 {
-    if (user.getGroup())
+    if (user->getGroup())
     {
         throw std::exception();
     }
-    if (user.isVip())
+    m_usersCount++;
+    if (user->isVip())
     {
+        m_isVip = true;
         m_vipCount++;
     }
-    this->updateViews(Genre::COMEDY, user.getEffectiveViews(Genre::COMEDY));
-    this->updateViews(Genre::DRAMA, user.getEffectiveViews(Genre::DRAMA));
-    this->updateViews(Genre::ACTION, user.getEffectiveViews(Genre::ACTION));
-    this->updateViews(Genre::FANTASY, user.getEffectiveViews(Genre::FANTASY));
-    users.insert(user.getId(), &user);
+    this->updateViews(Genre::COMEDY, user->getEffectiveViews(Genre::COMEDY));
+    this->updateViews(Genre::DRAMA, user->getEffectiveViews(Genre::DRAMA));
+    this->updateViews(Genre::ACTION, user->getEffectiveViews(Genre::ACTION));
+    this->updateViews(Genre::FANTASY, user->getEffectiveViews(Genre::FANTASY));
+    //(tree->get(this->getId())).insert(user->getId(), user);
 
 }
 
-void Group::removeUser(User& user)
+void Group::removeUser(shared_ptr<User> user)
 {
-    if (user.isVip())
+    m_usersCount--;
+    if (user->isVip())
     {
         m_vipCount--;
-    }
-    this->updateViews(Genre::COMEDY, -(user.getEffectiveViews(Genre::COMEDY)));
-    this->updateViews(Genre::DRAMA, -(user.getEffectiveViews(Genre::DRAMA)));
-    this->updateViews(Genre::ACTION, -(user.getEffectiveViews(Genre::ACTION)));
-    this->updateViews(Genre::FANTASY, -(user.getEffectiveViews(Genre::FANTASY)));
-    users.remove(user.getId());
-}
-
-void Group::closeGroup()
-{
-    for (AVLtree<int, User*>::Iterator it = users.begin(); it != users.end(); ++it)
-		{
-            User& user = *(it.value());
-			user.removeFromGroup();
+        if (m_vipCount == 0)
+        {
+            m_isVip = false;
         }
+    }
+    this->updateViews(Genre::COMEDY, -(user->getEffectiveViews(Genre::COMEDY)));
+    this->updateViews(Genre::DRAMA, -(user->getEffectiveViews(Genre::DRAMA)));
+    this->updateViews(Genre::ACTION, -(user->getEffectiveViews(Genre::ACTION)));
+    this->updateViews(Genre::FANTASY, -(user->getEffectiveViews(Genre::FANTASY)));
+    //(tree->get(this->getId())).remove(user->getId());
 }
 
 void Group::updateViews(Genre genre, int views)
@@ -77,9 +74,4 @@ int Group::getGroupViews(Genre genre) const
 void Group::incGroupWatch(Genre genre)
 {
     m_genreGroupViews[(int)genre]++;
-}
-
-AVLtree<int, User*>& Group::getUsers()
-{
-    return users;
 }

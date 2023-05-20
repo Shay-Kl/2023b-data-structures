@@ -4,8 +4,6 @@ Movie::Movie(Genre genre, int views, bool vipOnly, int id):
         m_views(views),m_vipOnly(vipOnly),
         m_id(id), m_ratingAverage(0), m_ratingCount(0), m_genre(genre) {}
 
-Movie::Movie() {}
-
 Genre Movie::getGenre() const
 {
     return m_genre;

@@ -8,7 +8,7 @@
 // The following main file is necessary to link and run your code.
 // This file is READ ONLY: even if you submit something else, the compiler ..
 // .. WILL use our file.
-
+// 
 
 #include "StreamingDBa1.h"
 #include <string>
@@ -22,6 +22,7 @@ void query_get_all_movies(string cmd, streaming_database *obj, Genre genre);
 
 int main()
 {
+	
     int d1, d2, d3, g1;
     string b1;
     bool b;
