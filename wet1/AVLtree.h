@@ -294,8 +294,8 @@ void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
         {
             next = next->left.get();
         }
-        unique_ptr<Node>& node_ptr = (parent->right.get() == node) ? node->parent->right : node->parent->left;
-        unique_ptr<Node>& next_ptr = (parent->right.get() == next) ? next->parent->right : next->parent->left;
+        unique_ptr<Node>& node_ptr = (parent->right && parent->right.get() == node) ? node->parent->right : node->parent->left;
+        unique_ptr<Node>& next_ptr = (next->parent->right && next->parent->right.get() == next) ? next->parent->right : next->parent->left;
         node_ptr.swap(next_ptr);
         node->right.swap(next->right);
         node->left.swap(next->right);
@@ -329,30 +329,18 @@ void AVLtree<Key,Val>::removeRoot()
     else
     {
         Node* next = m_root->right.get();
-        if(!next->left)
+        while(next->left)
         {
-            m_root->key = next->key;
-            m_root->val = next->val;
-            m_root->right = move(m_root->right->right);
-            if(m_root->right)
-            {
-                m_root->right->parent = m_root.get();
-            }
+            next = next->left.get();
         }
-        else
-        {
-            while(next->left)
-            {
-                next = next->left.get();
-            }
-
-            unique_ptr<Node> temp = move(m_root);
-            m_root = move(next->parent->left);
-            m_root->parent = nullptr;
-            m_root->left = move(temp->left);
-            m_root->right = move(temp->right);
-            removeNode(next);
-        }
+        unique_ptr<Node>& node_ptr = m_root;
+        unique_ptr<Node>& next_ptr = (next->parent->right && next->parent->right.get() == next) ? next->parent->right : next->parent->left;
+        node_ptr.swap(next_ptr);
+        m_root->right.swap(next->right);
+        m_root->left.swap(next->right);
+        next->parent = m_root->parent;
+        m_root->parent = nullptr;
+        removeNode(next);
     }
 }
 template <class Key, class Val>
