@@ -251,7 +251,7 @@ void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
     Node* parent = node->parent;
     if(!node->right && !node->left)
     {
-        if (parent->right.get() == node)
+        if (parent->right && parent->right.get() == node)
         {
             parent->right = nullptr;
 
@@ -263,7 +263,7 @@ void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
     }
     else if(!node->right)
     {
-        if (parent->right.get() == node)
+        if (parent->right && parent->right.get() == node)
         {
             node->left->parent = parent;
             parent->right = move(node->left);
@@ -276,7 +276,7 @@ void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
     }
     else if(!node->left)
     {
-        if (parent->right.get() == node)
+        if (parent->right && parent->right.get() == node)
         {
             node->right->parent = parent;
             parent->right = move(node->right);
