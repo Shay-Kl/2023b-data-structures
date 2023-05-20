@@ -10,20 +10,35 @@ class AVLtree
 {
 
 public:
-    AVLtree(): m_min(nullptr), m_root(nullptr), m_count(0) {}
-    AVLtree(const AVLtree<Key, Val>& other) : m_min(nullptr), m_root(nullptr), m_count(other.m_count)
+    AVLtree(): m_root(nullptr), m_min(nullptr), m_count(0) {}
+    AVLtree(const AVLtree<Key, Val>& other) : m_root(nullptr), m_min(nullptr), m_count(other.m_count)
     {
-        this->m_root = unique_ptr<Node>(copyNodes(other.m_root.get(), nullptr));
-        this->m_min = findMin(this->m_root.get());
+        m_root = unique_ptr<Node>(copyNodes(other.m_root.get(), nullptr));
+        if(m_root)
+        {
+            m_min = m_root.get();
+            while(m_min->left)
+            {
+                m_min = m_min->left.get();
+            }
+        }
     }
     AVLtree& operator=(const AVLtree& other)
     {
         if (this != &other) 
         {
             m_root = nullptr;
+            m_min = nullptr;
             m_count = other.m_count; 
             this->m_root = unique_ptr<Node>(copyNodes(other.m_root.get(), nullptr));
-            this->m_min = findMin(this->m_root.get());
+            if(m_root)
+            {
+                m_min = m_root.get();
+                while(m_min->left)
+                {
+                    m_min = m_min->left.get();
+                }
+            }
         }
         return *this;
     }
@@ -31,18 +46,38 @@ public:
     void remove(const Key& key);
     Val& get(Key& key);
     int getNodeCount() const {  return m_count; }
-    struct Node
+    class Node
     {
     public:
         Key key;
         Val val;
-        friend AVLtree;
         unique_ptr<Node> left, right;
         Node* parent;
-    private:
-        Node(): key(Key()), val(Val()), parent(nullptr), left(nullptr), right(nullptr) {}
-        Node(Key key, Val val): key(key), val(val), parent(nullptr), left(nullptr), right(nullptr) {}
         int height;
+        
+    private:
+        friend AVLtree;
+        Node(): key(Key()), val(Val()), left(nullptr), right(nullptr), parent(nullptr), height(0) {}
+        Node(Key key, Val val): key(key), val(val), left(nullptr), right(nullptr), parent(nullptr), height(0) {}
+        
+        void updateHeight()
+        {
+            int leftHeight = -1, rightHeight = -1;
+            if (left)
+            {
+                leftHeight = left->height;
+            }
+            if (right)
+            {
+                rightHeight = right->height;
+            }
+            height = (leftHeight > rightHeight) ? leftHeight+1 : rightHeight+1;
+            if (parent)
+            {
+                parent->updateHeight();
+            }
+            
+        }
     };
     class Iterator
     {
@@ -98,8 +133,8 @@ private:
     void removeRoot();
     void preOrder(Node* node);
     Node* copyNodes(Node* other_node, Node* parent);
-    Node* findMin(Node* node);
 
+    int getBalanceFactor(Node* node);
 };
 template <class Key, class Val>
 void AVLtree<Key,Val>::insert(const Key& key, const Val& value)
@@ -117,7 +152,7 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& value)
             parent = node;
             if (!(node->key != key))
             {
-                throw exception();
+                throw runtime_error("Insert existing");
             }
             if (node->key < key)
             {
@@ -147,6 +182,7 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& value)
         }
     }
     m_count++;
+
 }
 template <class Key, class Val>
 typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::find(const Key& key)
@@ -171,7 +207,7 @@ Val& AVLtree<Key,Val>::get(Key& key)
     Node* node = find(key);
     if (!node)
     {
-        throw exception();
+        throw runtime_error("Get non existing");
     }
     return node->val;
 }
@@ -181,7 +217,7 @@ void AVLtree<Key,Val>::remove(const Key& key)
     Node* node = find(key);
     if (!node)
     {
-        throw exception();
+        throw runtime_error("Remove non existing");
     }
 
     m_count--;
@@ -208,46 +244,47 @@ void AVLtree<Key,Val>::remove(const Key& key)
         }
         removeNode(node);
     }
-
 }
 template <class Key, class Val>
 void AVLtree<Key,Val>::removeNode(AVLtree<Key,Val>::Node* node)
 {
+    Node* parent = node->parent;
     if(!node->right && !node->left)
     {
-        if (node->parent->right && !(node->key != node->parent->right->key))
+        if (parent->right.get() == node)
         {
-            node->parent->right = nullptr;
+            parent->right = nullptr;
+
         }
         else
         {
-            node->parent->left = nullptr;
+            parent->left = nullptr;
         }
     }
     else if(!node->right)
     {
-        if (node->parent->right && !(node->key != node->parent->right->key))
+        if (parent->right.get() == node)
         {
-            node->left->parent = node->parent;
-            node->parent->right = move(node->left);
+            node->left->parent = parent;
+            parent->right = move(node->left);
         }
         else
         {
-            node->left->parent = node->parent;
-            node->parent->left = move(node->left);
+            node->left->parent = parent;
+            parent->left = move(node->left);
         }
     }
     else if(!node->left)
     {
-        if (node->parent->right && !(node->key != node->parent->right->key))
+        if (parent->right.get() == node)
         {
-            node->right->parent = node->parent;
-            node->parent->right = move(node->right);
+            node->right->parent = parent;
+            parent->right = move(node->right);
         }
         else
         {
-            node->right->parent = node->parent;
-            node->parent->left = move(node->right);
+            node->right->parent = parent;
+            parent->left = move(node->right);
         }
     }
     else
@@ -354,13 +391,5 @@ typename AVLtree<Key, Val>::Node* AVLtree<Key, Val>::copyNodes(Node* other_node,
     return new_node;
 }
 
-template <class Key, class Val>
-typename AVLtree<Key, Val>::Node* AVLtree<Key, Val>::findMin(Node* node)
-{
-    while(node && node->left)
-    {
-        node = node->left.get();
-    }
-    return node;
-}
+
 #endif
