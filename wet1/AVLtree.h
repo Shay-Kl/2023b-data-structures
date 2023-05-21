@@ -237,7 +237,7 @@ void AVLtree<Key,Val>::remove(const Key& key)
                 m_min = m_min->left.get();
             }
         }
-        else if(m_count)
+        else if(m_min->parent)
         {
             m_min = m_min->parent;
             while(m_min->parent && m_min->parent->right.get()==m_min)
