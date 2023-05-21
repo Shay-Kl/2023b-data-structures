@@ -27,9 +27,8 @@ class Group;
 class streaming_database {
 private:
 	AVLtree<int, Movie> movies;
-	AVLtree<int, shared_ptr<User>> users;
-	AVLtree<int, shared_ptr<Group>> groups;
-	AVLtree<int, AVLtree<int, shared_ptr<User>>> groupUsers;
+	AVLtree<int, User> users;
+	AVLtree<int, Group> groups;
 	AVLtree<Movie, int> genreMovies[5];
 
 	void removeUserAux(AVLtree<int,shared_ptr<User>>::Node* root, shared_ptr<Group>& group);
