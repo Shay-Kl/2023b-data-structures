@@ -338,7 +338,9 @@ unique_ptr<typename AVLtree<Key, Val>::Node> AVLtree<Key, Val>::copyNodes(Node* 
     }
     
     // Use unique_ptr for new_node
-    std::unique_ptr<Node> new_node = unique_ptr<Node>(new Node(other_node->key, other_node->val));
+    Key key = other_node->key;
+    Val val = other_node->val;
+    std::unique_ptr<Node> new_node = unique_ptr<Node>(new Node(key,val));
     new_node->height = other_node->height;
     new_node->left = copyNodes(other_node->left.get(), new_node.get());
     new_node->right = copyNodes(other_node->right.get(), new_node.get());
