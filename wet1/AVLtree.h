@@ -182,7 +182,7 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& value)
 template <class Key, class Val>
 void AVLtree<Key,Val>::update(const Key& oldKey, const Key& newKey)
 {
-    const Val& val = get(oldKey);
+    const Val val = get(oldKey);
     remove(oldKey);
     insert(newKey, val);
 }
