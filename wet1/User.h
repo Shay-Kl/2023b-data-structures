@@ -4,7 +4,6 @@
 #include "Group.h"
 #include "Movie.h"
 #include "wet1util.h"
-#include <memory>
 
 class Group;
 
@@ -13,14 +12,14 @@ class User
 public:
     User(int id, bool isVip);
 
+    //Dummy element for tree
+    User();
+
     //Returns pointer to group
-    std::shared_ptr<Group> getGroup() const;
+    Group* getGroup() const;
 
     //Returns the user's ID
     int getId() const;
-
-    //Returns the user's group ID
-    int getGroupId() const;
 
     //Returns the number of views by the user of movies in a genre
     int getEffectiveViews(Genre genre) const;
@@ -29,7 +28,7 @@ public:
     int getGenreViewCount(Genre genre) const;
 
     //Adds user to group, if user is already in a group, returns FailureException
-    void addToGroup(std::shared_ptr<Group>& group, int groupId);
+    void addToGroup(Group* group, int groupId);
 
     //Remove user's reference to group, should only be called by the group when it gets destroyed
     void removeFromGroup();
@@ -46,8 +45,7 @@ public:
 private:
     int m_id;
     bool m_isVip;
-    int m_groupId;
-    std::shared_ptr<Group> m_group;
+    Group* m_group;
     int m_genreViewCount[4];
 };
 #endif // __USER_H__

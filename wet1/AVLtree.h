@@ -232,10 +232,18 @@ void AVLtree<Key,Val>::remove(const Key& key)
         if(node->right)
         {
             m_min = node->right.get();
+            while(m_min->left)
+            {
+                m_min = m_min->left.get();
+            }
         }
         else if(m_count)
         {
             m_min = node->parent;
+            while(m_min->parent && m_min->parent->right.get()==m_min)
+            {
+                m_min = node->parent;
+            }
         }
         else
         {
@@ -255,19 +263,30 @@ void AVLtree<Key,Val>::swapNodes(unique_ptr<Node>& a, unique_ptr<Node>& b)
     a->right.swap(b->right);
 }
 template <class Key, class Val>
-void AVLtree<Key,Val>::removeNode(Node* node)
+void AVLtree<Key,Val>::removeNode(Node* node)   
 {
     unique_ptr<Node>& uniNode = unique(node);
     if (node->right && node->left)
     {
         if(!node->right->left)
         {
-            unique_ptr<Node> temp = move(node->right);
-            // Move the left child of the node to be the left child of temp
-            temp->left = move(node->left);
-            temp->left->parent = temp.get();
-            temp->parent = node->parent;
-            uniNode = move(temp);
+            unique_ptr<Node> tempNode = move(uniNode);
+            unique_ptr<Node> tempNext = move(node->right);
+
+            tempNode->right = move(tempNext->right);
+            tempNext->left = move(tempNode->left);
+
+            if(tempNode->right)
+            {
+                tempNode->right->parent = tempNode.get();
+            }
+            tempNext->left->parent = tempNext.get();
+        
+            uniNode = move(tempNext);
+            uniNode->right = move(tempNode);
+            uniNode->parent = uniNode->right->parent;
+            uniNode->right->parent = uniNode.get();
+            removeNode(uniNode->right.get());
         }
         else 
         {
@@ -290,24 +309,31 @@ void AVLtree<Key,Val>::removeNode(Node* node)
             node->parent = nextParent;
             next->parent = parent;
             uniNode.swap(next);
+            
+            next->left->parent = next.get();
+            next->right->parent = next.get();
+            if(node->right)
+            {
+                node->right->parent = node;
+            }
+            removeNode(uniNode.get());
+
         }
 
     }
     else if(node->right)
     {
         node->right->parent = node->parent;
-        unique_ptr<Node> temp = move(node->right);
-        uniNode = move(temp);
+        uniNode = move(node->right);
     }
     else if(node->left)
     {
         node->left->parent = node->parent;
-        unique_ptr<Node> temp = move(node->left);
-        uniNode = move(temp);
+        uniNode = move(node->left);
     }
     else
     {
-        uniNode.release();
+        uniNode.reset();
     }
     
 }

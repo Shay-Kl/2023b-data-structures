@@ -8,12 +8,32 @@ using namespace std;
 void st(StatusType s);
 void treeTest();
 void dbTest();
+void removeTest();
 
 int main()
 {
     //treeTest();
     dbTest();
+    //removeTest();
     return 0;
+}
+
+void removeTest()
+{
+    AVLtree<int, int> tree;
+    int a[10]  = {1,5,4,3,2,6,7,9,8,0};
+    for (int i = 0; i < 10; i++)
+    {
+        tree.insert(a[i], 0);
+    }
+    cout << tree;
+    int b[10]  = {1,7,9,8,0,2,3,4,6,5};
+    for (int i = 0; i < 10; i++)
+    {
+        cout << "Removed " << b[i];
+        tree.remove(b[i]);
+        cout << tree;
+    }
 }
 
 void dbTest()
