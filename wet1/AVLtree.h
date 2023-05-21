@@ -194,7 +194,6 @@ typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::release(const Key& key)
 {
     Node* removed = removeAux(m_root, key);
     m_count--;
-    if (m_count && key == m_min->key)
     if(!m_count)
     {
         m_min = nullptr;
