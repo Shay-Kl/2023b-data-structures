@@ -314,8 +314,12 @@ void AVLtree<Key,Val>::removeNode(Node* node)
             {
                 next->left->parent = next.get();
             }
+
+            if(next->right)
+            {
+                next->right->parent = next.get();
+            }
             
-            next->right->parent = next.get();
             if(node->right)
             {
                 node->right->parent = node;
