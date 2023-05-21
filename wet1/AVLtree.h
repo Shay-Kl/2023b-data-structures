@@ -47,6 +47,7 @@ public:
     void remove(const Key& key);
     Val& get(const Key& key) const;
     int getNodeCount() const {  return m_count; }
+
     class Node
     {
     public:
@@ -124,6 +125,7 @@ public:
 
     template <class K,class V>
     friend ostream& operator<<(ostream& os, AVLtree<K, V>& tree);
+    Node* getRoot() { return m_root.get(); }
 
 private:
     unique_ptr<Node> m_root;
@@ -146,6 +148,7 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& value)
     {
         m_root = unique_ptr<Node>(new Node(key,value,nullptr));
         m_min = m_root.get();
+        m_count++;
         return;
     }
     
@@ -268,31 +271,21 @@ void AVLtree<Key,Val>::removeNode(Node* node)
         }
         else 
         {
-            Node* next = node->right.get();
-            while(next->left) {
-                next = next->left.get();
-            }
-            unique_ptr<Node>& inorder_successor = unique(next);
-            unique_ptr<Node> temp = move(inorder_successor);
-            
-            // Fix the tree structure after removing the in-order successor
-            if (next->right) {
-                inorder_successor = move(next->right);
-            }
+            Iterator iterator = Iterator(node);
+            unique_ptr<Node>& next = unique(++iterator.node);
+            unique_ptr<Node> nodeLeft = move(node->left);
+            unique_ptr<Node> nodeRight = move(node->right);
+            unique_ptr<Node> nextLeft =move(next->left);
+            unique_ptr<Node> nextRight =move(next->right);
+            Node *parent = node->parent, *nextparent = next->parent;
 
-            // Replace the node with the in-order successor
-            temp->left = move(node->left);
-            temp->right = move(node->right);
-
-            if(temp->left) {
-                temp->left->parent = temp.get();
-            }
-            if(temp->right) {
-                temp->right->parent = temp.get();
-            }
-
-            temp->parent = node->parent;
-            uniNode = move(temp);
+            next->left = move(nodeLeft);
+            next->right = move(nodeRight);
+            node->left = move(nextLeft);
+            node->right = move(nextRight);
+            node->parent = next->parent;
+            next->parent = node->parent;
+            uniNode.swap(next);
         }
 
     }
