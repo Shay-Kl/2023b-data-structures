@@ -227,7 +227,7 @@ void AVLtree<Key,Val>::remove(const Key& key)
         throw runtime_error("Remove non existing");
     }
     m_count--;
-    if (!(m_min->key != key))
+    if (m_min == node)
     {
         if(node->right)
         {
@@ -239,7 +239,7 @@ void AVLtree<Key,Val>::remove(const Key& key)
         }
         else if(m_count)
         {
-            m_min = node->parent;
+            m_min = m_min->parent;
             while(m_min->parent && m_min->parent->right.get()==m_min)
             {
                 m_min = m_min->parent;
