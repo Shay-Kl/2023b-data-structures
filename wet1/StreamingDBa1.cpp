@@ -275,8 +275,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 		}
 		else
 		{
-			genreMovies[(int)genre].remove(movie);
-			genreMovies[(int)Genre::NONE].remove(movie);
+			genreMovies[(int)genre].release(movie);
+			genreMovies[(int)Genre::NONE].release(movie);
 			movie.view(members_in_group);
 			genreMovies[(int)genre].insert(movie, 0);
 			genreMovies[(int)Genre::NONE].insert(movie, 0);
