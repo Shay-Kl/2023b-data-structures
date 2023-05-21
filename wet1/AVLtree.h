@@ -175,10 +175,14 @@ Val& AVLtree<Key,Val>::getAux(unique_ptr<Node>& curNode, const Key& key)
 template <class Key, class Val>
 void AVLtree<Key,Val>::remove(const Key& key)
 {
-    m_count--;
     Node* removed = removeAux(m_root, key);
+    m_count--;
     delete removed;
-    if (key == m_min->key)
+    if(!m_count)
+    {
+        m_min = nullptr;
+    }
+    else if (key == m_min->key)
     {
         m_min = getLeftmost(m_root).get();
     }
@@ -191,6 +195,11 @@ typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::release(const Key& key)
     Node* removed = removeAux(m_root, key);
     m_count--;
     if (m_count && key == m_min->key)
+    if(!m_count)
+    {
+        m_min = nullptr;
+    }
+    else if (key == m_min->key)
     {
         m_min = getLeftmost(m_root).get();
     }
