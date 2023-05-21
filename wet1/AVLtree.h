@@ -271,20 +271,24 @@ void AVLtree<Key,Val>::removeNode(Node* node)
         }
         else 
         {
-            Iterator iterator = Iterator(node);
-            unique_ptr<Node>& next = unique(++iterator.node);
+            Node* nextNode = node->right.get();
+            while(nextNode->left)
+            {
+                nextNode = nextNode->left.get();
+            }
+            unique_ptr<Node>& next = unique(nextNode);
             unique_ptr<Node> nodeLeft = move(node->left);
             unique_ptr<Node> nodeRight = move(node->right);
             unique_ptr<Node> nextLeft =move(next->left);
             unique_ptr<Node> nextRight =move(next->right);
-            Node *parent = node->parent, *nextparent = next->parent;
+            Node *parent = node->parent, *nextParent = next->parent;
 
             next->left = move(nodeLeft);
             next->right = move(nodeRight);
             node->left = move(nextLeft);
             node->right = move(nextRight);
-            node->parent = next->parent;
-            next->parent = node->parent;
+            node->parent = nextParent;
+            next->parent = parent;
             uniNode.swap(next);
         }
 
