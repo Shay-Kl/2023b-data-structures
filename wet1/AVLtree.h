@@ -69,11 +69,11 @@ public:
     template <class K,class V>
     friend ostream& operator<<(ostream& os, AVLtree<K, V>& tree);
     Node* getRoot() { return m_root.get(); }
-    Node* getMin() { return getLeftmost(m_root).get(); }
+    Node* getMin() { return m_min }
 
 private:
     unique_ptr<Node> m_root;
-    Key* m_min;
+    Node* m_min;
     int m_count;
 
     void insertAux(unique_ptr<Node>& curNode, const Key& key, const Val& val);
@@ -93,6 +93,7 @@ void AVLtree<Key,Val>::insert(Key key, Val val)
 {
     insertAux(m_root, key, val);
     m_count++;
+    m_min = getLeftmost(m_root).get();
 }
 template <class Key, class Val>
 void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, const Key& key, const Val& val)
@@ -154,6 +155,7 @@ void AVLtree<Key,Val>::remove(const Key& key)
 {
     removeAux(m_root, key);
     m_count--;
+    m_min = getLeftmost(m_root).get();
 }
 
 
