@@ -46,7 +46,7 @@ public:
 private:
     int m_id;
     bool m_isVip;
-    int m_groupId;
+    int m_groupId = 0;
     Group* m_group;
     int m_genreViewCount[4];
 };

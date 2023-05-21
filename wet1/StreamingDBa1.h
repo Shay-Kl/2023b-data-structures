@@ -28,12 +28,12 @@ class streaming_database {
 private:
 	AVLtree<int, Movie> movies;
 	AVLtree<int, User> users;
-	AVLtree<int, Group> groups;
+	AVLtree<int, shared_ptr<Group>> groups;
 	AVLtree<Movie, int> genreMovies[5];
 
-	void removeUserAux(AVLtree<int,User*>::Node* root, Group& group);
+	void removeUserAux(AVLtree<int, User*>::Node* root, Group* group);
 	
-	void getAllAux(AVLtree<Movie,int>::Node* root, int* output);
+	void getAllAux(AVLtree<Movie, int>::Node* root, int* output);
 
 public:
 	// <DO-NOT-MODIFY> {
@@ -69,15 +69,8 @@ public:
     StatusType rate_movie(int userId, int movieId, int rating);
 	
 	output_t<int> get_group_recommendation(int groupId);
-
-	friend ostream& operator<<(ostream& os, streaming_database& db)
-	{
-		cout << endl << "Users:" << db.users;
-		cout << "Movies:" << db.movies;
-		cout << "Groups:" << db.groups << endl;
-		return os;
-	}
 	
 	// } </DO-NOT-MODIFY>
 };
+
 #endif // STREAMINGDBA1_H_

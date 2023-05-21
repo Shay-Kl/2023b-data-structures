@@ -71,7 +71,7 @@ public:
             
         }
     };
-    
+
     void insert(const Key& key, const Val& val);
     Val& get(const Key& key) const;
     void remove(const Key& key);

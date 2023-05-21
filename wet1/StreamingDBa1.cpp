@@ -14,21 +14,24 @@ streaming_database::~streaming_database()
 }
 
 
-void streaming_database::removeUserAux(AVLtree<int,User*>::Node* root, Group& group)
+void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, Group* group)
 {
     if (root == nullptr){
         return;
     }
+
     removeUserAux(root->left.get(), group);
     removeUserAux(root->right.get(), group);
 	User* user = root->val;
+	group->removeUser(user);
 	user->removeFromGroup();
-	//group->removeUser(user, &groupUsers);
+
+	
 }
 
 
 
-void streaming_database::getAllAux(AVLtree<Movie,int>::Node* root, int* output)
+void streaming_database::getAllAux(AVLtree<Movie, int>::Node* root, int* output)
 {
 	if (!root)
 	{
@@ -54,8 +57,8 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 	{
 		Movie movie(genre, views, vipOnly, movieId);
 		movies.insert(movieId, movie);
-		genreMovies[(int)Genre::NONE].insert(movie, 0);
 		genreMovies[(int)genre].insert(movie, 0);
+		genreMovies[(int)Genre::NONE].insert(movie, 0);
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -76,10 +79,12 @@ StatusType streaming_database::remove_movie(int movieId)
 	}
 	try
 	{
-		AVLtree<int,Movie>::Node* node = movies.release(movieId);
-		Genre genre = node->val.getGenre();
-		genreMovies[(int)Genre::NONE].release(node->val);
-		genreMovies[(int)genre].release(node->val);
+		Movie& movie = movies.get(movieId);
+		Genre genre = movie.getGenre();
+		
+		genreMovies[(int)genre].remove(movie);
+		genreMovies[(int)Genre::NONE].remove(movie);
+		movies.remove(movieId);
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -122,11 +127,11 @@ StatusType streaming_database::remove_user(int userId)
 	}
 	try
 	{
-		User& user = users.get(userId);
-		Group* group_ptr = user.getGroup();
-		if (user.getGroupId() != 0)
+		User* user = &users.get(userId);
+		if (user->getGroupId() != 0)
 		{
-			group_ptr->removeUser(&user);
+			Group* group_ptr = user->getGroup();
+			group_ptr->removeUser(user);
 		}
 		users.remove(userId);
 		return StatusType::SUCCESS;
@@ -149,7 +154,7 @@ StatusType streaming_database::add_group(int groupId)
 	}
 	try
 	{
-		Group group(groupId);
+		shared_ptr<Group> group(new Group(groupId));
 		groups.insert(groupId, group);
 		return StatusType::SUCCESS;
 	}
@@ -171,9 +176,9 @@ StatusType streaming_database::remove_group(int groupId)
 	}
 	try
 	{
-		Group group = groups.get(groupId);
-		AVLtree<int,User*>* group_users = group.getUsers();
-		removeUserAux(group_users->getRoot(), group);
+		shared_ptr<Group> group = groups.get(groupId);
+		AVLtree<int, User*>* group_users = group->getGroupUsers();
+		removeUserAux(group_users->getRoot(), group.get());
 		groups.remove(groupId);
 		
 		return StatusType::SUCCESS;
@@ -186,7 +191,6 @@ StatusType streaming_database::remove_group(int groupId)
 	{
 		return StatusType::FAILURE;
 	}
-	return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)
@@ -197,14 +201,12 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
 	}
 	try
 	{
-		User& user = users.get(userId);
-		Group& group = groups.get(groupId);
-		AVLtree<int,User*>* group_users = group.getUsers();
-		if (user.getGroupId() == 0)
+		User* user = &users.get(userId);
+		shared_ptr<Group> group = groups.get(groupId);
+		if (!user->getGroupId())
 		{
-			group.addUser(&user);
-			group_users->insert(user.getId(), &user);
-			user.addToGroup(&group, groupId);
+			group->addUser(user);
+			user->addToGroup(group.get(), groupId);
 			return StatusType::SUCCESS;
 		}
 		return StatusType::FAILURE;
@@ -236,8 +238,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 			return StatusType::FAILURE;
 		}
 		
-		genreMovies[(int)genre].release(movie);
-		genreMovies[(int)Genre::NONE].release(movie);
+		genreMovies[(int)genre].remove(movie);
+		genreMovies[(int)Genre::NONE].remove(movie);
 		user.watch(genre);
 
 		movie.view();
@@ -265,22 +267,22 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 	{
 		Movie& movie = movies.get(movieId);
 		Genre genre = movie.getGenre();
-		Group& group = groups.get(groupId);
-		int members_in_group = group.getUsersCount();
-		if (members_in_group == 0 || (movie.isVipOnly() && !group.isVip()))
+		shared_ptr<Group> group = groups.get(groupId);
+		int members_in_group = group->getUsersCount();
+		if (members_in_group == 0 || (movie.isVipOnly() && !group->isVip()))
 		{
 			return StatusType::FAILURE;
 		}
 		else
 		{
-			genreMovies[(int)genre].release(movie);
-			genreMovies[(int)Genre::NONE].release(movie);
+			genreMovies[(int)genre].remove(movie);
+			genreMovies[(int)Genre::NONE].remove(movie);
 			movie.view(members_in_group);
 			genreMovies[(int)genre].insert(movie, 0);
 			genreMovies[(int)Genre::NONE].insert(movie, 0);
 
-			group.updateViews(genre, members_in_group);
-			group.incGroupWatch(genre);
+			group->updateViews(genre, members_in_group);
+			group->incGroupWatch(genre);
 
 			return StatusType::SUCCESS;
 		}
@@ -369,8 +371,8 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 			return StatusType::FAILURE;
 		}
 
-		genreMovies[(int)genre].release(movie);
-		genreMovies[(int)Genre::NONE].release(movie);
+		genreMovies[(int)genre].remove(movie);
+		genreMovies[(int)Genre::NONE].remove(movie);
 		movie.rate(rating);
 		genreMovies[(int)genre].insert(movie, 0);
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
@@ -395,8 +397,8 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 		{
 			return StatusType::INVALID_INPUT;
 		}
-		Group& group = groups.get(groupId);
-		if (group.getUsersCount() == 0)
+		shared_ptr<Group> group = groups.get(groupId);
+		if (group->getUsersCount() == 0)
 		{
 			return StatusType::FAILURE;
 		}
@@ -404,7 +406,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 		int favorit_genre_views = 0;
 		for (int i = 0; i < 4; i++)
 		{
-			int temp = group.getGenreViewCount((Genre)i);
+			int temp = group->getGenreViewCount((Genre)i);
 			if(temp > favorit_genre_views)
 			{
 				favorit_genre = (Genre)i;
@@ -415,7 +417,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 		{
 			return StatusType::FAILURE;
 		}
-		int favorit_movie_id = genreMovies[(int)favorit_genre].getMin()->key.getId();
+		int favorit_movie_id = (genreMovies[(int)favorit_genre].getMin()->key).getId();
 		
 		return favorit_movie_id;
 	}

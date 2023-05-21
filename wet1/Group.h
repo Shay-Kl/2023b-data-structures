@@ -12,11 +12,16 @@ class Group
 public:
     //C'tor
     Group(int id);
+
+    Group(const Group& other) = default;
+    ~Group();
     //Returns the group's ID
     int getId() const;
 
     //Returns the number of users in the group
     int getUsersCount() const;
+
+    AVLtree<int, User*>* getGroupUsers();
 
     //Returns true if the group has VIP member in it
     bool isVip() const;
@@ -38,18 +43,16 @@ public:
     //Add one group watch to the groupWatchCounter
     void incGroupWatch(Genre genre);
 
-    AVLtree<int,User*>* getUsers();
-
 
 
 private:
     int m_id;
-    AVLtree<int, User*>* m_users;
     bool m_isVip;
     int m_vipCount;
     int m_usersCount;
     int m_genreTotalViews[4] = {0};
     int m_genreGroupViews[4] = {0};
+    AVLtree<int, User*>* m_members;
 
 };
 
