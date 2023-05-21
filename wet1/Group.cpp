@@ -18,7 +18,7 @@ int Group::getUsersCount() const
     return m_usersCount;
 }
 
-void Group::addUser(shared_ptr<User> user)
+void Group::addUser(User* user)
 {
     if (user->getGroup())
     {
@@ -38,7 +38,7 @@ void Group::addUser(shared_ptr<User> user)
 
 }
 
-void Group::removeUser(shared_ptr<User> user)
+void Group::removeUser(User* user)
 {
     m_usersCount--;
     if (user->isVip())
@@ -74,4 +74,8 @@ int Group::getGroupViews(Genre genre) const
 void Group::incGroupWatch(Genre genre)
 {
     m_genreGroupViews[(int)genre]++;
+}
+
+AVLtree<int,User*>* Group::getUsers(){
+    return m_users;
 }

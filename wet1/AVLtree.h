@@ -73,7 +73,7 @@ public:
     };
     
     void insert(const Key& key, const Val& val);
-    Val& get(const Key& key);
+    Val& get(const Key& key) const;
     void remove(const Key& key);
 
     //Same as remove but releases memory instead of deleting it
@@ -95,7 +95,7 @@ private:
     int m_count;
 
     void insertAux(unique_ptr<Node>& curNode, Node* newNode);
-    Val& getAux(unique_ptr<Node>& curNode, const Key& key);
+    Val& getAux(const unique_ptr<Node>& curNode, const Key& key) const;
     Node* removeAux(unique_ptr<Node>& curNode, const Key& key);
     void removeNode(unique_ptr<Node>& toDelete);
 
@@ -147,12 +147,12 @@ void AVLtree<Key,Val>::update(const Key& oldKey, const Key& newKey)
     insert(newKey, val);
 }
 template <class Key, class Val>
-Val& AVLtree<Key,Val>::get(const Key& key)
+Val& AVLtree<Key,Val>::get(const Key& key) const
 {
     return getAux(m_root, key);
 }
 template <class Key, class Val>
-Val& AVLtree<Key,Val>::getAux(unique_ptr<Node>& curNode, const Key& key)
+Val& AVLtree<Key,Val>::getAux(const unique_ptr<Node>& curNode, const Key& key) const
 {
     if (!curNode)
     {

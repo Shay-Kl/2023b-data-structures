@@ -22,9 +22,9 @@ public:
     bool isVip() const;
 
     //Add new user to the group
-    void addUser(shared_ptr<User> user);
+    void addUser(User* user);
     //Remove user from group
-    void removeUser(shared_ptr<User> user);
+    void removeUser(User* user);
 
     //Add num of views to the total genre views count
     void updateViews(Genre genre, int views);
@@ -38,10 +38,13 @@ public:
     //Add one group watch to the groupWatchCounter
     void incGroupWatch(Genre genre);
 
+    AVLtree<int,User*>* getUsers();
+
 
 
 private:
     int m_id;
+    AVLtree<int, User*>* m_users;
     bool m_isVip;
     int m_vipCount;
     int m_usersCount;
