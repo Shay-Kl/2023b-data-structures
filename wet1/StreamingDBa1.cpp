@@ -82,8 +82,8 @@ StatusType streaming_database::remove_movie(int movieId)
 		Movie& movie = movies.get(movieId);
 		Genre genre = movie.getGenre();
 		
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+		genreMovies[(int)genre].release(movie);
+		genreMovies[(int)Genre::NONE].release(movie);
 		movies.remove(movieId);
 		return StatusType::SUCCESS;
 	}
@@ -238,8 +238,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 			return StatusType::FAILURE;
 		}
 		
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+		genreMovies[(int)genre].release(movie);
+		genreMovies[(int)Genre::NONE].release(movie);
 		user.watch(genre);
 
 		movie.view();
@@ -275,8 +275,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 		}
 		else
 		{
-			genreMovies[(int)genre].remove(movie);
-			genreMovies[(int)Genre::NONE].remove(movie);
+			genreMovies[(int)genre].release(movie);
+			genreMovies[(int)Genre::NONE].release(movie);
 			movie.view(members_in_group);
 			genreMovies[(int)genre].insert(movie, 0);
 			genreMovies[(int)Genre::NONE].insert(movie, 0);
@@ -371,8 +371,8 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 			return StatusType::FAILURE;
 		}
 
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+		genreMovies[(int)genre].release(movie);
+		genreMovies[(int)Genre::NONE].release(movie);
 		movie.rate(rating);
 		genreMovies[(int)genre].insert(movie, 0);
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
