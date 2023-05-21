@@ -240,9 +240,9 @@ void AVLtree<Key,Val>::remove(const Key& key)
         else if(m_count)
         {
             m_min = node->parent;
-            while(m_min && m_min->parent && m_min->parent->right.get()==m_min)
+            while(m_min->parent && m_min->parent->right.get()==m_min)
             {
-                m_min = node->parent;
+                m_min = m_min->parent;
             }
         }
         else
@@ -266,6 +266,7 @@ template <class Key, class Val>
 void AVLtree<Key,Val>::removeNode(Node* node)   
 {
     unique_ptr<Node>& uniNode = unique(node);
+    if(!uniNode)
     if (node->right && node->left)
     {
         if(!node->right->left)
