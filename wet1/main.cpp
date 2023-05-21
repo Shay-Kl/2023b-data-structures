@@ -58,7 +58,6 @@ void dbTest()
 
     st(db.add_movie(123, Genre::ACTION, 20, false));
     st(db.add_movie(234, Genre::COMEDY, 30, true));
-
     st(db.add_movie(234, Genre::COMEDY, 30, true)); // Movie already exists, prints 2
     st(db.add_movie(-2, Genre::ACTION, 20, false)); //Invalid id, prints 3
     st(db.remove_movie(123));

@@ -75,14 +75,14 @@ public:
     void insert(const Key& key, const Val& val);
     Val& get(const Key& key);
     void remove(const Key& key);
-    unique_ptr<Node>& getLeftmost(unique_ptr<Node>& curNode);
+
+    //Same as remove but releases memory instead of deleting it
+    Node* release(const Key& key);
+    
 
     void update(const Key& oldKey, const Key& newKey);
 
     int getNodeCount() const {  return m_count; }
-
-    
-    
 
     template <class K,class V>
     friend ostream& operator<<(ostream& os, AVLtree<K, V>& tree);
@@ -96,11 +96,12 @@ private:
 
     void insert(unique_ptr<Node>& curNode, Node* newNode);
     Val& get(unique_ptr<Node>& curNode, const Key& key);
-    void remove(unique_ptr<Node>& curNode, const Key& key);
+    Node* remove(unique_ptr<Node>& curNode, const Key& key);
     void removeNode(unique_ptr<Node>& toDelete);
 
     void preOrder(unique_ptr<Node>& curNode);
     void inOrder(unique_ptr<Node>& curNode);
+    unique_ptr<Node>& getLeftmost(unique_ptr<Node>& curNode);
     unique_ptr<Node> copyNodes(Node* other_node, Node* parent);
 
     int getBalanceFactor(Node* node);
@@ -142,7 +143,7 @@ template <class Key, class Val>
 void AVLtree<Key,Val>::update(const Key& oldKey, const Key& newKey)
 {
     const Val val = get(oldKey);
-    remove(oldKey);
+    release(oldKey);
     insert(newKey, val);
 }
 template <class Key, class Val>
@@ -175,15 +176,31 @@ template <class Key, class Val>
 void AVLtree<Key,Val>::remove(const Key& key)
 {
     m_count--;
-    remove(m_root, key);
+    Node* removed = remove(m_root, key);
+    delete removed;
     if (key == m_min->key)
     {
         m_min = getLeftmost(m_root).get();
     }
 
 }
+
 template <class Key, class Val>
-void AVLtree<Key,Val>::remove(unique_ptr<Node>& curNode, const Key& key)
+typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::release(const Key& key)
+{
+    Node* removed = remove(m_root, key);
+    m_count--;
+    if (m_count && key == m_min->key)
+    {
+        m_min = getLeftmost(m_root).get();
+    }
+    return removed;
+
+}
+
+
+template <class Key, class Val>
+typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::remove(unique_ptr<Node>& curNode, const Key& key)
 {
     if (!curNode)
     {
@@ -191,15 +208,17 @@ void AVLtree<Key,Val>::remove(unique_ptr<Node>& curNode, const Key& key)
     }
     else if (curNode->key < key) 
     {
-        remove(curNode->right, key);
+        return remove(curNode->right, key);
     }
     else if(key < curNode->key)
     {
-        remove(curNode->left, key);
+        return remove(curNode->left, key);
     }
     else
     {
+        Node* node = curNode.get();
         removeNode(curNode);
+        return node;
     }
 }
 
@@ -235,15 +254,20 @@ void AVLtree<Key,Val>::removeNode(unique_ptr<Node>& toDelete)
     }
     else if(toDelete->right)
     {
-        toDelete.reset(toDelete->right.release());
+        
+        Node* temp = toDelete->right.release();
+        toDelete.release();
+        toDelete.reset(temp);
     }
     else if(toDelete->left)
     {
-        toDelete.reset(toDelete->left.release());
+        Node* temp = toDelete->left.release();
+        toDelete.release();
+        toDelete.reset(temp);
     }
     else
     {
-        toDelete.reset();
+        toDelete.release();
     }
     
 }

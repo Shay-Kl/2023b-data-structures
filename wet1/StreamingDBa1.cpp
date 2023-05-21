@@ -54,8 +54,8 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 	{
 		Movie movie(genre, views, vipOnly, movieId);
 		movies.insert(movieId, movie);
-		genreMovies[(int)genre].insert(movie, 0);
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
+		genreMovies[(int)genre].insert(movie, 0);
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -78,9 +78,8 @@ StatusType streaming_database::remove_movie(int movieId)
 	{
 		Movie& movie = movies.get(movieId);
 		Genre genre = movie.getGenre();
-		
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+		AVLtree<Movie, int>::Node* node = genreMovies[(int)Genre::NONE].release(movie);
+		node = genreMovies[(int)genre].release(movie);
 		movies.remove(movieId);
 		return StatusType::SUCCESS;
 	}
@@ -240,8 +239,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 			return StatusType::FAILURE;
 		}
 		
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+		genreMovies[(int)genre].release(movie);
+		genreMovies[(int)Genre::NONE].release(movie);
 		user->watch(genre);
 
 		movie.view();
@@ -373,8 +372,8 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 			return StatusType::FAILURE;
 		}
 
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+		genreMovies[(int)genre].release(movie);
+		genreMovies[(int)Genre::NONE].release(movie);
 		movie.rate(rating);
 		genreMovies[(int)genre].insert(movie, 0);
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
