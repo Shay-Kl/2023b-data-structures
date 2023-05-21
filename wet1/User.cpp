@@ -3,7 +3,7 @@
 User::User(int id, bool isVip): m_id(id), m_isVip(isVip), m_groupId(0),
                         m_group(nullptr), m_genreViewCount() {}
 
-Group* User::getGroup() const
+shared_ptr<Group> User::getGroup() const
 {
     return m_group;
 }
@@ -18,7 +18,7 @@ int User::getGroupId() const
     return m_groupId;
 }
 
-void User::addToGroup(Group* group, int groupId)
+void User::addToGroup(shared_ptr<Group> group, int groupId)
 {
     if (m_groupId != 0)
     {

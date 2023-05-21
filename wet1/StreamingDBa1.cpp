@@ -130,7 +130,7 @@ StatusType streaming_database::remove_user(int userId)
 		User* user = &users.get(userId);
 		if (user->getGroupId() != 0)
 		{
-			Group* group_ptr = user->getGroup();
+			shared_ptr<Group> group_ptr = user->getGroup();
 			group_ptr->removeUser(user);
 		}
 		users.remove(userId);
@@ -206,7 +206,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
 		if (!user->getGroupId())
 		{
 			group->addUser(user);
-			user->addToGroup(group.get(), groupId);
+			user->addToGroup(group, groupId);
 			return StatusType::SUCCESS;
 		}
 		return StatusType::FAILURE;
