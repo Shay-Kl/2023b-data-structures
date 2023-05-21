@@ -78,8 +78,8 @@ StatusType streaming_database::remove_movie(int movieId)
 	{
 		Movie& movie = movies.get(movieId);
 		Genre genre = movie.getGenre();
-		AVLtree<Movie, int>::Node* node = genreMovies[(int)Genre::NONE].release(movie);
-		node = genreMovies[(int)genre].release(movie);
+		genreMovies[(int)Genre::NONE].release(movie);
+		genreMovies[(int)genre].release(movie);
 		movies.remove(movieId);
 		return StatusType::SUCCESS;
 	}
