@@ -266,7 +266,6 @@ template <class Key, class Val>
 void AVLtree<Key,Val>::removeNode(Node* node)   
 {
     unique_ptr<Node>& uniNode = unique(node);
-    if(!uniNode)
     if (node->right && node->left)
     {
         if(!node->right->left)
