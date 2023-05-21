@@ -334,7 +334,7 @@ unique_ptr<typename AVLtree<Key, Val>::Node> AVLtree<Key, Val>::copyNodes(Node* 
 {
     if (other_node == nullptr)
     {
-        return nullptr;
+        return nullptr; 
     }
     
     // Use unique_ptr for new_node
