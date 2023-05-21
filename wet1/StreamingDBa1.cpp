@@ -23,8 +23,8 @@ void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, Group* g
     removeUserAux(root->left.get(), group);
     removeUserAux(root->right.get(), group);
 	User* user = root->val;
-	group->removeUser(user);
 	user->removeFromGroup();
+	group->removeUser(user);
 
 	
 }

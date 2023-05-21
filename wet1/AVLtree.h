@@ -76,6 +76,7 @@ public:
 
 private:
     unique_ptr<Node> m_root;
+    Key* m_min;
     int m_count;
 
     void insertAux(unique_ptr<Node>& curNode, Node* newNode);
@@ -114,6 +115,7 @@ void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, Node* newNode)
     }
     else
     {
+        delete newNode;
         throw runtime_error("Insert failed because key already exists");
     }
     
