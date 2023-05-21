@@ -310,7 +310,11 @@ void AVLtree<Key,Val>::removeNode(Node* node)
             next->parent = parent;
             uniNode.swap(next);
             
-            next->left->parent = next.get();
+            if (next->left)
+            {
+                next->left->parent = next.get();
+            }
+            
             next->right->parent = next.get();
             if(node->right)
             {
