@@ -111,7 +111,8 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& val)
 {
     Node* newNode = new Node(key, val);
     insertAux(m_root, newNode);
-    if (!m_min || m_min->key < newNode->key)
+    if (!m_min ||
+     m_min->key < key)
     {
         m_min = newNode;
     }
