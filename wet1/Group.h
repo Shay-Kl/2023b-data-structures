@@ -12,31 +12,19 @@ class Group
 public:
     //C'tor
     Group(int id);
-
-    //Dummy element for tree
-    Group();
-
     //Returns the group's ID
     int getId() const;
 
     //Returns the number of users in the group
     int getUsersCount() const;
 
-    //Returns the tree that holds all group's users
-    AVLtree<int, User*>& getUsers();
-
     //Returns true if the group has VIP member in it
     bool isVip() const;
 
     //Add new user to the group
-    void addUser(User& user);
-
+    void addUser(shared_ptr<User> user);
     //Remove user from group
-    void removeUser(User& user);
-
-    void closeGroup();
-
-    void closeGroupAux(unique_ptr<AVLtree<int,User>::Node>& curNode);
+    void removeUser(shared_ptr<User> user);
 
     //Add num of views to the total genre views count
     void updateViews(Genre genre, int views);
@@ -54,10 +42,12 @@ public:
 
 private:
     int m_id;
+    bool m_isVip;
     int m_vipCount;
+    int m_usersCount;
     int m_genreTotalViews[4] = {0};
     int m_genreGroupViews[4] = {0};
-    AVLtree<int, User*> users;
+
 };
 
 #endif // __GROUP_H__
