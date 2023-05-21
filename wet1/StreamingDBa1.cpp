@@ -76,11 +76,10 @@ StatusType streaming_database::remove_movie(int movieId)
 	}
 	try
 	{
-		Movie& movie = movies.get(movieId);
-		Genre genre = movie.getGenre();
-		genreMovies[(int)Genre::NONE].release(movie);
-		genreMovies[(int)genre].release(movie);
-		movies.remove(movieId);
+		AVLtree<int,Movie>::Node* node = movies.release(movieId);
+		Genre genre = node->val.getGenre();
+		genreMovies[(int)Genre::NONE].release(node->val);
+		genreMovies[(int)genre].release(node->val);
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)

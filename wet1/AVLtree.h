@@ -94,9 +94,9 @@ private:
     Node* m_min;
     int m_count;
 
-    void insert(unique_ptr<Node>& curNode, Node* newNode);
-    Val& get(unique_ptr<Node>& curNode, const Key& key);
-    Node* remove(unique_ptr<Node>& curNode, const Key& key);
+    void insertAux(unique_ptr<Node>& curNode, Node* newNode);
+    Val& getAux(unique_ptr<Node>& curNode, const Key& key);
+    Node* removeAux(unique_ptr<Node>& curNode, const Key& key);
     void removeNode(unique_ptr<Node>& toDelete);
 
     void preOrder(unique_ptr<Node>& curNode);
@@ -110,7 +110,7 @@ template <class Key, class Val>
 void AVLtree<Key,Val>::insert(const Key& key, const Val& val)
 {
     Node* newNode = new Node(key, val);
-    insert(m_root, newNode);
+    insertAux(m_root, newNode);
     if (!m_min || m_min->key < newNode->key)
     {
         m_min = newNode;
@@ -118,7 +118,7 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& val)
     m_count++;
 }
 template <class Key, class Val>
-void AVLtree<Key,Val>::insert(unique_ptr<Node>& curNode, Node* newNode)
+void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, Node* newNode)
 {
     if(!curNode)
     {
@@ -126,11 +126,11 @@ void AVLtree<Key,Val>::insert(unique_ptr<Node>& curNode, Node* newNode)
     }
     else if (curNode->key < newNode->key) 
     {
-        insert(curNode->right, newNode);
+        insertAux(curNode->right, newNode);
     }
     else if(newNode->key < curNode->key)
     {
-        insert(curNode->left, newNode);
+        insertAux(curNode->left, newNode);
     }
     else
     {
@@ -149,10 +149,10 @@ void AVLtree<Key,Val>::update(const Key& oldKey, const Key& newKey)
 template <class Key, class Val>
 Val& AVLtree<Key,Val>::get(const Key& key)
 {
-    return get(m_root, key);
+    return getAux(m_root, key);
 }
 template <class Key, class Val>
-Val& AVLtree<Key,Val>::get(unique_ptr<Node>& curNode, const Key& key)
+Val& AVLtree<Key,Val>::getAux(unique_ptr<Node>& curNode, const Key& key)
 {
     if (!curNode)
     {
@@ -160,11 +160,11 @@ Val& AVLtree<Key,Val>::get(unique_ptr<Node>& curNode, const Key& key)
     }
     else if (curNode->key < key) 
     {
-        return get(curNode->right, key);
+        return getAux(curNode->right, key);
     }
     else if(key < curNode->key)
     {
-        return get(curNode->left, key);
+        return getAux(curNode->left, key);
     }
     else
     {
@@ -176,7 +176,7 @@ template <class Key, class Val>
 void AVLtree<Key,Val>::remove(const Key& key)
 {
     m_count--;
-    Node* removed = remove(m_root, key);
+    Node* removed = removeAux(m_root, key);
     delete removed;
     if (key == m_min->key)
     {
@@ -188,7 +188,7 @@ void AVLtree<Key,Val>::remove(const Key& key)
 template <class Key, class Val>
 typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::release(const Key& key)
 {
-    Node* removed = remove(m_root, key);
+    Node* removed = removeAux(m_root, key);
     m_count--;
     if (m_count && key == m_min->key)
     {
@@ -200,7 +200,7 @@ typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::release(const Key& key)
 
 
 template <class Key, class Val>
-typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::remove(unique_ptr<Node>& curNode, const Key& key)
+typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::removeAux(unique_ptr<Node>& curNode, const Key& key)
 {
     if (!curNode)
     {
@@ -208,11 +208,11 @@ typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::remove(unique_ptr<Node>& curN
     }
     else if (curNode->key < key) 
     {
-        return remove(curNode->right, key);
+        return removeAux(curNode->right, key);
     }
     else if(key < curNode->key)
     {
-        return remove(curNode->left, key);
+        return removeAux(curNode->left, key);
     }
     else
     {
