@@ -11,35 +11,20 @@ class AVLtree
 
 public:
 
-    AVLtree(): m_root(nullptr), m_min(nullptr), m_count(0) {}
-    AVLtree(const AVLtree<Key, Val>& other) : m_root(nullptr), m_min(nullptr), m_count(other.m_count)
+    AVLtree(): m_root(nullptr), m_count(0) {}
+    AVLtree(const AVLtree<Key, Val>& other) : m_root(nullptr), m_count(other.m_count)
     {
         m_root = unique_ptr<Node>(copyNodes(other.m_root.get(), nullptr));
-        if(m_root)
-        {
-            m_min = m_root.get();
-            while(m_min->left)
-            {
-                m_min = m_min->left.get();
-            }
-        }
+
     }
     AVLtree& operator=(const AVLtree& other)
     {
         if (this != &other) 
         {
             m_root = nullptr;
-            m_min = nullptr;
             m_count = other.m_count; 
             this->m_root = unique_ptr<Node>(copyNodes(other.m_root.get(), nullptr));
-            if(m_root)
-            {
-                m_min = m_root.get();
-                while(m_min->left)
-                {
-                    m_min = m_min->left.get();
-                }
-            }
+
         }
         return *this;
     }
@@ -87,11 +72,10 @@ public:
     template <class K,class V>
     friend ostream& operator<<(ostream& os, AVLtree<K, V>& tree);
     Node* getRoot() { return m_root.get(); }
-    Node* getMin() { return m_min; }
+    Node* getMin() { return getLeftmost(m_root).get(); }
 
 private:
     unique_ptr<Node> m_root;
-    Node* m_min;
     int m_count;
 
     void insertAux(unique_ptr<Node>& curNode, Node* newNode);
@@ -111,11 +95,6 @@ void AVLtree<Key,Val>::insert(const Key& key, const Val& val)
 {
     Node* newNode = new Node(key, val);
     insertAux(m_root, newNode);
-    if (!m_min ||
-     m_min->key < key)
-    {
-        m_min = newNode;
-    }
     m_count++;
 }
 template <class Key, class Val>
@@ -178,15 +157,6 @@ void AVLtree<Key,Val>::remove(const Key& key)
 {
     removeAux(m_root, key, false);
     m_count--;
-    if(!m_count)
-    {
-        m_min = nullptr;
-    }
-    else if (!m_min)
-    {
-        m_min = getLeftmost(m_root).get();
-    }
-
 }
 
 template <class Key, class Val>
@@ -194,14 +164,6 @@ typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::release(const Key& key)
 {
     Node* removed = removeAux(m_root, key, true);
     m_count--;
-    if(!m_count)
-    {
-        m_min = nullptr;
-    }
-    else if (key == m_min->key)
-    {
-        m_min = getLeftmost(m_root).get();
-    }
     return removed;
 
 }
