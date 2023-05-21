@@ -94,7 +94,6 @@ private:
 template <class Key, class Val>
 void AVLtree<Key,Val>::insert(const Key& key, const Val& val)
 {
-    Node* newNode = new Node(key, val);
     insertAux(m_root, key, val);
     m_count++;
 }
