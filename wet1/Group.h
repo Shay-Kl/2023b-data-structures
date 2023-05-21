@@ -3,7 +3,7 @@
 
 #include "StreamingDBa1.h"
 #include "User.h"
-#include "AVL_tree.h"
+#include "AVLtree.h"
 
 class User;
 
@@ -12,19 +12,24 @@ class Group
 public:
     //C'tor
     Group(int id);
+
+    Group(const Group& other) = default;
+    ~Group();
     //Returns the group's ID
     int getId() const;
 
     //Returns the number of users in the group
     int getUsersCount() const;
 
+    AVLtree<int, User*>* getGroupUsers();
+
     //Returns true if the group has VIP member in it
     bool isVip() const;
 
     //Add new user to the group
-    void addUser(shared_ptr<User> user);
+    void addUser(User* user);
     //Remove user from group
-    void removeUser(shared_ptr<User> user);
+    void removeUser(User* user);
 
     //Add num of views to the total genre views count
     void updateViews(Genre genre, int views);
@@ -47,6 +52,7 @@ private:
     int m_usersCount;
     int m_genreTotalViews[4] = {0};
     int m_genreGroupViews[4] = {0};
+    AVLtree<int, User*>* m_members;
 
 };
 

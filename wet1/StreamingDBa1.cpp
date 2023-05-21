@@ -14,33 +14,34 @@ streaming_database::~streaming_database()
 }
 
 
-template <class Key ,class Value>
-void streaming_database::removeUserAux(Node<Key, Value>* root, shared_ptr<Group>& group)
+void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, Group* group)
 {
     if (root == nullptr){
         return;
     }
-    removeUserAux(root->m_left, group);
-    removeUserAux(root->m_right, group);
-	shared_ptr<User> user = root->m_value;
+
+    removeUserAux(root->left.get(), group);
+    removeUserAux(root->right.get(), group);
+	User* user = root->val;
 	user->removeFromGroup();
-	//group->removeUser(user, &groupUsers);
+	group->removeUser(user);
+
+	
 }
 
 
 
-template <class Key ,class Value>
-void streaming_database::getAllAux(Node<Key, Value>* root, int* output)
+void streaming_database::getAllAux(AVLtree<Movie, int>::Node* root, int* output)
 {
 	if (!root)
 	{
 		return;
 	}
-	getAllAux(root->m_left, output);
-	Movie& temp = root->m_key;
+	getAllAux(root->left.get(), output);
+	Movie& temp = root->key;
 	output[iii] = temp.getId();
 	iii++;
-	getAllAux(root->m_right, output);
+	getAllAux(root->right.get(), output);
 }
 
 
@@ -126,10 +127,10 @@ StatusType streaming_database::remove_user(int userId)
 	}
 	try
 	{
-		shared_ptr<User> user = users.get(userId);
-		shared_ptr<Group> group_ptr = user->getGroup();
+		User* user = &users.get(userId);
 		if (user->getGroupId() != 0)
 		{
+			shared_ptr<Group> group_ptr = user->getGroup();
 			group_ptr->removeUser(user);
 			(groupUsers.get(user->getGroupId())).remove(user->getId());
 		}
@@ -177,9 +178,9 @@ StatusType streaming_database::remove_group(int groupId)
 	}
 	try
 	{
-		shared_ptr<Group>& group = groups.get(groupId);
-		AVLtree<int, shared_ptr<User>>& group_users = groupUsers.get(groupId);
-		removeUserAux(group_users.getRoot(), group);
+		shared_ptr<Group> group = groups.get(groupId);
+		AVLtree<int, User*>* group_users = group->getGroupUsers();
+		removeUserAux(group_users->getRoot(), group.get());
 		groups.remove(groupId);
 		groupUsers.remove(groupId);
 		
@@ -193,7 +194,6 @@ StatusType streaming_database::remove_group(int groupId)
 	{
 		return StatusType::FAILURE;
 	}
-	return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)
@@ -204,12 +204,11 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
 	}
 	try
 	{
-		shared_ptr<User> user = users.get(userId);
-		shared_ptr<Group>& group = groups.get(groupId);
-		if (user->getGroupId() == 0)
+		User* user = &users.get(userId);
+		shared_ptr<Group> group = groups.get(groupId);
+		if (!user->getGroupId())
 		{
 			group->addUser(user);
-			(groupUsers.get(groupId)).insert(user->getId(), user);
 			user->addToGroup(group, groupId);
 			return StatusType::SUCCESS;
 		}
@@ -421,7 +420,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 		{
 			return StatusType::FAILURE;
 		}
-		int favorit_movie_id = (genreMovies[(int)favorit_genre].getMinNode()->m_key).getId();
+		int favorit_movie_id = (genreMovies[(int)favorit_genre].getMin()->key).getId();
 		
 		return favorit_movie_id;
 	}

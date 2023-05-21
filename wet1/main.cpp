@@ -1,31 +1,64 @@
-#include "AVL_tree.h"
+#include "AVLtree.h"
 #include "wet1util.h"
 #include "Movie.h"
-#include "StreamingDBa1.h"
 #include <iostream>
+#include "StreamingDBa1.h"
 using namespace std;
 
 void st(StatusType s);
 void treeTest();
 void dbTest();
+void removeTest();
 
 int main()
 {
     //treeTest();
     dbTest();
+    //removeTest();
+    
     return 0;
 }
 
+void removeTest()
+{
+    AVLtree<int, int> tree;
+    int a[10]  = {1,5,4,3,2,6,7,9,8,0};
+    for (int i = 0; i < 10; i++)
+    {
+        tree.insert(a[i], 0);
+    }
+    cout << tree;
+    int b[10]  = {1,7,9,8,0,2,3,4,6,5};
+    for (int i = 0; i < 10; i++)
+    {
+        cout << "Removed " << b[i] << endl;
+        tree.remove(b[i]);
+        cout << tree;
+    }
+
+    int c[10]  = {7, 5,4,3,2,6,1,9,8,0};
+    for (int i = 0; i < 10; i++)
+    {
+        tree.insert(c[i], 0);
+    }
+    cout << tree;
+    int d[10]  = {1, 7, 9,8,0,2,3,4,6,5};
+    for (int i = 0; i < 10; i++)
+    {
+        cout << "Removed " << b[i] << endl;
+        tree.remove(d[i]);
+        cout << tree;
+    }
+}
 void dbTest()
 {
 
-    streaming_database db = streaming_database();
+    streaming_database db;
 
     //Line 1 - Printing StatusType for various basic functions, every other command is an intended error of some kind
 
     st(db.add_movie(123, Genre::ACTION, 20, false));
     st(db.add_movie(234, Genre::COMEDY, 30, true));
-
     st(db.add_movie(234, Genre::COMEDY, 30, true)); // Movie already exists, prints 2
     st(db.add_movie(-2, Genre::ACTION, 20, false)); //Invalid id, prints 3
     st(db.remove_movie(123));
@@ -39,7 +72,6 @@ void dbTest()
     st(db.user_watch(101, 234)); //User isn't vip, prints 2
 
     cout << endl << endl;
-    db = streaming_database();
     //Line 2 - printing number of movies in each genre
     db.add_movie(1, Genre::COMEDY, 5, false);
     db.add_movie(2, Genre::COMEDY, 5, false);
@@ -69,7 +101,6 @@ void dbTest()
     cout << endl << endl;
 
     //line 4 - rating and then printing all movies in a genre, sorted
-
     db.rate_movie(10, 3, 80);
     db.rate_movie(10, 3, 100); // Movie 3 - average rating of 90, high view count
     db.rate_movie(10, 2, 90); // Movie 2 - average rating of 90
@@ -99,7 +130,6 @@ void dbTest()
  
     //------------------------
 
-    db = streaming_database();
     db.add_movie(1, Genre::COMEDY, 0, false);
     db.add_movie(2, Genre::COMEDY, 0, false);
     db.add_movie(3, Genre::COMEDY, 0, false);
@@ -110,6 +140,7 @@ void dbTest()
     db.add_user(2, false);
     db.add_user(3, true);
     db.add_user(4, true);
+
 
     //line 5 - add groups
     st(db.add_group(1));//
@@ -155,8 +186,8 @@ void dbTest()
     cout << " ,";
     st(db.get_group_recommendation(4).status()); //empty group, print 2
     cout << endl;
-}
 
+}
 
 void st(StatusType s)
 {
@@ -175,16 +206,4 @@ void st(StatusType s)
         cout << "4,";
         break;
     }
-}
-void treeTest()
-{
-    AVLtree<int, int> tree = AVLtree<int, int>();
-    tree.insert(5, 0);
-    tree.insert(3, 30);
-    tree.insert(1, 0);
-    tree.insert(2, 0);
-    tree.insert(4, 0);
-    cout << tree;
-    tree.remove(1);
-    cout << tree;
 }

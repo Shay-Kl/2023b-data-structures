@@ -6,6 +6,7 @@
 #include "wet1util.h"
 #include <memory>
 
+using namespace std;
 class Group;
 
 class User
@@ -14,7 +15,7 @@ public:
     User(int id, bool isVip);
 
     //Returns pointer to group
-    std::shared_ptr<Group> getGroup() const;
+    shared_ptr<Group> getGroup() const;
 
     //Returns the user's ID
     int getId() const;
@@ -29,7 +30,7 @@ public:
     int getGenreViewCount(Genre genre) const;
 
     //Adds user to group, if user is already in a group, returns FailureException
-    void addToGroup(std::shared_ptr<Group>& group, int groupId);
+    void addToGroup(shared_ptr<Group> group, int groupId);
 
     //Remove user's reference to group, should only be called by the group when it gets destroyed
     void removeFromGroup();
@@ -46,8 +47,8 @@ public:
 private:
     int m_id;
     bool m_isVip;
-    int m_groupId;
-    std::shared_ptr<Group> m_group;
+    int m_groupId = 0;
+    shared_ptr<Group> m_group;
     int m_genreViewCount[4];
 };
 #endif // __USER_H__

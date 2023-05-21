@@ -18,9 +18,9 @@ int User::getGroupId() const
     return m_groupId;
 }
 
-void User::addToGroup(shared_ptr<Group>& group, int groupId)
+void User::addToGroup(shared_ptr<Group> group, int groupId)
 {
-    if (m_groupId)
+    if (m_groupId != 0)
     {
         throw std::exception();
     }
@@ -43,8 +43,10 @@ void User::removeFromGroup()
     m_genreViewCount[1] += getGroup()->getGroupViews(Genre::DRAMA);
     m_genreViewCount[2] += getGroup()->getGroupViews(Genre::ACTION);
     m_genreViewCount[3] += getGroup()->getGroupViews(Genre::FANTASY);
-    m_group = nullptr;
     m_groupId = 0;
+    m_group = nullptr;
+
+    
 }
 
 void User::watch(Genre genre)

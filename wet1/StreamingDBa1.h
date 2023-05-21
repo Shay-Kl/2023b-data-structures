@@ -19,7 +19,7 @@
 #include "Movie.h"
 #include "User.h"
 #include "Group.h"
-#include "AVL_tree.h"
+#include "AVLtree.h"
 
 class User;
 class Group;
@@ -27,16 +27,13 @@ class Group;
 class streaming_database {
 private:
 	AVLtree<int, Movie> movies;
-	AVLtree<int, shared_ptr<User>> users;
+	AVLtree<int, User> users;
 	AVLtree<int, shared_ptr<Group>> groups;
-	AVLtree<int, AVLtree<int, shared_ptr<User>>> groupUsers;
 	AVLtree<Movie, int> genreMovies[5];
 
-	template <class Key ,class Value>
-	void removeUserAux(Node<Key, Value>* root, shared_ptr<Group>& group);
+	void removeUserAux(AVLtree<int, User*>::Node* root, Group* group);
 	
-	template <class Key ,class Value>
-	void getAllAux(Node<Key, Value>* root, int* output);
+	void getAllAux(AVLtree<Movie, int>::Node* root, int* output);
 
 public:
 	// <DO-NOT-MODIFY> {
