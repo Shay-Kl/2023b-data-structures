@@ -79,7 +79,7 @@ private:
     Key* m_min;
     int m_count;
 
-    void insertAux(unique_ptr<Node>& curNode, Node* newNode);
+    void insertAux(unique_ptr<Node>& curNode, const Key& key, const Val& val);
     Val& getAux(const unique_ptr<Node>& curNode, const Key& key) const;
     Node* removeAux(unique_ptr<Node>& curNode, const Key& key, bool toRelease);
     void removeNode(unique_ptr<Node>& toDelete, bool toRelease);
@@ -95,27 +95,26 @@ template <class Key, class Val>
 void AVLtree<Key,Val>::insert(const Key& key, const Val& val)
 {
     Node* newNode = new Node(key, val);
-    insertAux(m_root, newNode);
+    insertAux(m_root, key, val);
     m_count++;
 }
 template <class Key, class Val>
-void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, Node* newNode)
+void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, const Key& key, const Val& val)
 {
     if(!curNode)
     {
-        curNode.reset(newNode);
+        curNode.reset(new Node(key, val));
     }
-    else if (curNode->key < newNode->key) 
+    else if (curNode->key < key) 
     {
-        insertAux(curNode->right, newNode);
+        insertAux(curNode->right, key, val);
     }
-    else if(newNode->key < curNode->key)
+    else if(key < curNode->key)
     {
-        insertAux(curNode->left, newNode);
+        insertAux(curNode->left, key, val);
     }
     else
     {
-        delete newNode;
         throw runtime_error("Insert failed because key already exists");
     }
     
