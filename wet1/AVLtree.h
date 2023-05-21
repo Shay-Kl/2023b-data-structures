@@ -69,7 +69,7 @@ public:
     template <class K,class V>
     friend ostream& operator<<(ostream& os, AVLtree<K, V>& tree);
     Node* getRoot() { return m_root.get(); }
-    Node* getMin() { return m_min }
+    Node* getMin() { return m_min; }
 
 private:
     unique_ptr<Node> m_root;
@@ -155,7 +155,15 @@ void AVLtree<Key,Val>::remove(const Key& key)
 {
     removeAux(m_root, key);
     m_count--;
-    m_min = getLeftmost(m_root).get();
+    if (m_root)
+    {
+        m_min = getLeftmost(m_root).get();
+    }
+    else
+    {
+        m_min = nullptr;
+    }
+    
 }
 
 

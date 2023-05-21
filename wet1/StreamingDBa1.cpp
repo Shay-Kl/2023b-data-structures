@@ -105,7 +105,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)
 	}
 	try
 	{
-		shared_ptr<User> user(new User(userId, isVip));
+		User user(userId, isVip);
 		users.insert(userId, user);
 		return StatusType::SUCCESS;
 	}
@@ -132,7 +132,6 @@ StatusType streaming_database::remove_user(int userId)
 		{
 			shared_ptr<Group> group_ptr = user->getGroup();
 			group_ptr->removeUser(user);
-			(groupUsers.get(user->getGroupId())).remove(user->getId());
 		}
 		users.remove(userId);
 		return StatusType::SUCCESS;
@@ -157,7 +156,6 @@ StatusType streaming_database::add_group(int groupId)
 	{
 		shared_ptr<Group> group(new Group(groupId));
 		groups.insert(groupId, group);
-		groupUsers.insert(groupId, AVLtree<int, shared_ptr<User>>());
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -182,7 +180,6 @@ StatusType streaming_database::remove_group(int groupId)
 		AVLtree<int, User*>* group_users = group->getGroupUsers();
 		removeUserAux(group_users->getRoot(), group.get());
 		groups.remove(groupId);
-		groupUsers.remove(groupId);
 		
 		return StatusType::SUCCESS;
 	}
@@ -234,16 +231,16 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 	try
 	{
 		Movie& movie = movies.get(movieId);
-		shared_ptr<User> user = users.get(userId);
+		User& user = users.get(userId);
 		Genre genre = movie.getGenre();
-		if (movie.isVipOnly() && !user->isVip())
+		if (movie.isVipOnly() && !user.isVip())
 		{
 			return StatusType::FAILURE;
 		}
 		
 		genreMovies[(int)genre].remove(movie);
 		genreMovies[(int)Genre::NONE].remove(movie);
-		user->watch(genre);
+		user.watch(genre);
 
 		movie.view();
 		genreMovies[(int)Genre::NONE].insert(movie, 0);
@@ -344,8 +341,8 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 	}
 	try
 	{
-		shared_ptr<User> user = users.get(userId);
-		return user->getEffectiveViews(genre);
+		User& user = users.get(userId);
+		return user.getEffectiveViews(genre);
 	}
 	catch(bad_alloc)
 	{
@@ -366,10 +363,10 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 	
 	try
 	{
-		shared_ptr<User> user = users.get(userId);
+		User& user = users.get(userId);
 		Movie& movie = movies.get(movieId);
 		Genre genre = movie.getGenre();
-		if (movie.isVipOnly() && !user->isVip())
+		if (movie.isVipOnly() && !user.isVip())
 		{
 			return StatusType::FAILURE;
 		}

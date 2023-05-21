@@ -36,12 +36,6 @@ public:
     friend bool operator!=(const Movie& movie1, const Movie& movie2);
     friend bool operator<(const Movie& movie1, const Movie& movie2);
     friend bool operator==(const Movie& movie1, const Movie& movie2);
-    friend std::ostream& operator<<(std::ostream& os, const Movie& movie)
-    {
-        std::cout << (movie.m_id);
-        return os;
-    }
-
 private:
     int m_views;
     bool m_vipOnly;
