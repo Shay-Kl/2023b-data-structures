@@ -10,6 +10,7 @@ class AVLtree
 {
 
 public:
+
     AVLtree(): m_root(nullptr), m_min(nullptr), m_count(0) {}
     AVLtree(const AVLtree<Key, Val>& other) : m_root(nullptr), m_min(nullptr), m_count(other.m_count)
     {
@@ -42,25 +43,18 @@ public:
         }
         return *this;
     }
-    void insert(const Key& key, const Val& val);
-    void update(const Key& oldKey, const Key& newKey);
-    void remove(const Key& key);
-    Val& get(const Key& key) const;
-    int getNodeCount() const {  return m_count; }
-
     class Node
     {
     public:
         Key key;
         Val val;
         unique_ptr<Node> left, right;
-        Node* parent;
         int height;
         
     private:
         friend AVLtree;
-        Node(): key(Key()), val(Val()), left(nullptr), right(nullptr), parent(nullptr), height(0) {}
-        Node(Key key, Val val, Node* parent): key(key), val(val), left(nullptr), right(nullptr), parent(parent), height(0) {}
+        Node(): key(Key()), val(Val()), left(nullptr), right(nullptr), height(0) {}
+        Node(Key key, Val val): key(key), val(val), left(nullptr), right(nullptr), height(0) {}
         
         void updateHeight()
         {
@@ -74,109 +68,74 @@ public:
                 rightHeight = right->height;
             }
             height = (leftHeight > rightHeight) ? leftHeight+1 : rightHeight+1;
-            if (parent)
-            {
-                parent->updateHeight();
-            }
             
         }
     };
-    class Iterator
-    {
-    public:
-        Iterator& operator++()
-        {
-            if (node->right)
-            {
-                node = node->right.get();
-                while(node->left)
-                {
-                    node = node->left.get();
-                }
-            }
-            else
-            {
-                while(node->parent && node->parent->right.get() == node)
-                {
-                    node = node->parent;
-                }
-                node = node->parent;
-            }
-            return *this;
-        }
+    
+    void insert(const Key& key, const Val& val);
+    Val& get(const Key& key);
+    void remove(const Key& key);
+    unique_ptr<Node>& getLeftmost(unique_ptr<Node>& curNode);
 
-        bool operator!=(const Iterator& other) const
-        {
-            return node != other.node;
-        }
-        const Node& operator*() const
-        {
-            return *node;
-        }
-    private:
-        Node* node;
-        Iterator(Node* node): node(node) {}
-        Iterator(): node(nullptr) {}
-        friend AVLtree;
-    };
+    void update(const Key& oldKey, const Key& newKey);
 
-    Iterator begin() { return m_min; }
-    Iterator end() { return nullptr; }
+    int getNodeCount() const {  return m_count; }
+
+    
+    
 
     template <class K,class V>
     friend ostream& operator<<(ostream& os, AVLtree<K, V>& tree);
     Node* getRoot() { return m_root.get(); }
+    Node* getMin() { return m_min; }
 
 private:
     unique_ptr<Node> m_root;
     Node* m_min;
     int m_count;
 
-    void removeNode(Node* node);
-    void preOrder(Node* node);
-    void swapNodes(unique_ptr<Node>& a, unique_ptr<Node>& b);
-    unique_ptr<Node> copyNodes(Node* other_node, Node* parent);
+    void insert(unique_ptr<Node>& curNode, Node* newNode);
+    Val& get(unique_ptr<Node>& curNode, const Key& key);
+    void remove(unique_ptr<Node>& curNode, const Key& key);
+    void removeNode(unique_ptr<Node>& toDelete);
 
-    unique_ptr<Node>& unique(Node* node);
+    void preOrder(unique_ptr<Node>& curNode);
+    void inOrder(unique_ptr<Node>& curNode);
+    unique_ptr<Node> copyNodes(Node* other_node, Node* parent);
 
     int getBalanceFactor(Node* node);
 };
 template <class Key, class Val>
-void AVLtree<Key,Val>::insert(const Key& key, const Val& value)
+void AVLtree<Key,Val>::insert(const Key& key, const Val& val)
 {
-    if (!m_root)
+    Node* newNode = new Node(key, val);
+    insert(m_root, newNode);
+    if (!m_min || m_min->key < newNode->key)
     {
-        m_root = unique_ptr<Node>(new Node(key,value,nullptr));
-        m_min = m_root.get();
-        m_count++;
-        return;
-    }
-    
-    Node* node = m_root.get(), *parent = nullptr;
-    while (node && node->key != key)
-    {
-        parent = node;
-        if (node->key < key)
-        {
-            node = node->right.get();
-        }
-        else
-        {
-            node = node->left.get();
-        }
-    }
-    if (node)
-    {
-        throw runtime_error("Insert existing");
-    }
-    unique_ptr<Node>& uniNode = (parent->key < key) ? parent->right : parent->left;
-    uniNode.reset(new Node(key, value, parent));
-
-    if(key < m_min->key)
-    {
-        m_min = uniNode.get();
+        m_min = newNode;
     }
     m_count++;
+}
+template <class Key, class Val>
+void AVLtree<Key,Val>::insert(unique_ptr<Node>& curNode, Node* newNode)
+{
+    if(!curNode)
+    {
+        curNode.reset(newNode);
+    }
+    else if (curNode->key < newNode->key) 
+    {
+        insert(curNode->right, newNode);
+    }
+    else if(newNode->key < curNode->key)
+    {
+        insert(curNode->left, newNode);
+    }
+    else
+    {
+        throw runtime_error("Insert failed because key already exists");
+    }
+    
 }
 
 template <class Key, class Val>
@@ -187,189 +146,156 @@ void AVLtree<Key,Val>::update(const Key& oldKey, const Key& newKey)
     insert(newKey, val);
 }
 template <class Key, class Val>
-Val& AVLtree<Key,Val>::get(const Key& key) const
+Val& AVLtree<Key,Val>::get(const Key& key)
 {
-    Node* node = m_root.get();
-    while (node && node->key != key)
-    {
-        if (node->key < key)
-        {
-            node = node->right.get();
-        }
-        else
-        {
-            node = node->left.get();
-        }
-    }
-    if (!node)
-    {
-        throw runtime_error("Get non existing");
-    }
-    return node->val;
+    return get(m_root, key);
 }
 template <class Key, class Val>
-void AVLtree<Key,Val>::remove(const Key& key)
+Val& AVLtree<Key,Val>::get(unique_ptr<Node>& curNode, const Key& key)
 {
-    Node* node = m_root.get();
-    while (node && node->key != key)
+    if (!curNode)
     {
-        if (node->key < key)
-        {
-            node = node->right.get();
-        }
-        else
-        {
-            node = node->left.get();
-        }
+        throw runtime_error("Get failed because node doesn't exist");
     }
-    if (!node)
+    else if (curNode->key < key) 
     {
-        throw runtime_error("Remove non existing");
+        return get(curNode->right, key);
     }
-    m_count--;
-    if (m_min == node)
+    else if(key < curNode->key)
     {
-        if(node->right)
-        {
-            m_min = node->right.get();
-            while(m_min->left)
-            {
-                m_min = m_min->left.get();
-            }
-        }
-        else if(m_min->parent)
-        {
-            m_min = m_min->parent;
-            while(m_min->parent && m_min->parent->right && m_min->parent->right.get()==m_min)
-            {
-                m_min = m_min->parent;
-            }
-        }
-        else
-        {
-            m_min = nullptr;
-        }
-    }
-
-    removeNode(node);
-}
-template <class Key, class Val>
-void AVLtree<Key,Val>::swapNodes(unique_ptr<Node>& a, unique_ptr<Node>& b)
-{
-    Node* temp = a->parent;
-    a->parent = b->parent;
-    b->parent = temp;
-    a->left.swap(b->left);
-    a->right.swap(b->right);
-}
-template <class Key, class Val>
-void AVLtree<Key,Val>::removeNode(Node* node)   
-{
-    unique_ptr<Node>& uniNode = unique(node);
-    if (node->right && node->left)
-    {
-        if(!node->right->left)
-        {
-            unique_ptr<Node> tempNode = move(uniNode);
-            unique_ptr<Node> tempNext = move(node->right);
-
-            tempNode->right = move(tempNext->right);
-            tempNext->left = move(tempNode->left);
-
-            if(tempNode->right)
-            {
-                tempNode->right->parent = tempNode.get();
-            }
-            tempNext->left->parent = tempNext.get();
-        
-            uniNode = move(tempNext);
-            uniNode->right = move(tempNode);
-            uniNode->parent = uniNode->right->parent;
-            uniNode->right->parent = uniNode.get();
-            removeNode(uniNode->right.get());
-        }
-        else 
-        {
-            Node* nextNode = node->right.get();
-            while(nextNode->left)
-            {
-                nextNode = nextNode->left.get();
-            }
-            unique_ptr<Node>& next = unique(nextNode);
-            unique_ptr<Node> nodeLeft = move(node->left);
-            unique_ptr<Node> nodeRight = move(node->right);
-            unique_ptr<Node> nextLeft =move(next->left);
-            unique_ptr<Node> nextRight =move(next->right);
-            Node *parent = node->parent, *nextParent = next->parent;
-
-            next->left = move(nodeLeft);
-            next->right = move(nodeRight);
-            node->left = move(nextLeft);
-            node->right = move(nextRight);
-            node->parent = nextParent;
-            next->parent = parent;
-            uniNode.swap(next);
-            
-            if (next->left)
-            {
-                next->left->parent = next.get();
-            }
-
-            if(next->right)
-            {
-                next->right->parent = next.get();
-            }
-            
-            if(node->right)
-            {
-                node->right->parent = node;
-            }
-            removeNode(next.get());
-
-        }
-
-    }
-    else if(node->right)
-    {
-        node->right->parent = node->parent;
-        uniNode = move(node->right);
-    }
-    else if(node->left)
-    {
-        node->left->parent = node->parent;
-        uniNode = move(node->left);
+        return get(curNode->left, key);
     }
     else
     {
-        uniNode.reset();
+        return curNode->val;
     }
     
 }
 template <class Key, class Val>
-void AVLtree<Key,Val>::preOrder(AVLtree::Node* node)
+void AVLtree<Key,Val>::remove(const Key& key)
 {
-    if(node)
+    m_count--;
+    remove(m_root, key);
+    if (key == m_min->key)
     {
-        cout << node->key << ", ";
-        preOrder(node->left.get());
-        preOrder(node->right.get());
+        m_min = getLeftmost(m_root).get();
     }
+
+}
+template <class Key, class Val>
+void AVLtree<Key,Val>::remove(unique_ptr<Node>& curNode, const Key& key)
+{
+    if (!curNode)
+    {
+        throw runtime_error("Remove failed because node doesn't exist");
+    }
+    else if (curNode->key < key) 
+    {
+        remove(curNode->right, key);
+    }
+    else if(key < curNode->key)
+    {
+        remove(curNode->left, key);
+    }
+    else
+    {
+        removeNode(curNode);
+    }
+}
+
+template <class Key, class Val>
+void AVLtree<Key,Val>::removeNode(unique_ptr<Node>& toDelete)
+{
+    if (toDelete->right && toDelete->left)
+    {
+        
+        unique_ptr<Node>& next = getLeftmost(toDelete->right);
+        unique_ptr<Node> temp = move(next);
+        if (toDelete->right == next)
+        {
+            toDelete->right = std::move(temp->right);
+            temp->left = std::move(toDelete->left);
+            temp->right = move(toDelete);
+            toDelete = std::move(temp); 
+            removeNode(toDelete->right);
+        }
+        else
+        {
+            unique_ptr<Node> right = move(toDelete->right);
+            unique_ptr<Node> left = move(toDelete->left);
+
+            toDelete->right = move(temp->right);
+            temp->right = move(right);
+            temp->left = move(left);
+            next = move(toDelete);
+            toDelete = move(temp);
+            removeNode(next);
+        }
+        
+    }
+    else if(toDelete->right)
+    {
+        toDelete.reset(toDelete->right.release());
+    }
+    else if(toDelete->left)
+    {
+        toDelete.reset(toDelete->left.release());
+    }
+    else
+    {
+        toDelete.reset();
+    }
+    
+}
+
+template <class Key, class Val>
+unique_ptr<typename AVLtree<Key,Val>::Node>& AVLtree<Key,Val>::getLeftmost(unique_ptr<Node>& curNode)
+{
+    if (curNode->left)
+    {
+        return getLeftmost(curNode->left);
+    }
+    return curNode;
+    
 }
 
 template <class Key,class Val>
 ostream& operator<<(ostream& os, AVLtree<Key, Val>& tree)
 {
-    cout << endl << "Inorder: ";
-    
-    for (const typename AVLtree<Key,Val>::Node& node: tree)
-    {
-        cout << node.key << ", ";
-    }
+    cout << "Inorder: ";
+    tree.inOrder(tree.m_root);
     cout << endl << "Preorder: ";
-    tree.preOrder(tree.m_root.get());
+    tree.preOrder(tree.m_root);
     cout << endl;
     return os;
 }
+
+template <class Key, class Val>
+void AVLtree<Key,Val>::inOrder(unique_ptr<Node>& curNode)
+{
+    if (!curNode)
+    {
+        return;
+    }
+    
+    inOrder(curNode->left);
+    cout << curNode->key << ", ";
+    inOrder(curNode->right);
+}
+
+template <class Key, class Val>
+void AVLtree<Key,Val>::preOrder(unique_ptr<Node>& curNode)
+{
+    if (!curNode)
+    {
+        return;
+    }
+    
+    cout << curNode->key << ", ";
+    preOrder(curNode->left);
+    preOrder(curNode->right);
+}
+
 
 template <class Key, class Val>
 unique_ptr<typename AVLtree<Key, Val>::Node> AVLtree<Key, Val>::copyNodes(Node* other_node, Node* parent)
@@ -380,7 +306,7 @@ unique_ptr<typename AVLtree<Key, Val>::Node> AVLtree<Key, Val>::copyNodes(Node* 
     }
     
     // Use unique_ptr for new_node
-    std::unique_ptr<Node> new_node = unique_ptr<Node>(new Node(other_node->key, other_node->val, parent));
+    std::unique_ptr<Node> new_node = unique_ptr<Node>(new Node(other_node->key, other_node->val));
     new_node->height = other_node->height;
     new_node->left = copyNodes(other_node->left.get(), new_node.get());
     new_node->right = copyNodes(other_node->right.get(), new_node.get());
@@ -388,24 +314,5 @@ unique_ptr<typename AVLtree<Key, Val>::Node> AVLtree<Key, Val>::copyNodes(Node* 
     // Return unique_ptr to ensure memory management
     return new_node;
 }
-
-template <class Key, class Val>
-unique_ptr<typename AVLtree<Key, Val>::Node>& AVLtree<Key, Val>::unique(Node* node)
-{
-    if(!node->parent)
-    {
-        return m_root;
-    }
-    else if(node->parent->left.get() == node)
-    {
-        return node->parent->left;
-    }
-    else
-    {
-        return node->parent->right;
-    }
-
-}
-
 
 #endif

@@ -1,8 +1,8 @@
 #include "AVLtree.h"
-#include "StreamingDBa1.h"
 #include "wet1util.h"
 #include "Movie.h"
 #include <iostream>
+#include "StreamingDBa1.h"
 using namespace std;
 
 void st(StatusType s);
@@ -30,12 +30,25 @@ void removeTest()
     int b[10]  = {1,7,9,8,0,2,3,4,6,5};
     for (int i = 0; i < 10; i++)
     {
-        cout << "Removed " << b[i];
+        cout << "Removed " << b[i] << endl;
         tree.remove(b[i]);
         cout << tree;
     }
-}
 
+    int c[10]  = {7, 5,4,3,2,6,1,9,8,0};
+    for (int i = 0; i < 10; i++)
+    {
+        tree.insert(c[i], 0);
+    }
+    cout << tree;
+    int d[10]  = {1, 7, 9,8,0,2,3,4,6,5};
+    for (int i = 0; i < 10; i++)
+    {
+        cout << "Removed " << b[i] << endl;
+        tree.remove(d[i]);
+        cout << tree;
+    }
+}
 void dbTest()
 {
 
@@ -51,7 +64,6 @@ void dbTest()
     st(db.remove_movie(123));
     st(db.remove_movie(12)); // No such movie exists, prints 2
     st(db.add_user(101, false));
-    cout << db;
     st(db.add_user(101, false)); //User already exists, prints 2
     st(db.remove_user(101));
     st(db.remove_user(101)); // No such user exists, prints 2

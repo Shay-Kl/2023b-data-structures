@@ -419,7 +419,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 		{
 			return StatusType::FAILURE;
 		}
-		int favorit_movie_id = (*genreMovies[(int)favorit_genre].begin()).key.getId();
+		int favorit_movie_id = genreMovies[(int)favorit_genre].getMin()->key.getId();
 		
 		return favorit_movie_id;
 	}

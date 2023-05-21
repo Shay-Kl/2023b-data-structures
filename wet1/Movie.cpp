@@ -75,3 +75,8 @@ bool operator!=(const Movie& movie1, const Movie& movie2)
 {
     return movie1.getId() != movie2.getId();
 }
+
+bool operator==(const Movie& movie1, const Movie& movie2)
+{
+    return movie1.getId() == movie2.getId();
+}
