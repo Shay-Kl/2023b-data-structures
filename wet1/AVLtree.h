@@ -181,7 +181,7 @@ void AVLtree<Key,Val>::remove(const Key& key)
     {
         m_min = nullptr;
     }
-    else if (key == m_min->key)
+    else if (!key)
     {
         m_min = getLeftmost(m_root).get();
     }
