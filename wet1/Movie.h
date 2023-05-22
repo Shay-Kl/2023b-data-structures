@@ -2,6 +2,7 @@
 #define __MOVIE_H__
 
 #include "wet1util.h"
+#include <iostream>
 
 class Movie
 {
@@ -36,6 +37,8 @@ public:
     friend bool operator!=(const Movie& movie1, const Movie& movie2);
     friend bool operator<(const Movie& movie1, const Movie& movie2);
     friend bool operator==(const Movie& movie1, const Movie& movie2);
+    friend std::ostream& operator<<(std::ostream& os, const Movie& movie);
+
 private:
     int m_views;
     bool m_vipOnly;

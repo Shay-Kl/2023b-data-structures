@@ -12,12 +12,14 @@ class AVLtree
 
 public:
     class Node;
+
+    //Default C'tor
     AVLtree(): m_root(nullptr), m_count(0) {}
     
     //Insert a node into the tree with key and val being copies of the parameters
-    //If key exists in the tree throw a KeyAlreadyExists exception instead
-    //If allocation fails, bad alloc is throw and the tree doesn't change
-    // O(log n)
+    //If a node with key already exists, throw a KeyAlreadyExists exception instead
+    //If allocation fails, bad alloc is thrown and the tree doesn't change
+    //O(log n)
     void insert(Key key, Val val);
 
     //Insert the given node into the tree without copying its data
@@ -25,12 +27,13 @@ public:
     //O(log n)
     void insertNode(Node* node);
 
-    //Return a reference of the value for the given key
+    //Return a reference to the value for the given key
+    //If a node with key doesn't exist, throw a KeyMissing exception instead
     //O(log n)
     Val& get(const Key& key) const;
 
     //Remove the node with the given key from the tree
-    //If node doesn't exist, throw a runtime error
+    //If a node with key doesn't exist, throw a KeyMissing exception instead
     //O(log n)
     void remove(const Key& key);
 
@@ -65,10 +68,17 @@ private:
 
     //Helper functions for removing
     Node* removeAux(unique_ptr<Node>& curNode, const Key& key);
-    void removeNode(unique_ptr<Node>& toDelete);
+    void removeNode(unique_ptr<Node>& curNode);
 
     //Returns the leftmost node from a given node
     unique_ptr<Node>& getLeftmost(unique_ptr<Node>& curNode);
+
+
+    void rightRotate(unique_ptr<Node>& y);
+    void leftRotate(unique_ptr<Node>& y);
+
+    void balance(unique_ptr<Node>& node);
+
 
     //Helper functions for printing
     void preOrder(unique_ptr<Node>& curNode, ostream& os);
@@ -110,6 +120,7 @@ void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, Node* newNode)
         delete newNode;
         throw KeyAlreadyExists();
     }
+    balance(curNode);
     
 }
 
@@ -161,73 +172,69 @@ typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::removeAux(unique_ptr<Node>& c
 {
     if (!curNode)
     {
-        throw KeyAlreadyExists();
+        throw KeyMissing();
     }
     else if (curNode->key < key) 
     {
-        return removeAux(curNode->right, key);
+        Node* node =  removeAux(curNode->right, key);
+        balance(curNode);
+        return node;
     }
     else if(key < curNode->key)
     {
-        return removeAux(curNode->left, key);
-    }
-    else
-    {
-        Node* node = curNode.get();
-        removeNode(curNode);
+        Node* node =  removeAux(curNode->left, key);
+        balance(curNode);
         return node;
     }
-}
-
-template <class Key, class Val>
-void AVLtree<Key,Val>::removeNode(unique_ptr<Node>& toDelete)
-{
-    if (toDelete->right && toDelete->left)
+    else if(curNode->right && curNode->left)
     {
-        
-        unique_ptr<Node>& next = getLeftmost(toDelete->right);
+        unique_ptr<Node>& next = getLeftmost(curNode->right);
         unique_ptr<Node> temp = move(next);
-        if (toDelete->right == next)
+        if (curNode->right == next)
         {
-            toDelete->right = std::move(temp->right);
-            temp->left = std::move(toDelete->left);
-            temp->right = move(toDelete);
-            toDelete = std::move(temp); 
-            removeNode(toDelete->right);
+            curNode->right = move(temp->right);
+            temp->left = move(curNode->left);
+            temp->right = move(curNode);
+            curNode = move(temp); 
+            Node* removed = removeAux(curNode->right, key);
+            balance(curNode);
+            return removed;
         }
         else
         {
-            unique_ptr<Node> right = move(toDelete->right);
-            unique_ptr<Node> left = move(toDelete->left);
+            unique_ptr<Node> right = move(curNode->right);
+            unique_ptr<Node> left = move(curNode->left);
 
-            toDelete->right = move(temp->right);
+            curNode->right = move(temp->right);
             temp->right = move(right);
             temp->left = move(left);
-            next = move(toDelete);
-            toDelete = move(temp);
-            removeNode(next);
+            next = move(curNode);
+            curNode = move(temp);
+            Node* removed = removeAux(curNode->right, key);
+            balance(curNode);
+            return removed;
         }
         
     }
-    else if(toDelete->right)
+    else if(curNode->right)
     {
-        
-        Node* temp = toDelete->right.release();
-        toDelete.release();
-        toDelete.reset(temp);
+        Node* temp = curNode->right.release();
+        Node* removed = curNode.release();
+        curNode.reset(temp);
+        return removed;
     }
-    else if(toDelete->left)
+    else if(curNode->left)
     {
-        Node* temp = toDelete->left.release();
-        toDelete.release();
-        toDelete.reset(temp);
+        Node* temp = curNode->left.release();
+        Node* removed = curNode.release();
+        curNode.reset(temp);
+        return removed;
     }
     else
     {
-        toDelete.release();
-        toDelete.reset();
+        Node* removed = curNode.release();
+        return removed;
     }
-    
 }
 
 template <class Key, class Val>
@@ -239,6 +246,71 @@ unique_ptr<typename AVLtree<Key,Val>::Node>& AVLtree<Key,Val>::getLeftmost(uniqu
     }
     return curNode;
     
+}
+
+//Function to right rotate subtree rooted with y
+template <class Key, class Val>
+void AVLtree<Key,Val>::rightRotate(unique_ptr<typename AVLtree<Key,Val>::Node>& B) {
+    unique_ptr<AVLtree<Key,Val>::Node> A = move(B->left);
+    unique_ptr<AVLtree<Key,Val>::Node> Ar = move(A->right);
+
+    A->right = move(B);
+    A->right->left = move(Ar);
+
+    A->right->updateHeight();
+    A->updateHeight();
+
+    B = move(A);
+}
+
+//Function to left rotate subtree rooted with x
+template <class Key, class Val>
+void AVLtree<Key,Val>::leftRotate(unique_ptr<AVLtree<Key,Val>::Node>& A) {
+    unique_ptr<AVLtree<Key,Val>::Node> B = move(A->right);
+    unique_ptr<AVLtree<Key,Val>::Node> Bl = move(B->left);
+
+    B->left = move(A);
+    B->left->right = move(Bl);
+
+    B->left->updateHeight();
+    B->updateHeight();
+
+    A = move(B);
+}
+// Function to balance the tree
+template <class Key, class Val>
+void AVLtree<Key,Val>::balance(unique_ptr<AVLtree<Key,Val>::Node>& node)
+{
+    node->updateHeight();
+    int balance = node->getBalanceFactor();
+    int leftBalance = node->left->getBalanceFactor();
+    int rightBalance = node->right->getBalanceFactor();
+
+    //LL
+    if (balance == 2 && leftBalance >= 0)
+    {
+        return rightRotate(node);
+    }
+
+    //LR
+    if (balance == 2 && leftBalance < 0)
+    {
+        leftRotate(node->left);
+        rightRotate(node);
+    }
+
+    //RR
+    if (balance == -2 && rightBalance <= 0)
+    {
+        leftRotate(node);
+    }
+
+    //RL
+    if (balance == -2 && rightBalance > 0)
+    {
+        rightRotate(node->right);
+        leftRotate(node);
+    }
 }
 
 template <class Key,class Val>
@@ -260,7 +332,7 @@ void AVLtree<Key,Val>::inOrder(unique_ptr<Node>& curNode, ostream& os)
     }
     
     inOrder(curNode->left, os);
-    os << curNode->key << ", ";
+    os << curNode->key << ",";
     inOrder(curNode->right, os);
 }
 template <class Key, class Val>
@@ -271,7 +343,7 @@ void AVLtree<Key,Val>::preOrder(unique_ptr<Node>& curNode, ostream& os)
         return;
     }
     
-    os << curNode->key << ", ";
+    os << curNode->key << ",";
     preOrder(curNode->left, os);
     preOrder(curNode->right, os);
 }
@@ -289,8 +361,8 @@ public:
     Node(Key key, Val val): key(key), val(val), left(nullptr), right(nullptr), height(0) {}
     
 private:
-    int height;
     unique_ptr<Node> left, right;
+    int height;
     friend AVLtree;
     
     int getHeight()
@@ -307,12 +379,12 @@ private:
         {
             return 0;
         }
-        return getHeight(getLeft()) - getHeight(getRight());
+        return getLeft()->getHeight() - getRight()->getHeight();
     }
     void updateHeight()
     {
-        int leftHeight = getHeight(getLeft());
-        int rightHeight = getHeight(getLeft());
+        int leftHeight = getLeft()->getHeight();
+        int rightHeight = right->getHeight();
         height = (leftHeight > rightHeight) ? leftHeight+1 : rightHeight+1;
     }
 };

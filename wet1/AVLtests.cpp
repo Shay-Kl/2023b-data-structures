@@ -1,4 +1,4 @@
-#include "AVL_tree.h"
+#include "AVLtree.h"
 #include "wet1util.h"
 #include "Movie.h"
 #include <iostream>
@@ -169,14 +169,7 @@ int main()
 {
   //Test1();
   //Test2();
-  //Test3();
-
-  AVLtree<Movie, int> movies;
-  for(int i = 1; i <= 1000; i+=3)
-  {
-    Movie movie(Genre::COMEDY, i, false, i);
-    movies.insert(movie, i);
-  }
+  Test3();
 
   return 0;
 }

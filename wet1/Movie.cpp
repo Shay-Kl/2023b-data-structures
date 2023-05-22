@@ -78,3 +78,9 @@ bool operator==(const Movie& movie1, const Movie& movie2)
 {
     return movie1.getId() == movie2.getId();
 }
+
+std::ostream& operator<<(std::ostream& os, const Movie& movie)
+{
+    os << movie.getId();
+    return os;
+}

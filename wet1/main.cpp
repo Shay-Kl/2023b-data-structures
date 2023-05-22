@@ -13,8 +13,8 @@ void removeTest();
 int main()
 {
     //treeTest();
-    dbTest();
-    //removeTest();
+    //dbTest();
+    removeTest();
     
     return 0;
 }
@@ -26,6 +26,7 @@ void removeTest()
     for (int i = 0; i < 10; i++)
     {
         tree.insert(a[i], 0);
+        cout << tree;
     }
     cout << tree;
     int b[10]  = {1,7,9,8,0,2,3,4,6,5};
