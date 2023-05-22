@@ -1,10 +1,10 @@
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 #include <stdexcept>
-    class nodeExists : public std::exception
+    class KeyAlreadyExists : public std::exception
     {
     };
-    class nodeNotExists : public std::exception
+    class KeyMissing : public std::exception
     {
     };
 

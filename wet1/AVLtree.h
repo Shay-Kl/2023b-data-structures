@@ -2,6 +2,7 @@
 #define __tree_h__
 #include <memory>
 #include <iostream>
+#include "exceptions.h"
 
 using namespace std;
 
@@ -10,120 +11,108 @@ class AVLtree
 {
 
 public:
-
+    class Node;
     AVLtree(): m_root(nullptr), m_count(0) {}
-    AVLtree(const AVLtree<Key, Val>& other) : m_root(nullptr), m_count(other.m_count)
-    {
-        m_root = unique_ptr<Node>(copyNodes(other.m_root.get(), nullptr));
-
-    }
-    AVLtree& operator=(const AVLtree& other)
-    {
-        if (this != &other) 
-        {
-            m_root = nullptr;
-            m_count = other.m_count; 
-            this->m_root = unique_ptr<Node>(copyNodes(other.m_root.get(), nullptr));
-
-        }
-        return *this;
-    }
-    class Node
-    {
-    public:
-        Key key;
-        Val val;
-        unique_ptr<Node> left, right;
-        int height;
-        
-    private:
-        friend AVLtree;
-        Node(): key(Key()), val(Val()), left(nullptr), right(nullptr), height(0) {}
-        Node(Key key, Val val): key(key), val(val), left(nullptr), right(nullptr), height(0) {}
-        
-        void updateHeight()
-        {
-            int leftHeight = -1, rightHeight = -1;
-            if (left)
-            {
-                leftHeight = left->height;
-            }
-            if (right)
-            {
-                rightHeight = right->height;
-            }
-            height = (leftHeight > rightHeight) ? leftHeight+1 : rightHeight+1;
-            
-        }
-    };
-
-    void insert(Key key, Val val);
-    Val& get(const Key& key) const;
-    void remove(const Key& key);
     
+    //Insert a node into the tree with key and val being copies of the parameters
+    //If key exists in the tree throw a KeyAlreadyExists exception instead
+    //If allocation fails, bad alloc is throw and the tree doesn't change
+    // O(log n)
+    void insert(Key key, Val val);
 
-    void update(const Key& oldKey, const Key& newKey);
+    //Insert the given node into the tree without copying its data
+    //Allocation can't fail because the funciton doesn't allocate the memory
+    //O(log n)
+    void insertNode(Node* node);
 
+    //Return a reference of the value for the given key
+    //O(log n)
+    Val& get(const Key& key) const;
+
+    //Remove the node with the given key from the tree
+    //If node doesn't exist, throw a runtime error
+    //O(log n)
+    void remove(const Key& key);
+
+    //Returns the number of nodes in the tree;
+    //O(1)
     int getNodeCount() const {  return m_count; }
 
+    //Returns the tree's root node
+    //O(1)
+    Node* getRoot() { return m_root.get(); }
+
+    //Returns the tree's minimum node
+    //O(1)
+    Node* getMin() { return m_min; }
+
+    //Print out the tree's keys using both inorder and preorder
+    //O(n)
     template <class K,class V>
     friend ostream& operator<<(ostream& os, AVLtree<K, V>& tree);
-    Node* getRoot() { return m_root.get(); }
-    Node* getMin() { return m_min; }
+
 
 private:
     unique_ptr<Node> m_root;
     Node* m_min;
     int m_count;
 
-    void insertAux(unique_ptr<Node>& curNode, const Key& key, const Val& val);
+    //Helper function for inserting
+    void insertAux(unique_ptr<Node>& curNode, Node* newNode);
+
+    //Helper function for getting
     Val& getAux(const unique_ptr<Node>& curNode, const Key& key) const;
+
+    //Helper functions for removing
     Node* removeAux(unique_ptr<Node>& curNode, const Key& key);
     void removeNode(unique_ptr<Node>& toDelete);
 
-    void preOrder(unique_ptr<Node>& curNode);
-    void inOrder(unique_ptr<Node>& curNode);
+    //Returns the leftmost node from a given node
     unique_ptr<Node>& getLeftmost(unique_ptr<Node>& curNode);
-    unique_ptr<Node> copyNodes(Node* other_node, Node* parent);
 
-    int getBalanceFactor(Node* node);
+    //Helper functions for printing
+    void preOrder(unique_ptr<Node>& curNode, ostream& os);
+    void inOrder(unique_ptr<Node>& curNode, ostream& os);
 };
+
+
 template <class Key, class Val>
 void AVLtree<Key,Val>::insert(Key key, Val val)
 {
-    insertAux(m_root, key, val);
+    insertAux(m_root, new Node(key, val));
     m_count++;
     m_min = getLeftmost(m_root).get();
 }
 template <class Key, class Val>
-void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, const Key& key, const Val& val)
+void AVLtree<Key,Val>::insertNode(Node* node)
+{
+    insertAux(m_root, node);
+    m_count++;
+    m_min = getLeftmost(m_root).get();
+}
+template <class Key, class Val>
+void AVLtree<Key,Val>::insertAux(unique_ptr<Node>& curNode, Node* newNode)
 {
     if(!curNode)
     {
-        curNode.reset(new Node(key, val));
+        curNode.reset(newNode);
     }
-    else if (curNode->key < key) 
+    else if (curNode->key < newNode->key) 
     {
-        insertAux(curNode->right, key, val);
+        insertAux(curNode->right, newNode);
     }
-    else if(key < curNode->key)
+    else if(newNode->key < curNode->key)
     {
-        insertAux(curNode->left, key, val);
+        insertAux(curNode->left, newNode);
     }
     else
     {
-        throw runtime_error("Insert failed because key already exists");
+        delete newNode;
+        throw KeyAlreadyExists();
     }
     
 }
 
-template <class Key, class Val>
-void AVLtree<Key,Val>::update(const Key& oldKey, const Key& newKey)
-{
-    const Val val = get(oldKey);
-    release(oldKey);
-    insert(newKey, val);
-}
 template <class Key, class Val>
 Val& AVLtree<Key,Val>::get(const Key& key) const
 {
@@ -134,7 +123,7 @@ Val& AVLtree<Key,Val>::getAux(const unique_ptr<Node>& curNode, const Key& key) c
 {
     if (!curNode)
     {
-        throw runtime_error("Get failed because node doesn't exist");
+        throw KeyMissing();
     }
     else if (curNode->key < key) 
     {
@@ -150,10 +139,11 @@ Val& AVLtree<Key,Val>::getAux(const unique_ptr<Node>& curNode, const Key& key) c
     }
     
 }
+
 template <class Key, class Val>
 void AVLtree<Key,Val>::remove(const Key& key)
 {
-    removeAux(m_root, key);
+    delete removeAux(m_root, key);
     m_count--;
     if (m_root)
     {
@@ -166,13 +156,12 @@ void AVLtree<Key,Val>::remove(const Key& key)
     
 }
 
-
 template <class Key, class Val>
 typename AVLtree<Key,Val>::Node* AVLtree<Key,Val>::removeAux(unique_ptr<Node>& curNode, const Key& key)
 {
     if (!curNode)
     {
-        throw runtime_error("Remove failed because node doesn't exist");
+        throw KeyAlreadyExists();
     }
     else if (curNode->key < key) 
     {
@@ -224,15 +213,18 @@ void AVLtree<Key,Val>::removeNode(unique_ptr<Node>& toDelete)
     {
         
         Node* temp = toDelete->right.release();
+        toDelete.release();
         toDelete.reset(temp);
     }
     else if(toDelete->left)
     {
         Node* temp = toDelete->left.release();
+        toDelete.release();
         toDelete.reset(temp);
     }
     else
     {
+        toDelete.release();
         toDelete.reset();
     }
     
@@ -250,61 +242,79 @@ unique_ptr<typename AVLtree<Key,Val>::Node>& AVLtree<Key,Val>::getLeftmost(uniqu
 }
 
 template <class Key,class Val>
-ostream& operator<<(ostream& os, AVLtree<Key, Val>& tree)
+std::ostream& operator<<(std::ostream& os, AVLtree<Key, Val>& tree)
 {
-    cout << "Inorder: ";
-    tree.inOrder(tree.m_root);
-    cout << endl << "Preorder: ";
-    tree.preOrder(tree.m_root);
-    cout << endl;
+    os << "Inorder: ";
+    tree.inOrder(tree.m_root, os);
+    os << endl << "Preorder: ";
+    tree.preOrder(tree.m_root, os);
+    os << endl;
     return os;
 }
-
 template <class Key, class Val>
-void AVLtree<Key,Val>::inOrder(unique_ptr<Node>& curNode)
+void AVLtree<Key,Val>::inOrder(unique_ptr<Node>& curNode, ostream& os)
 {
     if (!curNode)
     {
         return;
     }
     
-    inOrder(curNode->left);
-    cout << curNode->key << ", ";
-    inOrder(curNode->right);
+    inOrder(curNode->left, os);
+    os << curNode->key << ", ";
+    inOrder(curNode->right, os);
 }
-
 template <class Key, class Val>
-void AVLtree<Key,Val>::preOrder(unique_ptr<Node>& curNode)
+void AVLtree<Key,Val>::preOrder(unique_ptr<Node>& curNode, ostream& os)
 {
     if (!curNode)
     {
         return;
     }
     
-    cout << curNode->key << ", ";
-    preOrder(curNode->left);
-    preOrder(curNode->right);
+    os << curNode->key << ", ";
+    preOrder(curNode->left, os);
+    preOrder(curNode->right, os);
 }
-
 
 template <class Key, class Val>
-unique_ptr<typename AVLtree<Key, Val>::Node> AVLtree<Key, Val>::copyNodes(Node* other_node, Node* parent)
+class AVLtree<Key,Val>::Node
 {
-    if (other_node == nullptr)
-    {
-        return nullptr; 
-    }
-    
-    // Use unique_ptr for new_node
-    Key key = other_node->key;
-    Val val = other_node->val;
-    std::unique_ptr<Node> new_node = unique_ptr<Node>(new Node(key,val));
-    new_node->height = other_node->height;
-    new_node->left = copyNodes(other_node->left.get(), new_node.get());
-    new_node->right = copyNodes(other_node->right.get(), new_node.get());
+public:
+    Key key;
+    Val val;
 
-    // Return unique_ptr to ensure memory management
-    return new_node;
-}
+    Node* getRight(){ return right.get();}
+    Node* getLeft(){ return left.get(); }
+    
+    Node(Key key, Val val): key(key), val(val), left(nullptr), right(nullptr), height(0) {}
+    
+private:
+    int height;
+    unique_ptr<Node> left, right;
+    friend AVLtree;
+    
+    int getHeight()
+    {
+        if (!this)
+        {
+            return -1;
+        }
+        return height;
+    }
+    int getBalanceFactor()
+    {
+        if(!this)
+        {
+            return 0;
+        }
+        return getHeight(getLeft()) - getHeight(getRight());
+    }
+    void updateHeight()
+    {
+        int leftHeight = getHeight(getLeft());
+        int rightHeight = getHeight(getLeft());
+        height = (leftHeight > rightHeight) ? leftHeight+1 : rightHeight+1;
+    }
+};
 
 #endif

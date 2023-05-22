@@ -20,13 +20,11 @@ void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, Group* g
         return;
     }
 
-    removeUserAux(root->left.get(), group);
-    removeUserAux(root->right.get(), group);
+    removeUserAux(root->getLeft(), group);
+    removeUserAux(root->getRight(), group);
 	User* user = root->val;
 	user->removeFromGroup();
 	group->removeUser(user);
-
-	
 }
 
 
@@ -37,11 +35,11 @@ void streaming_database::getAllAux(AVLtree<Movie, int>::Node* root, int* output)
 	{
 		return;
 	}
-	getAllAux(root->left.get(), output);
+	getAllAux(root->getLeft(), output);
 	Movie& temp = root->key;
 	output[iii] = temp.getId();
 	iii++;
-	getAllAux(root->right.get(), output);
+	getAllAux(root->getRight(), output);
 }
 
 
@@ -56,9 +54,15 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 	try
 	{
 		Movie movie(genre, views, vipOnly, movieId);
-		movies.insert(movieId, movie);
-		genreMovies[(int)genre].insert(movie, 0);
-		genreMovies[(int)Genre::NONE].insert(movie, 0);
+
+		//Allocate all of the memory before starting to change the trees to prevent changes in case of bad alloc
+		unique_ptr<AVLtree<int, Movie>::Node> movieNode1(new AVLtree<int, Movie>::Node(movieId, Movie(movie)));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(Movie(movie), 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode3(new AVLtree<Movie,int>::Node(Movie(movie), 0));
+
+		movies.insertNode(movieNode1.release());
+		genreMovies[(int)genre].insertNode(movieNode2.release());
+		genreMovies[(int)Genre::NONE].insertNode(movieNode3.release());
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -237,14 +241,21 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 		{
 			return StatusType::FAILURE;
 		}
-		
-		genreMovies[(int)genre].remove(movie);
-		genreMovies[(int)Genre::NONE].remove(movie);
+
+		Movie updatedMovie(movie);
+		updatedMovie.view();
+
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+
 		user.watch(genre);
 
+		genreMovies[(int)genre].remove(movie);
+		genreMovies[(int)Genre::NONE].remove(movie);
+
 		movie.view();
-		genreMovies[(int)Genre::NONE].insert(movie, 0);
-		genreMovies[(int)genre].insert(movie, 0);
+		genreMovies[(int)Genre::NONE].insertNode(movieNode1.release());
+		genreMovies[(int)genre].insertNode(movieNode2.release());
     	return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -273,19 +284,24 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 		{
 			return StatusType::FAILURE;
 		}
-		else
-		{
-			genreMovies[(int)genre].remove(movie);
-			genreMovies[(int)Genre::NONE].remove(movie);
-			movie.view(members_in_group);
-			genreMovies[(int)genre].insert(movie, 0);
-			genreMovies[(int)Genre::NONE].insert(movie, 0);
 
-			group->updateViews(genre, members_in_group);
-			group->incGroupWatch(genre);
+		Movie updatedMovie(movie);
+		updatedMovie.view(members_in_group);
 
-			return StatusType::SUCCESS;
-		}
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+
+		group->updateViews(genre, members_in_group);
+		group->incGroupWatch(genre);
+
+		genreMovies[(int)genre].remove(movie);
+		genreMovies[(int)Genre::NONE].remove(movie);
+
+		movie.view(members_in_group);
+		genreMovies[(int)Genre::NONE].insertNode(movieNode1.release());
+		genreMovies[(int)genre].insertNode(movieNode2.release());
+
+		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
 	{
@@ -371,11 +387,19 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 			return StatusType::FAILURE;
 		}
 
+		Movie updatedMovie(movie);
+		updatedMovie.rate(rating);
+
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+
+
 		genreMovies[(int)genre].remove(movie);
 		genreMovies[(int)Genre::NONE].remove(movie);
+
 		movie.rate(rating);
-		genreMovies[(int)genre].insert(movie, 0);
-		genreMovies[(int)Genre::NONE].insert(movie, 0);
+		genreMovies[(int)Genre::NONE].insertNode(movieNode1.release());
+		genreMovies[(int)genre].insertNode(movieNode2.release());
 
 		return StatusType::SUCCESS;
 	}
