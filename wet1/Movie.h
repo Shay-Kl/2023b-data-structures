@@ -44,7 +44,7 @@ private:
     bool m_vipOnly;
     int m_id;
     double m_ratingAverage;
-    int m_ratingCount;
+    double m_ratingCount;
     Genre m_genre;
 };
 #endif //__MOVIE_H__
