@@ -11,7 +11,7 @@ class Group
 {
 public:
     //C'tor
-    explicit Group(int id);
+    Group(int id);
 
     //Returns the group's ID
     int getId() const;

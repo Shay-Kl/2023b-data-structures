@@ -33,7 +33,7 @@ private:
 
 	void removeUserAux(AVLtree<int, User*>::Node* root, shared_ptr<Group> group);
 	
-	void getAllAux(AVLtree<Movie, int>::Node* root, int* output);
+	void getAllAux(AVLtree<Movie, int>::Node* root, int* output, int& index);
 
 public:
 	// <DO-NOT-MODIFY> {

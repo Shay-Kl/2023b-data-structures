@@ -2,7 +2,6 @@
 #include <new>
 #include "wet1util.h"
 #include <memory>
-int iii = 0;
 
 streaming_database::streaming_database():
 	movies(), users(), groups(), genreMovies()
@@ -29,17 +28,16 @@ void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, shared_p
 
 
 
-void streaming_database::getAllAux(AVLtree<Movie, int>::Node* root, int* output)
+void streaming_database::getAllAux(AVLtree<Movie, int>::Node* root, int* output, int& index)
 {
-	if (!root)
-	{
-		return;
-	}
-	getAllAux(root->getLeft(), output);
+	if (!root){
+        return;
+    }
+	getAllAux(root->getLeft(), output, index);
 	Movie& temp = root->key;
-	output[iii] = temp.getId();
-	iii++;
-	getAllAux(root->getRight(), output);
+	output[index] = temp.getId();
+	index++;
+	getAllAux(root->getRight(), output, index);
 }
 
 
@@ -56,9 +54,9 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 		Movie movie(genre, views, vipOnly, movieId);
 
 		//Allocate all of the memory before starting to change the trees to prevent changes in case of bad alloc
-		unique_ptr<AVLtree<int, Movie>::Node> movieNode1(new AVLtree<int, Movie>::Node(movieId, Movie(movie)));
-		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(*new Movie(movie), *new int(0)));
-		unique_ptr<AVLtree<Movie, int>::Node> movieNode3(new AVLtree<Movie,int>::Node(Movie(movie), 0));
+		unique_ptr<AVLtree<int, Movie>::Node> movieNode1(new AVLtree<int, Movie>::Node(movieId, movie));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(movie, 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode3(new AVLtree<Movie,int>::Node(movie, 0));
 
 		movies.insertNode(movieNode1.release());
 		genreMovies[(int)genre].insertNode(movieNode2.release());
@@ -244,8 +242,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 		Movie updatedMovie(movie);
 		updatedMovie.view();
 
-		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
-		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(updatedMovie, 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(updatedMovie, 0));
 
 		user.watch(genre);
 
@@ -287,8 +285,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 		Movie updatedMovie(movie);
 		updatedMovie.view(members_in_group);
 
-		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
-		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(Movie(updatedMovie), 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(updatedMovie, 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(updatedMovie, 0));
 
 		group->updateViews(genre, members_in_group);
 		group->incGroupWatch(genre);
@@ -337,8 +335,8 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 		{
 			return StatusType::FAILURE;
 		}
-		getAllAux(genreMovies[(int)genre].getRoot(), output);
-		iii = 0;
+		int index = 0;
+		getAllAux(genreMovies[(int)genre].getRoot(), output, index);
 
 		return StatusType::SUCCESS;
 	}
