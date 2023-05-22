@@ -24,7 +24,7 @@ bool Movie::isVipOnly() const
     return m_vipOnly;
 }
 
-int Movie::getRating() const
+double Movie::getRating() const
 {
     return m_ratingAverage;
 }

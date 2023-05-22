@@ -20,7 +20,7 @@ public:
     bool isVipOnly() const;
 
     //Returns the movie's average rating    
-    int getRating() const;
+    double getRating() const;
 
     //Returns the movie's id
     int getId() const;
