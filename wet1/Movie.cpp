@@ -52,7 +52,7 @@ bool operator<(const Movie& movie1, const Movie& movie2)
     {
         return true;
     }
-    else if (movie1.getRating() >= movie2.getRating())
+    else if (!(movie1.getRating() < movie2.getRating()))
     {
         if (movie1.getViews() > movie2.getViews())
         {
