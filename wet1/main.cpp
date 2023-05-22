@@ -13,8 +13,8 @@ void removeTest();
 int main()
 {
     //treeTest();
-    //dbTest();
-    removeTest();
+    dbTest();
+    //removeTest();
     
     return 0;
 }

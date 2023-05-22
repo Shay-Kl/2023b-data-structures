@@ -14,7 +14,7 @@ streaming_database::~streaming_database()
 }
 
 
-void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, Group* group)
+void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, shared_ptr<Group> group)
 {
     if (root == nullptr){
         return;
@@ -57,7 +57,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 		//Allocate all of the memory before starting to change the trees to prevent changes in case of bad alloc
 		unique_ptr<AVLtree<int, Movie>::Node> movieNode1(new AVLtree<int, Movie>::Node(movieId, Movie(movie)));
-		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(Movie(movie), 0));
+		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(*new Movie(movie), *new int(0)));
 		unique_ptr<AVLtree<Movie, int>::Node> movieNode3(new AVLtree<Movie,int>::Node(Movie(movie), 0));
 
 		movies.insertNode(movieNode1.release());
@@ -134,8 +134,8 @@ StatusType streaming_database::remove_user(int userId)
 		User* user = &users.get(userId);
 		if (user->getGroupId() != 0)
 		{
-			shared_ptr<Group> group_ptr = user->getGroup();
-			group_ptr->removeUser(user);
+			Group& group = user->getGroup();
+			group.removeUser(user);
 		}
 		users.remove(userId);
 		return StatusType::SUCCESS;
@@ -158,8 +158,7 @@ StatusType streaming_database::add_group(int groupId)
 	}
 	try
 	{
-		shared_ptr<Group> group(new Group(groupId));
-		groups.insert(groupId, group);
+		groups.insert(groupId, shared_ptr<Group>(new Group(groupId)));
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
@@ -181,8 +180,8 @@ StatusType streaming_database::remove_group(int groupId)
 	try
 	{
 		shared_ptr<Group> group = groups.get(groupId);
-		AVLtree<int, User*>* group_users = group->getGroupUsers();
-		removeUserAux(group_users->getRoot(), group.get());
+		AVLtree<int, User*>& group_users = group->getGroupUsers();
+		removeUserAux(group_users.getRoot(), group);
 		groups.remove(groupId);
 		
 		return StatusType::SUCCESS;

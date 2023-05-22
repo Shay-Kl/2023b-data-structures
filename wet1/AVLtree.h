@@ -73,12 +73,10 @@ private:
     //Returns the leftmost node from a given node
     unique_ptr<Node>& getLeftmost(unique_ptr<Node>& curNode);
 
-
+    //Functions to AVL balance a tree after a change is made
+    void balance(unique_ptr<Node>& node);
     void rightRotate(unique_ptr<Node>& y);
     void leftRotate(unique_ptr<Node>& y);
-
-    void balance(unique_ptr<Node>& node);
-
 
     //Helper functions for printing
     void preOrder(unique_ptr<Node>& curNode, ostream& os);
@@ -248,36 +246,28 @@ unique_ptr<typename AVLtree<Key,Val>::Node>& AVLtree<Key,Val>::getLeftmost(uniqu
     
 }
 
-//Function to right rotate subtree rooted with y
 template <class Key, class Val>
-void AVLtree<Key,Val>::rightRotate(unique_ptr<typename AVLtree<Key,Val>::Node>& B) {
+void AVLtree<Key,Val>::rightRotate(unique_ptr<typename AVLtree<Key,Val>::Node>& B)
+{
     unique_ptr<AVLtree<Key,Val>::Node> A = move(B->left);
     unique_ptr<AVLtree<Key,Val>::Node> Ar = move(A->right);
-
     A->right = move(B);
     A->right->left = move(Ar);
-
     A->right->updateHeight();
     A->updateHeight();
-
     B = move(A);
 }
-
-//Function to left rotate subtree rooted with x
 template <class Key, class Val>
-void AVLtree<Key,Val>::leftRotate(unique_ptr<AVLtree<Key,Val>::Node>& A) {
+void AVLtree<Key,Val>::leftRotate(unique_ptr<AVLtree<Key,Val>::Node>& A)
+{
     unique_ptr<AVLtree<Key,Val>::Node> B = move(A->right);
     unique_ptr<AVLtree<Key,Val>::Node> Bl = move(B->left);
-
     B->left = move(A);
     B->left->right = move(Bl);
-
     B->left->updateHeight();
     B->updateHeight();
-
     A = move(B);
 }
-// Function to balance the tree
 template <class Key, class Val>
 void AVLtree<Key,Val>::balance(unique_ptr<AVLtree<Key,Val>::Node>& node)
 {
@@ -285,28 +275,21 @@ void AVLtree<Key,Val>::balance(unique_ptr<AVLtree<Key,Val>::Node>& node)
     int balance = node->getBalanceFactor();
     int leftBalance = node->left->getBalanceFactor();
     int rightBalance = node->right->getBalanceFactor();
-
-    //LL
-    if (balance == 2 && leftBalance >= 0)
+    
+    if (balance == 2 && leftBalance >= 0) //LL
     {
         return rightRotate(node);
     }
-
-    //LR
-    if (balance == 2 && leftBalance < 0)
+    else if (balance == 2 && leftBalance < 0) //LR
     {
         leftRotate(node->left);
         rightRotate(node);
     }
-
-    //RR
-    if (balance == -2 && rightBalance <= 0)
+    else if (balance == -2 && rightBalance <= 0) //RR
     {
         leftRotate(node);
     }
-
-    //RL
-    if (balance == -2 && rightBalance > 0)
+    else if (balance == -2 && rightBalance > 0) //RL
     {
         rightRotate(node->right);
         leftRotate(node);
@@ -379,11 +362,11 @@ private:
         {
             return 0;
         }
-        return getLeft()->getHeight() - getRight()->getHeight();
+        return left->getHeight() - right->getHeight();
     }
     void updateHeight()
     {
-        int leftHeight = getLeft()->getHeight();
+        int leftHeight = left->getHeight();
         int rightHeight = right->getHeight();
         height = (leftHeight > rightHeight) ? leftHeight+1 : rightHeight+1;
     }

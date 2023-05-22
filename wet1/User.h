@@ -14,8 +14,8 @@ class User
 public:
     User(int id, bool isVip);
 
-    //Returns pointer to group
-    shared_ptr<Group> getGroup() const;
+    //Returns reference to group
+    Group& getGroup() const;
 
     //Returns the user's ID
     int getId() const;

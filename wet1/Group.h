@@ -11,17 +11,17 @@ class Group
 {
 public:
     //C'tor
-    Group(int id);
+    explicit Group(int id);
 
-    Group(const Group& other) = default;
-    ~Group();
     //Returns the group's ID
     int getId() const;
+
+    Group(const Group&) = delete;
 
     //Returns the number of users in the group
     int getUsersCount() const;
 
-    AVLtree<int, User*>* getGroupUsers();
+    AVLtree<int, User*>& getGroupUsers();
 
     //Returns true if the group has VIP member in it
     bool isVip() const;
@@ -52,7 +52,7 @@ private:
     int m_usersCount;
     int m_genreTotalViews[4] = {0};
     int m_genreGroupViews[4] = {0};
-    AVLtree<int, User*>* m_members;
+    AVLtree<int, User*> m_members;
 
 };
 

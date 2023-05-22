@@ -31,7 +31,7 @@ private:
 	AVLtree<int, shared_ptr<Group>> groups;
 	AVLtree<Movie, int> genreMovies[5];
 
-	void removeUserAux(AVLtree<int, User*>::Node* root, Group* group);
+	void removeUserAux(AVLtree<int, User*>::Node* root, shared_ptr<Group> group);
 	
 	void getAllAux(AVLtree<Movie, int>::Node* root, int* output);
 
