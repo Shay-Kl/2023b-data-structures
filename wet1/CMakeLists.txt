@@ -20,6 +20,6 @@ set(CMAKE_CPP_FLAGS ${MTM_FLAGS_DEBUG})
 
 
 # Add the names of your source files here
-set(CPP_FILES "main.cpp" "User.cpp" "Group.cpp" "Movie.cpp" "StreamingDBa1.cpp")
+set(CPP_FILES "code/maina1.cpp" "code/User.cpp" "code/Group.cpp" "code/Movie.cpp" "code/StreamingDBa1.cpp")
 
-add_executable(game1 ${CPP_FILES})
+add_executable(prog ${CPP_FILES})
