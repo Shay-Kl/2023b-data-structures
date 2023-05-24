@@ -1,1 +1,1 @@
-valgrind --leak-check=full -s ./prog < inFiles_Buggy/test362.in > inFiles_Buggy/test362.out
+valgrind --leak-check=full -s ./prog < inFiles_Buggy/test362.in > outFiles_Buggy/test362.result

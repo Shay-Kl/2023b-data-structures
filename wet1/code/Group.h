@@ -51,7 +51,6 @@ public:
 
 
 private:
-
     int m_id;
     int m_vipCount;
     int m_userCount;

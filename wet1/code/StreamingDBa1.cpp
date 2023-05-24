@@ -188,8 +188,9 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
 	{
 		User* user = &users.get(userId);
 		shared_ptr<Group> group = groups.get(groupId);
+		user->updateGroup();
 		group->addUser(user);
-		user->addToGroup(group, groupId);
+		user->addToGroup(group);
 		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)

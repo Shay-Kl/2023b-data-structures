@@ -24,18 +24,19 @@ public:
     shared_ptr<Group> getGroup();
 
     //Adds user to group, if user is already in a group, returns FailureException
-    void addToGroup(shared_ptr<Group> group, int groupId);
+    void addToGroup(shared_ptr<Group> group);
 
     //Watch a movie and increase the user's viewcount of that genre
     void watch(Genre genre);
 
     //Returns true if the user is a vip
     bool isVip() const;
+    
+    //Checks to see if user is in group, if user left group, updates his status
+    void updateGroup();
 
 private:
 
-    //Checks to see if user is in group, if user left group, updates his status
-    void updateGroup();
 
     bool m_isVip;
     shared_ptr<Group> m_group;

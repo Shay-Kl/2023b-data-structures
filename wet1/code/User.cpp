@@ -2,13 +2,8 @@
 
 User::User(bool isVip): m_isVip(isVip), m_group(nullptr), m_genreViewCount() {}
 
-void User::addToGroup(shared_ptr<Group> group, int groupId)
+void User::addToGroup(shared_ptr<Group> group)
 {
-    updateGroup();
-    if(group == nullptr)
-    {
-        throw std::bad_alloc();
-    }
     m_group = group;
 
     m_genreViewCount[0] -= group->getGroupViews(Genre::COMEDY);
@@ -75,7 +70,7 @@ shared_ptr<Group> User::getGroup()
 
 void User::updateGroup()
 {
-    if (m_group && !m_group->isClosed())
+    if (m_group && m_group->isClosed())
     {
         m_genreViewCount[0] += m_group->getGroupViews(Genre::COMEDY);
         m_genreViewCount[1] += m_group->getGroupViews(Genre::DRAMA);
