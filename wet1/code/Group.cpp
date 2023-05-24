@@ -1,69 +1,62 @@
 #include "Group.h"
 
-Group::Group(int id): m_id(id), m_isVip(false), m_vipCount(0),
-                    m_usersCount(0), m_genreTotalViews(), m_genreGroupViews(), m_members() {}
+Group::Group(int id): m_id(id), m_vipCount(0), m_userCount(0), m_isOpen(true), m_genreTotalViews(), m_genreGroupViews(){}
 
 int Group::getId() const
 {
     return m_id;
 }
 
-AVLtree<int, User*>& Group::getGroupUsers()
-{
-    return m_members;
-}
-
 bool Group::isVip() const
 {
-    return m_isVip;
+    return m_vipCount;
+}
+
+bool Group::isClosed() const
+{
+    return !m_isOpen;
 }
 
 int Group::getUsersCount() const
 {
-    return m_usersCount;
+    return m_userCount;
 }
 
 void Group::addUser(User* user)
 {
-    if (user->getGroupId())
+    if(user->getGroup())
     {
-        throw std::exception();
+        throw exception();
     }
-    m_usersCount++;
+    m_userCount++;
     if (user->isVip())
     {
-        m_isVip = true;
         m_vipCount++;
     }
-    this->updateViews(Genre::COMEDY, user->getEffectiveViews(Genre::COMEDY));
-    this->updateViews(Genre::DRAMA, user->getEffectiveViews(Genre::DRAMA));
-    this->updateViews(Genre::ACTION, user->getEffectiveViews(Genre::ACTION));
-    this->updateViews(Genre::FANTASY, user->getEffectiveViews(Genre::FANTASY));
-    m_members.insert(user->getId(), user);
+    m_genreTotalViews[(int)Genre::COMEDY]+=user->getEffectiveViews(Genre::COMEDY);
+    m_genreTotalViews[(int)Genre::DRAMA]+=user->getEffectiveViews(Genre::DRAMA);
+    m_genreTotalViews[(int)Genre::ACTION]+=user->getEffectiveViews(Genre::ACTION);
+    m_genreTotalViews[(int)Genre::FANTASY]+=user->getEffectiveViews(Genre::FANTASY);
 
 }
+
 
 void Group::removeUser(User* user)
 {
-    m_usersCount--;
+    m_userCount--;
     if (user->isVip())
     {
         m_vipCount--;
-        if (m_vipCount == 0)
-        {
-            m_isVip = false;
-        }
     }
-    this->updateViews(Genre::COMEDY, -(user->getEffectiveViews(Genre::COMEDY)));
-    this->updateViews(Genre::DRAMA, -(user->getEffectiveViews(Genre::DRAMA)));
-    this->updateViews(Genre::ACTION, -(user->getEffectiveViews(Genre::ACTION)));
-    this->updateViews(Genre::FANTASY, -(user->getEffectiveViews(Genre::FANTASY)));
-    m_members.remove(user->getId());
+    m_genreTotalViews[(int)Genre::COMEDY]-=user->getEffectiveViews(Genre::COMEDY);
+    m_genreTotalViews[(int)Genre::DRAMA]-=user->getEffectiveViews(Genre::DRAMA);
+    m_genreTotalViews[(int)Genre::ACTION]-=user->getEffectiveViews(Genre::ACTION);
+    m_genreTotalViews[(int)Genre::FANTASY]-=user->getEffectiveViews(Genre::FANTASY);
 }
 
-void Group::updateViews(Genre genre, int views)
+void Group::closeGroup()
 {
-    m_genreTotalViews[(int)genre] += views;
+    m_isOpen = false;
 }
 
 int Group::getGenreViewCount(Genre genre) const
@@ -76,7 +69,13 @@ int Group::getGroupViews(Genre genre) const
     return m_genreGroupViews[(int)genre];
 }
 
-void Group::incGroupWatch(Genre genre)
+void Group::groupWatch(Genre genre)
 {
     m_genreGroupViews[(int)genre]++;
+    m_genreTotalViews[(int)genre]+=m_userCount;
+}
+
+void Group::soloWatch(Genre genre)
+{
+    m_genreTotalViews[(int)genre]++;
 }
