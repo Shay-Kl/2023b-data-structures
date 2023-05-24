@@ -18,21 +18,23 @@ public:
 
     Group(const Group&) = delete;
 
-    //Returns the number of users in the group
-    int getUsersCount() const;
-
-    AVLtree<int, User*>& getGroupUsers();
-
     //Returns true if the group has VIP member in it
     bool isVip() const;
 
+    //Returns true if the group is closed
+    bool isClosed() const ;
+
+    //Returns the number of users in the group
+    int getUsersCount() const;
+
     //Add new user to the group
     void addUser(User* user);
+
     //Remove user from group
     void removeUser(User* user);
 
-    //Add num of views to the total genre views count
-    void updateViews(Genre genre, int views);
+    //Makes group officially closed.
+    void closeGroup();
 
     //Returns the total genre views count of the group
     int getGenreViewCount(Genre genre) const;
@@ -40,19 +42,22 @@ public:
     //Returns the number of times the group watched together in a genre
     int getGroupViews(Genre genre) const;
 
-    //Add one group watch to the groupWatchCounter
-    void incGroupWatch(Genre genre);
+    //Watch a movie as a group
+    void groupWatch(Genre genre);
+
+    //Watch a movie solo
+    void soloWatch(Genre genre);
 
 
 
 private:
+
     int m_id;
-    bool m_isVip;
     int m_vipCount;
-    int m_usersCount;
+    int m_userCount;
+    bool m_isOpen;
     int m_genreTotalViews[4] = {0};
     int m_genreGroupViews[4] = {0};
-    AVLtree<int, User*> m_members;
 
 };
 

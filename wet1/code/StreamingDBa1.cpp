@@ -13,21 +13,6 @@ streaming_database::~streaming_database()
 }
 
 
-void streaming_database::removeUserAux(AVLtree<int, User*>::Node* root, shared_ptr<Group> group)
-{
-    if (root == nullptr){
-        return;
-    }
-
-    removeUserAux(root->getLeft(), group);
-    removeUserAux(root->getRight(), group);
-	User* user = root->val;
-	user->removeFromGroup();
-	group->removeUser(user);
-}
-
-
-
 void streaming_database::getAllAux(AVLtree<Movie, int>::Node* root, int* output, int& index)
 {
 	if (!root){
@@ -107,7 +92,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)
 	}
 	try
 	{
-		User user(userId, isVip);
+		User user(isVip);
 		users.insert(userId, user);
 		return StatusType::SUCCESS;
 	}
@@ -130,10 +115,10 @@ StatusType streaming_database::remove_user(int userId)
 	try
 	{
 		User* user = &users.get(userId);
-		if (user->getGroupId() != 0)
+		if (user->getGroup())
 		{
-			Group& group = user->getGroup();
-			group.removeUser(user);
+			shared_ptr<Group> group = user->getGroup();
+			group->removeUser(user);
 		}
 		users.remove(userId);
 		return StatusType::SUCCESS;
@@ -178,8 +163,7 @@ StatusType streaming_database::remove_group(int groupId)
 	try
 	{
 		shared_ptr<Group> group = groups.get(groupId);
-		AVLtree<int, User*>& group_users = group->getGroupUsers();
-		removeUserAux(group_users.getRoot(), group);
+		group->closeGroup();
 		groups.remove(groupId);
 		
 		return StatusType::SUCCESS;
@@ -204,13 +188,9 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
 	{
 		User* user = &users.get(userId);
 		shared_ptr<Group> group = groups.get(groupId);
-		if (!user->getGroupId())
-		{
-			group->addUser(user);
-			user->addToGroup(group, groupId);
-			return StatusType::SUCCESS;
-		}
-		return StatusType::FAILURE;
+		group->addUser(user);
+		user->addToGroup(group, groupId);
+		return StatusType::SUCCESS;
 	}
 	catch(bad_alloc)
 	{
@@ -288,8 +268,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 		unique_ptr<AVLtree<Movie, int>::Node> movieNode1(new AVLtree<Movie,int>::Node(updatedMovie, 0));
 		unique_ptr<AVLtree<Movie, int>::Node> movieNode2(new AVLtree<Movie,int>::Node(updatedMovie, 0));
 
-		group->updateViews(genre, members_in_group);
-		group->incGroupWatch(genre);
+		group->groupWatch(genre);
 
 		genreMovies[(int)genre].remove(movie);
 		genreMovies[(int)Genre::NONE].remove(movie);
