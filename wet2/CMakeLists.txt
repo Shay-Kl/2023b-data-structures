@@ -20,6 +20,6 @@ set(CMAKE_CPP_FLAGS ${MTM_FLAGS_DEBUG})
 
 
 # Add the names of your source files here
-set(CPP_FILES "code/mainWet2.cpp" "code/recordsCompany.cpp")
+set(CPP_FILES  "code/main.cpp" "code/recordsCompany.cpp" "code/memberTree.cpp" "code/Customer.cpp") #"code/mainWet2.cpp"
 
 add_executable(prog ${CPP_FILES})
