@@ -65,26 +65,28 @@ public:
     
     Node(Customer* customer): customer(customer), minId(customer->getId()), maxId(customer->getId()) {}
 
-    //Getter functions which work for nullptr nodes
+    //Getter functions
     int getMinId();
     int getMaxId();
     int getBalanceFactor();
     int getHeight();
 
-    //Increase the node's lazy discount by a given amount
-    void increaseDiscount(int amount);
 
-    //Propogate the node's discount
+    //Propogate the node's discount (make it trickle down)
     void propogate();
 
     //Update the node's unique members (height,minId, maxId) based on the node's children
     void update();
+    
+    //Increase a node's lazy discount counter
+    void lazyDiscount(int amount);
 
 private:
-    int height = 0; //Node's height
-    int discount = 0; //Discount applied to all nodes in node's subtree
+    //Increase the node's lazy discount by a given amount
     int minId; //Mainimum id in node's subtree
     int maxId; //Maximum id in node's subtree
+    int height = 0; //Node's height
+    int discount = 0; //Discount applied to all nodes in node's subtree
 };
 
 #endif

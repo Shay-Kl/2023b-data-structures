@@ -41,7 +41,7 @@ void MemberTree::addPrizeAux(unique_ptr<Node>& curNode, int lowerLimit, int uppe
     }
     else if (curNode->getMinId() >= lowerLimit && curNode->getMaxId() < upperLimit)
     {
-        curNode->increaseDiscount(amount);
+        curNode->lazyDiscount(amount);
     }
     else
     {
@@ -111,8 +111,8 @@ void MemberTree::balance(unique_ptr<MemberTree::Node>& node)
 {
     node->update();
     int balance = node->getBalanceFactor();
-    int leftBalance = node->left->getBalanceFactor();
-    int rightBalance = node->right->getBalanceFactor();
+    int leftBalance = (node->left) ? node->left->getBalanceFactor() : 0;
+    int rightBalance = (node->right) ? node->right->getBalanceFactor() : 0;
     
     if (balance == 2 && leftBalance >= 0) //LL
     {
@@ -172,76 +172,53 @@ void MemberTree::inOrder(unique_ptr<Node>& curNode, ostream& os)
 
 int MemberTree::Node::getBalanceFactor()
 {
-    if(!this)
-    {
-        return 0;
-    }
-    return left->getHeight() - right->getHeight();
+    int leftHeight = (left) ? left->getHeight() : -1;
+    int rightHeight = (right) ? right->getHeight() : -1;
+
+    return leftHeight - rightHeight;
 }
 int MemberTree::Node::getMinId()
 {
-    if(!this)
-    {
-        return 0x7FFFFFFF; //Max int
-    }
     return minId;
 }
 int MemberTree::Node::getMaxId()
 {
-    if (!this)
-    {
-        return -0x7FFFFFFF; //Min int
-    }
     return maxId;   
 }
 
 int MemberTree::Node::getHeight()
 {
-    if (!this)
-    {
-        return -1;
-    }
     return height;
 }
 
-void MemberTree::Node::increaseDiscount(int amount)
+void MemberTree::Node::lazyDiscount(int amount)
 {
-    if (this)
-    {
-        discount+=amount;
-    }
-    
+     discount+=amount;
 }
 
 void MemberTree::Node::propogate()
 {
     if (discount!=0)
     {
-        left->increaseDiscount(discount);
-        right->increaseDiscount(discount);
+        if (left)
+        {
+            left->lazyDiscount(discount);
+        }
+        if (right)
+        {
+            right->lazyDiscount(discount);
+        }
         customer->discount(discount);
         discount = 0;
     }
 }
 
-//Updates all of a node's special values assuming its children's special values are updated
 void MemberTree::Node::update()
 {
-    if(left->getHeight() > right->getHeight())
-    {
-        height = left->getHeight() + 1;
-    }
-    else
-    {
-        height = right->getHeight() + 1;
-    }
-
-    if (right->getMaxId() > maxId)
-    {
-        maxId = right->getMaxId();
-    }
-    if (left->getMinId() < minId)
-    {
-        minId = left->getMinId();
-    }
+    int leftHeight = (left) ? left->getHeight() : -1;
+    int rightHeight = (right) ? right->getHeight() : -1;
+    height = (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
+    
+    maxId = (right) ? right->getMaxId() : customer->getId();
+    minId = (left) ? left->getMinId() : customer->getId();
 }

@@ -60,27 +60,21 @@ private:
     Node* m_min;
     int m_count;
 
-    //Helper function for inserting
+    //Recursion helper functions
     void insertAux(unique_ptr<Node>& curNode, Node* newNode);
-
-    //Helper function for getting
     Val& getAux(const unique_ptr<Node>& curNode, const Key& key) const;
-
-    //Helper functions for removing
     Node* removeAux(unique_ptr<Node>& curNode, const Key& key);
     void removeNode(unique_ptr<Node>& curNode);
+    void preOrder(unique_ptr<Node>& curNode, ostream& os);
+    void inOrder(unique_ptr<Node>& curNode, ostream& os);
 
     //Returns the leftmost node from a given node
     unique_ptr<Node>& getLeftmost(unique_ptr<Node>& curNode);
 
-    //Functions to AVL balance a tree after a change is made
+    //AVL balancing functions
     void balance(unique_ptr<Node>& node);
     void rightRotate(unique_ptr<Node>& y);
     void leftRotate(unique_ptr<Node>& y);
-
-    //Helper functions for printing
-    void preOrder(unique_ptr<Node>& curNode, ostream& os);
-    void inOrder(unique_ptr<Node>& curNode, ostream& os);
 };
 
 
@@ -273,8 +267,8 @@ void AVLtree<Key,Val>::balance(unique_ptr<AVLtree<Key,Val>::Node>& node)
 {
     node->updateHeight();
     int balance = node->getBalanceFactor();
-    int leftBalance = node->left->getBalanceFactor();
-    int rightBalance = node->right->getBalanceFactor();
+    int leftBalance = (node->left) ? node->left->getBalanceFactor() : 0;
+    int rightBalance = (node->right) ? node->right->getBalanceFactor() : 0;
     
     if (balance == 2 && leftBalance >= 0) //LL
     {
@@ -348,27 +342,17 @@ private:
     int height;
     friend AVLtree;
     
-    int getHeight()
-    {
-        if (!this)
-        {
-            return -1;
-        }
-        return height;
-    }
     int getBalanceFactor()
     {
-        if(!this)
-        {
-            return 0;
-        }
-        return left->getHeight() - right->getHeight();
-    }
+        int leftHeight = (left) ? left->height : -1;
+        int rightHeight = (right) ? right->height : -1;
+        return leftHeight - rightHeight;
+    }    
     void updateHeight()
     {
-        int leftHeight = left->getHeight();
-        int rightHeight = right->getHeight();
-        height = (leftHeight > rightHeight) ? leftHeight+1 : rightHeight+1;
+        int leftHeight = (left) ? left->height : -1;
+        int rightHeight = (right) ? right->height : -1;
+        height = (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
     }
 };
 
