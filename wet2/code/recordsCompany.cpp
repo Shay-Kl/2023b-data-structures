@@ -42,6 +42,11 @@ StatusType RecordsCompany::buyRecord(int c_id, int r_id)
 
 StatusType RecordsCompany::addPrize(int c_id1, int c_id2, double  amount)
 {
+    if (amount <=0 || c_id1 < 0 || c_id2 < c_id1)
+    {
+        return StatusType::INVALID_INPUT;
+    }
+    
     m_members.addPrize(c_id1, c_id2, amount);
     return StatusType::SUCCESS;
 }
