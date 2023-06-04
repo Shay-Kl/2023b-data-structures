@@ -169,6 +169,7 @@ StatusType RecordsCompany::putOnTop(int r_id1, int r_id2)
     try
     {
         //m_records.putOnTop(r_id1, r_id2);
+        return StatusType::SUCCESS;
     }
     catch(KeyMissing)
     {
@@ -178,9 +179,6 @@ StatusType RecordsCompany::putOnTop(int r_id1, int r_id2)
     {
         return StatusType::FAILURE;
     }
-    
-    
-    return StatusType::SUCCESS;
 }
 
 StatusType RecordsCompany::getPlace(int r_id, int *column, int *hight)
@@ -195,11 +193,9 @@ StatusType RecordsCompany::getPlace(int r_id, int *column, int *hight)
         //column = &(m_records.getColumn(r_id));
         return StatusType::SUCCESS;
     }
-    catch(const std::exception& e)
+    catch(KeyMissing)
     {
-        std::cerr << e.what() << '\n';
+        return StatusType::DOESNT_EXISTS;
     }
-    
-    
     return StatusType::SUCCESS;
 }
