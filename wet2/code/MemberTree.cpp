@@ -55,36 +55,6 @@ void MemberTree::addPrizeAux(unique_ptr<Node>& curNode, int lowerLimit, int uppe
     
 }
 
-Customer& MemberTree::get(int id) const
-{
-    return getAux(m_root, id);
-}
-
-Customer& MemberTree::getAux(const unique_ptr<Node>& curNode, int id) const
-{
-    if (!curNode)
-    {
-        throw KeyMissing();
-    }
-    else if (curNode->customer->getId() < id) 
-    {
-        curNode->propogate();
-        return getAux(curNode, id);
-    }
-    else if(curNode->customer->getId() > id)
-    {
-        curNode->propogate();
-        return getAux(curNode->left, id);
-    }
-    else
-    {
-        curNode->propogate();
-        return *curNode->customer;
-    }
-    
-}
-
-
 void MemberTree::rightRotate(unique_ptr<typename MemberTree::Node>& B)
 {
     unique_ptr<MemberTree::Node> A = move(B->left);

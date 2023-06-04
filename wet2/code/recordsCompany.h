@@ -2,12 +2,13 @@
 #define RECORDS_COMPANY_H
 
 #include "utilesWet2.h"
+#include "MemberTree.h"
 
 
 
 class RecordsCompany {
   private:
-    // todo
+    MemberTree m_members;
   public:
     RecordsCompany();
     ~RecordsCompany();

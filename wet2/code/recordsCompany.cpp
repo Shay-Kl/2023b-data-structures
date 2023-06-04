@@ -1,12 +1,14 @@
 
 #include "recordsCompany.h"
 
-RecordsCompany::RecordsCompany() {}
+RecordsCompany::RecordsCompany(): m_members() {}
 
 RecordsCompany::~RecordsCompany() {}
 
 StatusType RecordsCompany::newMonth(int *records_stocks, int number_of_records)
 {
+    //Record related code
+    m_members.resetExpenses();
     return StatusType::SUCCESS;
 }
 
@@ -22,6 +24,9 @@ Output_t<int> RecordsCompany::getPhone(int c_id)
 
 StatusType RecordsCompany::makeMember(int c_id)
 {
+    Customer* customer;
+    //customer = customers.get(c_id)
+    m_members.insert(customer);
     return StatusType::SUCCESS;
 }
 
@@ -37,6 +42,7 @@ StatusType RecordsCompany::buyRecord(int c_id, int r_id)
 
 StatusType RecordsCompany::addPrize(int c_id1, int c_id2, double  amount)
 {
+    m_members.addPrize(c_id1, c_id2, amount);
     return StatusType::SUCCESS;
 }
 

@@ -22,11 +22,6 @@ public:
     //O(log n)
     void insert(Customer* Customer);
 
-    //Return a reference to a customer associated with a given id
-    //If a customer with that id doesn't exist, throw a KeyMissing exception instead
-    //O(log n)
-    Customer& get(int id) const;
-
     //Gives out a discount prize of amount to all members with ids greater or equal to lowerLimit and lesser than upperLimit
     //O(log n)
     void addPrize(int lowerLimit, int upperLimit, int amount);
@@ -45,7 +40,6 @@ private:
 
     //Recursion helper functions
     void insertAux(unique_ptr<Node>& curNode, Node* newNode);
-    Customer& getAux(const unique_ptr<Node>& curNode, int id) const;
     void addPrizeAux(unique_ptr<Node>&, int lowerLimit, int upperLimit, int amount);
     void resetExpensesAux(unique_ptr<Node>& curNode);
     void inOrder(unique_ptr<Node>& curNode, ostream& os);
