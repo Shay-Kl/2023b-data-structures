@@ -16,14 +16,14 @@ public:
     int getPhone();
 
     //Returns customer's expenses total
-    int getExpenses();
+    double getExpenses();
 
     //Increases expenses by a given amount if the customer is a member
     //Does nothing otherwise
-    void pay(int amount);
+    void pay(double amount);
 
     //Discounts expenses by given amount
-    void discount(int amount);
+    void discount(double amount);
 
     //Resets expenses to 0
     void resetExpenses();
@@ -35,7 +35,7 @@ private:
     int m_id;
     int m_phone;
     bool m_isMember;
-    int m_expenses;
+    double m_expenses;
 };
 
 

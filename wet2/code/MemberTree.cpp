@@ -29,11 +29,11 @@ void MemberTree::insertAux(unique_ptr<Node>& curNode, Node* newNode)
     balance(curNode);
 }
 
-void MemberTree::addPrize(int lowerLimit, int upperLimit, int amount)
+void MemberTree::addPrize(int lowerLimit, int upperLimit, double amount)
 {
     addPrizeAux(m_root, lowerLimit, upperLimit, amount);
 }
-void MemberTree::addPrizeAux(unique_ptr<Node>& curNode, int lowerLimit, int upperLimit, int amount)
+void MemberTree::addPrizeAux(unique_ptr<Node>& curNode, int lowerLimit, int upperLimit, double amount)
 {
     if(!curNode || curNode->getMinId()>= upperLimit || curNode->getMaxId()< lowerLimit)
     {
@@ -54,6 +54,36 @@ void MemberTree::addPrizeAux(unique_ptr<Node>& curNode, int lowerLimit, int uppe
     }
     
 }
+
+Customer& MemberTree::get(int id) const
+{
+    return getAux(m_root, id);
+}
+
+Customer& MemberTree::getAux(const unique_ptr<Node>& curNode, int id) const
+{
+    if (!curNode)
+    {
+        throw KeyMissing();
+    }
+    else if (curNode->customer->getId() < id) 
+    {
+        curNode->propogate();
+        return getAux(curNode, id);
+    }
+    else if(curNode->customer->getId() > id)
+    {
+        curNode->propogate();
+        return getAux(curNode->left, id);
+    }
+    else
+    {
+        curNode->propogate();
+        return *curNode->customer;
+    }
+    
+}
+
 
 void MemberTree::rightRotate(unique_ptr<typename MemberTree::Node>& B)
 {
@@ -161,7 +191,7 @@ int MemberTree::Node::getHeight()
     return height;
 }
 
-void MemberTree::Node::lazyDiscount(int amount)
+void MemberTree::Node::lazyDiscount(double amount)
 {
      discount+=amount;
 }

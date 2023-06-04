@@ -1,6 +1,6 @@
 #include "Customer.h"
 
-Customer::Customer(int id, int phone): m_id(id), m_phone(phone), m_isMember(false), m_expenses(0) {}
+Customer::Customer(int id, int phone): m_id(id), m_phone(phone), m_isMember(false), m_expenses(0.0) {}
 
 bool Customer::isMember()
 {
@@ -17,12 +17,12 @@ int Customer::getPhone()
     return m_phone;
 }
 
-int Customer::getExpenses()
+double Customer::getExpenses()
 {
     return m_expenses;
 }
 
-void Customer::pay(int expense)
+void Customer::pay(double expense)
 {
     if (m_isMember)
     {
@@ -31,7 +31,7 @@ void Customer::pay(int expense)
     
 }
 
-void Customer::discount(int amount)
+void Customer::discount(double amount)
 {
     m_expenses-=amount;
 }
