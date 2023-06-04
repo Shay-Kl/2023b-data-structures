@@ -160,13 +160,46 @@ Output_t<double> RecordsCompany::getExpenses(int c_id)
     }
 }
 
-
-//Unionfind logic, to be implemented
 StatusType RecordsCompany::putOnTop(int r_id1, int r_id2)
 {
+    if (r_id1 < 0 || r_id2 < 0)
+    {
+        return StatusType::INVALID_INPUT;
+    }
+    try
+    {
+        //m_records.putOnTop(r_id1, r_id2);
+    }
+    catch(KeyMissing)
+    {
+        return StatusType::DOESNT_EXISTS;
+    }
+    catch(Failiure)
+    {
+        return StatusType::FAILURE;
+    }
+    
+    
     return StatusType::SUCCESS;
 }
+
 StatusType RecordsCompany::getPlace(int r_id, int *column, int *hight)
 {
+    if (r_id < 0 || !column || !hight)
+    {
+        return StatusType::INVALID_INPUT;
+    }
+    try
+    {
+        //hight = &(m_records.getHeight(r_id));
+        //column = &(m_records.getColumn(r_id));
+        return StatusType::SUCCESS;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    
+    
     return StatusType::SUCCESS;
 }
