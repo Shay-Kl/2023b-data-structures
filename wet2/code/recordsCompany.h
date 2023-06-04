@@ -9,6 +9,8 @@
 class RecordsCompany {
   private:
     MemberTree m_members;
+    //HashTable m_customers;
+    //UnionFind m_records;
   public:
     RecordsCompany();
     ~RecordsCompany();
