@@ -189,8 +189,8 @@ StatusType RecordsCompany::getPlace(int r_id, int *column, int *hight)
     }
     try
     {
-        //hight = &(m_records.getHeight(r_id));
-        //column = &(m_records.getColumn(r_id));
+        //*hight = m_records.getHeight(r_id);
+        //*column = m_records.getColumn(r_id);
         return StatusType::SUCCESS;
     }
     catch(KeyMissing)

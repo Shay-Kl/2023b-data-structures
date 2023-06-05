@@ -49,6 +49,7 @@ void MemberTree::addPrizeAux(unique_ptr<Node>& curNode, int lowerLimit, int uppe
         {
             curNode->customer->discount(amount);
         }
+        
         addPrizeAux(curNode->left, lowerLimit, upperLimit, amount);
         addPrizeAux(curNode->right, lowerLimit, upperLimit, amount);
     }
@@ -110,6 +111,16 @@ void MemberTree::leftRotate(unique_ptr<MemberTree::Node>& A)
 void MemberTree::balance(unique_ptr<MemberTree::Node>& node)
 {
     node->update();
+    node->propogate();
+    if (node->right)
+    {
+        node->right->propogate();
+    }
+    if (node->left)
+    {
+        node->left->propogate();
+    }
+    
     int balance = node->getBalanceFactor();
     int leftBalance = (node->left) ? node->left->getBalanceFactor() : 0;
     int rightBalance = (node->right) ? node->right->getBalanceFactor() : 0;
