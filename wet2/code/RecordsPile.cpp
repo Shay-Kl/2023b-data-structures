@@ -1,6 +1,7 @@
 #include "RecordsPile.h"
 #include "exceptions.h"
 
+RecordsPile::RecordsPile(): m_pile(new Record[1]) {}
 
 RecordsPile::RecordsPile(int* records_stock, int number_of_records): m_pile(new Record[number_of_records]), m_count(number_of_records)
 {
@@ -8,6 +9,31 @@ RecordsPile::RecordsPile(int* records_stock, int number_of_records): m_pile(new 
     {
         m_pile[i] = Record(records_stock[i], i);
     }
+}
+
+RecordsPile::~RecordsPile()
+{
+    delete[] m_pile;
+}
+
+RecordsPile::RecordsPile(const RecordsPile& other): m_pile(new Record[other.m_count]), m_count(other.m_count)
+{
+    for(int i = 0; i < m_count; i++)
+    {
+        m_pile[i] = Record(other.m_pile[i]);
+    }
+}
+
+RecordsPile& RecordsPile::operator=(const RecordsPile& other) 
+{
+    delete[] m_pile;
+    m_count = other.m_count;
+    m_pile = new Record[m_count];
+    for(int i = 0; i < m_count; i++)
+    {
+        m_pile[i] = Record(other.m_pile[i]);
+    }
+    return *this;
 }
 
 void RecordsPile::pileOnTop(int id1, int id2)

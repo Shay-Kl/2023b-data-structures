@@ -5,7 +5,12 @@ class RecordsPile
 {
 public:
     //Junk c'tor
-    RecordsPile() {}
+    RecordsPile();
+
+    //Big 3
+    ~RecordsPile();
+    RecordsPile(const RecordsPile& other);
+    RecordsPile& operator=(const RecordsPile& other);
 
     //Real c'tor
     RecordsPile(int* records_stock, int number_of_records);

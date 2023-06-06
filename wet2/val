@@ -1,0 +1,1 @@
+ valgrind --leak-check=full ./prog < tests/test.in > out
