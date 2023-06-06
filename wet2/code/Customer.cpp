@@ -44,4 +44,5 @@ void Customer::resetExpenses()
 void Customer::makeMember()
 {
     m_isMember = true;
+    m_expenses = 0;
 }

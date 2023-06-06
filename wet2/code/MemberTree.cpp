@@ -70,7 +70,7 @@ Customer& MemberTree::getAux(const unique_ptr<Node>& curNode, int id) const
     else if (curNode->customer->getId() < id) 
     {
         curNode->propogate();
-        return getAux(curNode, id);
+        return getAux(curNode->right, id);
     }
     else if(curNode->customer->getId() > id)
     {

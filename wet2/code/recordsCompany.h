@@ -3,14 +3,16 @@
 
 #include "utilesWet2.h"
 #include "MemberTree.h"
+#include "RecordsPile.H"
+#include "AVLtree.h"
 
 
 
 class RecordsCompany {
   private:
     MemberTree m_members;
-    //HashTable m_customers;
-    //UnionFind m_records;
+    AVLtree<int, Customer> m_customers; //temp
+    RecordsPile m_records;
   public:
     RecordsCompany();
     ~RecordsCompany();

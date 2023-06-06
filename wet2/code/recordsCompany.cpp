@@ -2,7 +2,7 @@
 #include "recordsCompany.h"
 #include "exceptions.h"
 
-RecordsCompany::RecordsCompany(): m_members() {}
+RecordsCompany::RecordsCompany(): m_members(), m_customers(), m_records() {}
 
 RecordsCompany::~RecordsCompany() {}
 
@@ -14,7 +14,7 @@ StatusType RecordsCompany::newMonth(int *records_stocks, int number_of_records)
     }
     try
     {
-        //m_records.newMonth();
+        m_records = RecordsPile(records_stocks, number_of_records);
         m_members.resetExpenses();
         return StatusType::SUCCESS;
     }
@@ -33,7 +33,7 @@ StatusType RecordsCompany::addCostumer(int c_id, int phone)
     }
     try
     {
-        //m_customers.insert(new Customer(c_id, phone));
+        m_customers.insert(c_id, Customer(c_id, phone));
         return StatusType::SUCCESS;
     }
     catch(KeyAlreadyExists)
@@ -54,8 +54,8 @@ Output_t<int> RecordsCompany::getPhone(int c_id)
     }
     try
     {
-        //Customer* customer = customers.get(c_id);
-        // return m_customer.getPhone();
+        Customer& customer = m_customers.get(c_id);
+        return customer.getPhone();
         return 0;
     }
     catch(KeyMissing)
@@ -72,10 +72,9 @@ StatusType RecordsCompany::makeMember(int c_id)
     }
     try
     {
-        Customer* customer;
-        //customer = m_customers.get(c_id);
-        m_members.insert(customer);
-        customer->makeMember();
+        Customer& customer = m_customers.get(c_id);
+        m_members.insert(&customer);
+        customer.makeMember();
         return StatusType::SUCCESS;
     }
     catch(KeyAlreadyExists)
@@ -100,8 +99,8 @@ Output_t<bool> RecordsCompany::isMember(int c_id)
     }
     try
     {
-        //Customer* customer = m_customers.get(c_id)
-        //return customer.isMember();
+        Customer& customer = m_customers.get(c_id);
+        return customer.isMember();
         return true;
     }
     catch(KeyMissing)
@@ -118,11 +117,8 @@ StatusType RecordsCompany::buyRecord(int c_id, int r_id)
     }
     try
     {
-        //Record* record = m_records.get(r_id);
-        //record.addPurchase();
-        //int price = record.getPrice();
-        //Customer* customer = m_customers.get(c_id);
-        //customer.pay(price)
+        Customer& customer = m_customers.get(c_id);
+        customer.pay(m_records.purchase(r_id));
     }
     catch(KeyMissing)
     {
@@ -168,7 +164,7 @@ StatusType RecordsCompany::putOnTop(int r_id1, int r_id2)
     }
     try
     {
-        //m_records.putOnTop(r_id1, r_id2);
+        m_records.pileOnTop(r_id1, r_id2);
         return StatusType::SUCCESS;
     }
     catch(KeyMissing)
@@ -189,8 +185,8 @@ StatusType RecordsCompany::getPlace(int r_id, int *column, int *hight)
     }
     try
     {
-        //*hight = m_records.getHeight(r_id);
-        //*column = m_records.getColumn(r_id);
+        *hight = m_records.getHeight(r_id);
+        *column = m_records.getColumn(r_id);
         return StatusType::SUCCESS;
     }
     catch(KeyMissing)
