@@ -49,7 +49,7 @@ void RecordsPile::pileOnTop(int id1, int id2)
     int stackHeight1 = root1->getStackHeight();
     int stackHeight2 = root2->getStackHeight();
 
-    int ogHeight2 = root2->getOgHeight();
+    int ogHeight2 = root2->getRecordCopies();
 
     root1->setParent(root2);
     root1->increaseHeightDelta(stackHeight2 - ogHeight2);
@@ -71,13 +71,13 @@ int RecordsPile::getHeight(int id)
     return m_pile[id].getRecordHeight();
 }
 
-RecordsPile::Record::Record(int height, int id): parent(nullptr), bought(0), column(id), height_og(height), height_delta(height), height_total(height) {}
+RecordsPile::Record::Record(int height, int id): parent(nullptr), bought(0), column(id), copies(height), height_delta(height), height_total(height) {}
 
 int RecordsPile::Record::getRecordHeight() 
 {
     
     Record* temp = parent;
-    int sum = height_delta - height_og;
+    int sum = height_delta - copies;
     while(temp)
     {
         sum+=temp->height_delta;
@@ -95,9 +95,9 @@ int RecordsPile::Record::getStackHeight()
     return height_total;
 }
 
-int RecordsPile::Record::getOgHeight()
+int RecordsPile::Record::getRecordCopies()
 {
-    return height_og;
+    return copies;
 }
 
 int RecordsPile::Record::getColumn()

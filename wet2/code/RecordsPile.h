@@ -50,8 +50,8 @@ public:
     //Returns the total height of the record's stack
     int getStackHeight();
 
-    //Returns the stack's original heigh value
-    int getOgHeight();
+    //Returns the number of copies of the record
+    int getRecordCopies();
 
     //Returns the record's column
     int getColumn();
@@ -75,10 +75,10 @@ private:
     Record* parent; //Record's parent / next node in reverse tree
     int bought; // Number of copies of record bought (only relevant for price calculation)
     
-    int column; //Node's column, only active for root records
-
-    int height_og; //The original height of the record, used to subtract from height to prevent counting self
+    int copies; //The number of copies of the record, dictates how high the record is.
     int height_delta; //Height of the record relative to its parent's height
+
     int height_total; //Height of the record's stack, only active for root records
+    int column; //Node's column, only active for root records
 };
 #endif // __RECORDSPILE_H__
