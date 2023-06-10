@@ -56,7 +56,6 @@ Output_t<int> RecordsCompany::getPhone(int c_id)
     {
         Customer& customer = m_customers.get(c_id);
         return customer.getPhone();
-        return 0;
     }
     catch(KeyMissing)
     {
@@ -101,7 +100,6 @@ Output_t<bool> RecordsCompany::isMember(int c_id)
     {
         Customer& customer = m_customers.get(c_id);
         return customer.isMember();
-        return true;
     }
     catch(KeyMissing)
     {
@@ -119,14 +117,12 @@ StatusType RecordsCompany::buyRecord(int c_id, int r_id)
     {
         Customer& customer = m_customers.get(c_id);
         customer.pay(m_records.purchase(r_id));
+        return StatusType::SUCCESS;
     }
     catch(KeyMissing)
     {
         return StatusType::DOESNT_EXISTS;
     }
-    
-    
-    return StatusType::SUCCESS;
 }
 
 StatusType RecordsCompany::addPrize(int c_id1, int c_id2, double  amount)
@@ -193,5 +189,4 @@ StatusType RecordsCompany::getPlace(int r_id, int *column, int *hight)
     {
         return StatusType::DOESNT_EXISTS;
     }
-    return StatusType::SUCCESS;
 }
