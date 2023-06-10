@@ -81,6 +81,8 @@ public:
     //Increase a node's lazy discount counter
     void lazyDiscount(double amount);
 
+    void resetLazyDiscount();
+
 private:
     int minId; //Mainimum id in node's subtree
     int maxId; //Maximum id in node's subtree

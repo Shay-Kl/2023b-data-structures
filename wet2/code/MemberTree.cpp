@@ -157,6 +157,7 @@ void MemberTree::resetExpensesAux(unique_ptr<Node>& curNode)
         return;
     }
     curNode->customer->resetExpenses();
+    curNode->resetLazyDiscount();
     resetExpensesAux(curNode->left);
     resetExpensesAux(curNode->right);
 }
@@ -207,6 +208,11 @@ void MemberTree::Node::lazyDiscount(double amount)
      discount+=amount;
 }
 
+void MemberTree::Node::resetLazyDiscount()
+{
+     discount = 0;
+}
+
 void MemberTree::Node::propogate()
 {
     if (discount!=0)
@@ -220,7 +226,7 @@ void MemberTree::Node::propogate()
             right->lazyDiscount(discount);
         }
         customer->discount(discount);
-        discount = 0;
+        resetLazyDiscount();
     }
 }
 
