@@ -66,6 +66,7 @@ void testin()
     cout << "c:" << column << " h:" << height << endl;
     st(c.getPlace(37, &column, &height));
     cout << "c:" << column << " h:" << height << endl;
+    delete[] stock;
 }
 
 

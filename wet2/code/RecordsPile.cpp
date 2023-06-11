@@ -71,7 +71,7 @@ int RecordsPile::getHeight(int id)
     return m_pile[id].getRecordHeight();
 }
 
-RecordsPile::Record::Record(int height, int id): parent(nullptr), bought(0), column(id), copies(height), height_delta(height), height_total(height) {}
+RecordsPile::Record::Record(int height, int id): parent(nullptr), bought(0), copies(height), height_delta(height), height_total(height), column(id) {}
 
 int RecordsPile::Record::getRecordHeight() 
 {
