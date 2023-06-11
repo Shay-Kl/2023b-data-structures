@@ -22,32 +22,26 @@ void HashTable::reHashTree(AVLtree<int, Customer>::Node* src_tree_root, AVLtree<
 
 void HashTable::insert(int id, Customer customer)
 {
-    if (isExists(id))
-    {
-        throw KeyAlreadyExists();
-    }
     m_array[HashFunction(id)].insert(id, customer);
     m_counter++;
     if (m_counter == m_size) //needs a ReHash
     {
         AVLtree<int, Customer>* new_arr = new AVLtree<int, Customer>[m_size*EXPANSION_RATE];
-        for (int i = 0; i < m_size; i++)
+        int old_size = m_size;
+        m_size *= EXPANSION_RATE;
+        for (int i = 0; i < old_size; i++)
         {
             reHashTree(m_array[i].getRoot(), new_arr);
         }
         delete[] m_array;
         m_array = new_arr;
-        m_size *= EXPANSION_RATE;
+        
     }
 }
 
 
 void HashTable::Remove(int id)
 {
-    if (!isExists(id))
-    {
-        throw KeyMissing();
-    }
     m_array[HashFunction(id)].remove(id);
     m_counter--;
     if (m_counter <= (m_size/4)) //needs a ReHash
@@ -78,7 +72,7 @@ bool HashTable::isExists(int id)
         Customer& customer = find(id);
         return true;
     }
-    catch(const std::exception& e)
+    catch(const KeyMissing& e)
     {
         return false;
     }
