@@ -5,13 +5,14 @@
 #include "MemberTree.h"
 #include "RecordsPile.h"
 #include "AVLtree.h"
+#include "HashTable.h"
 
 
 
 class RecordsCompany {
   private:
     MemberTree m_members;
-    AVLtree<int, Customer> m_customers; //temp
+    HashTable m_customers;
     RecordsPile m_records;
   public:
     RecordsCompany();

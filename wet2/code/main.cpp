@@ -4,6 +4,7 @@
 #include "MemberTree.h"
 #include "recordsCompany.h"
 #include "RecordsPile.h"
+#include "HashTable.h"
 
 void discountTest();
 void unionFindTest();
