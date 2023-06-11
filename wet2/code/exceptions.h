@@ -4,4 +4,5 @@
     class KeyAlreadyExists : public std::exception {};
     class KeyMissing : public std::exception {};
     class Failiure : public std::exception {};
+    class IndexOutOfRange : public std::exception {};
 #endif
