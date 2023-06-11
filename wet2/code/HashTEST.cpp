@@ -35,15 +35,15 @@ int main()
     }
     bool testSucceeded = true;
     int problemValue = -1;
-    for(int i = 0; i < 5000; ++i)
+    for(int i = 0; i < 10000; ++i)
     {
-        if(!(i%10) && (i < 5000) && !hash1.isExists(i))
+        if(!(i%10) && (i < 10000) && !hash1.isExists(i))
         {   
             testSucceeded = false;
             problemValue = i;
             cout << "fucked here: " << i << endl;
         }
-        if((i >= 5000) && hash1.isExists(i))
+        if((i >= 10000) && hash1.isExists(i))
         {
             testSucceeded = false;
             problemValue = i;
