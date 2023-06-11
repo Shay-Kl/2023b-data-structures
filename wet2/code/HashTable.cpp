@@ -25,7 +25,9 @@ void HashTable::insert(int id, Customer customer)
     if (m_counter == m_size) //needs a ReHash
     {
         AVLtree<int, shared_ptr<Customer>>* new_arr = new AVLtree<int, shared_ptr<Customer>>[m_size*EXPANSION_RATE];
-        for (int i = 0; i < m_size; i++)
+        int old_size = m_size;
+        m_size *= EXPANSION_RATE;
+        for (int i = 0; i < old_size; i++)
         {
             reHashTree(m_array[i].getRoot(), new_arr);
         }
