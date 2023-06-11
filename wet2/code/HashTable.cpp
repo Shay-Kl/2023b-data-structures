@@ -31,7 +31,7 @@ void HashTable::insert(int id, Customer customer)
         }
         delete[] m_array;
         m_array = new_arr;
-        m_size *= EXPANSION_RATE;
+        
     }
 }
 
