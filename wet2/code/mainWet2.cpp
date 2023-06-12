@@ -1,5 +1,5 @@
-#include "../recordsCompany.h"
-#include "../utilesWet2.h"
+#include "recordsCompany.h"
+#include "utilesWet2.h"
 #include <string>
 #include <iostream>
 #include <vector>

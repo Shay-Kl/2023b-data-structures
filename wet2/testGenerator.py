@@ -263,9 +263,9 @@ def generateTest(number, lines):
         
 
     with open("inFiles/test"+str(number)+".in", mode="w") as file:
-        file.write(input)
+        file.write(input+"\n")
     with open("outFiles/test"+str(number)+".out", mode="w") as file:
-        file.write(output)
+        file.write(output+"\n")
 for i in range(1, 10):
     generateTest(i, 100)
 for i in range(10, 50):
