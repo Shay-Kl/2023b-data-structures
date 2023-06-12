@@ -38,6 +38,11 @@ RecordsPile& RecordsPile::operator=(const RecordsPile& other)
 
 void RecordsPile::pileOnTop(int id1, int id2)
 {
+    if (id1 >= m_count || id2 >= m_count)
+    {
+        throw KeyMissing();
+    }
+    
     Record* root1 = m_pile[id1].getRoot();
     Record* root2 = m_pile[id2].getRoot();
     if (root1==root2)
@@ -58,20 +63,33 @@ void RecordsPile::pileOnTop(int id1, int id2)
 
 int RecordsPile::purchase(int id)
 {
+    if (id >= m_count)
+    {
+        throw KeyMissing();
+    }
     return m_pile[id].purchase();
 }
 
 int RecordsPile::getColumn(int id)
 {
+    if (id >= m_count)
+    {
+        throw KeyMissing();
+    }
     return m_pile[id].getColumn();
 }
 
 int RecordsPile::getHeight(int id)
 {
+    if (id >= m_count)
+    {
+        throw KeyMissing();
+    }
+    
     return m_pile[id].getRecordHeight();
 }
 
-RecordsPile::Record::Record(int height, int id): parent(nullptr), bought(0), copies(height), height_delta(height), height_total(height), column(id) {}
+RecordsPile::Record::Record(int height, int id): parent(nullptr), cost(100), copies(height), height_delta(height), height_total(height), column(id) {}
 
 int RecordsPile::Record::getRecordHeight() 
 {
@@ -135,5 +153,5 @@ void RecordsPile::Record::increaseHeightTotal(int height)
 
 int RecordsPile::Record::purchase()
 {
-    return 100 + bought++;
+    return cost++;
 }

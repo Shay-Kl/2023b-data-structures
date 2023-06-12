@@ -24,7 +24,7 @@ public:
     //Return column of the record
     int getColumn(int id);
 
-    //Returns the current cost of the record (100+bought) and increment bought
+    //Returns the current cost of the record (100+bought) and increment cost
     int purchase(int id);
 
 private:
@@ -65,7 +65,7 @@ public:
     //Increase the record's height delta by a given amount
     void increaseHeightTotal(int height);
     
-    //Returns the current cost of the record (100+bought) and increment bought
+    //Returns the current cost of the record (100+bought) and increment cost
     int purchase();
 
     //Sets the node's parent to a given record
@@ -73,7 +73,7 @@ public:
 
 private:
     Record* parent; //Record's parent / next node in reverse tree
-    int bought; // Number of copies of record bought (only relevant for price calculation)
+    int cost; // cost of the record (starts at 100 and goes up every time a record is bought)
     
     int copies; //The number of copies of the record, dictates how high the record is.
     int height_delta; //Height of the record relative to its parent's height

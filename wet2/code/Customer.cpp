@@ -33,7 +33,11 @@ void Customer::pay(double expense)
 
 void Customer::discount(double amount)
 {
-    m_expenses-=amount;
+    if (m_isMember)
+    {
+        m_expenses-=amount;
+    }
+    
 }
 
 void Customer::resetExpenses()

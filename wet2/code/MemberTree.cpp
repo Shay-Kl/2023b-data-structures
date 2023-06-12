@@ -15,10 +15,12 @@ void MemberTree::insertAux(unique_ptr<Node>& curNode, Node* newNode)
     }
     else if (curNode->customer->getId() < newNode->customer->getId()) 
     {
+        curNode->propogate();
         insertAux(curNode->right, newNode);
     }
     else if(curNode->customer->getId() > newNode->customer->getId())
     {
+        curNode->propogate();
         insertAux(curNode->left, newNode);
     }
     else
@@ -35,7 +37,7 @@ void MemberTree::addPrize(int lowerLimit, int upperLimit, double amount)
 }
 void MemberTree::addPrizeAux(unique_ptr<Node>& curNode, int lowerLimit, int upperLimit, double amount)
 {
-    if(!curNode || curNode->getMinId()>= upperLimit || curNode->getMaxId()< lowerLimit)
+    if(!curNode || curNode->getMinId()> upperLimit || curNode->getMaxId() < lowerLimit)
     {
         return;
     }
