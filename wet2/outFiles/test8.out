@@ -1,0 +1,103 @@
+newMonth: SUCCESS
+addCostumer: SUCCESS
+addCostumer: SUCCESS
+addCostumer: SUCCESS
+isMember: False
+getPhone: 37
+addPrize: SUCCESS
+makeMember: DOESNT_EXISTS
+putOnTop: SUCCESS
+getPlace: column=8, hight=0
+makeMember: SUCCESS
+getPhone: 187
+getExpenses: 0
+buyRecord: SUCCESS
+makeMember: ALREADY_EXISTS
+isMember: True
+buyRecord: SUCCESS
+isMember: True
+makeMember: ALREADY_EXISTS
+getExpenses: DOESNT_EXISTS
+isMember: True
+isMember: True
+addCostumer: SUCCESS
+putOnTop: SUCCESS
+addPrize: INVALID_INPUT
+getPhone: DOESNT_EXISTS
+getExpenses: DOESNT_EXISTS
+addPrize: INVALID_INPUT
+getPhone: 85
+getPhone: 187
+buyRecord: SUCCESS
+putOnTop: SUCCESS
+makeMember: SUCCESS
+getExpenses: 0
+getPlace: DOESNT_EXISTS
+getExpenses: DOESNT_EXISTS
+getPhone: 187
+getPlace: column=12, hight=0
+buyRecord: SUCCESS
+addPrize: INVALID_INPUT
+makeMember: ALREADY_EXISTS
+makeMember: ALREADY_EXISTS
+getPhone: 37
+getExpenses: DOESNT_EXISTS
+getPhone: 37
+getPlace: DOESNT_EXISTS
+putOnTop: SUCCESS
+putOnTop: FAILURE
+getPhone: 187
+isMember: INVALID_INPUT
+addCostumer: SUCCESS
+getPlace: column=10, hight=10
+addCostumer: SUCCESS
+makeMember: ALREADY_EXISTS
+getPhone: DOESNT_EXISTS
+makeMember: SUCCESS
+isMember: DOESNT_EXISTS
+putOnTop: DOESNT_EXISTS
+putOnTop: SUCCESS
+buyRecord: DOESNT_EXISTS
+addCostumer: SUCCESS
+buyRecord: SUCCESS
+getPlace: column=4, hight=0
+getExpenses: 200
+isMember: True
+addPrize: INVALID_INPUT
+putOnTop: SUCCESS
+addCostumer: SUCCESS
+buyRecord: SUCCESS
+addPrize: SUCCESS
+getPlace: column=4, hight=11
+getPhone: 22
+isMember: DOESNT_EXISTS
+isMember: True
+buyRecord: SUCCESS
+addCostumer: SUCCESS
+addCostumer: SUCCESS
+getPlace: column=9, hight=0
+getPhone: 57
+getPlace: column=18, hight=0
+getPlace: DOESNT_EXISTS
+getPlace: column=11, hight=0
+addPrize: SUCCESS
+addCostumer: SUCCESS
+addCostumer: SUCCESS
+getPhone: 187
+getExpenses: DOESNT_EXISTS
+buyRecord: SUCCESS
+putOnTop: DOESNT_EXISTS
+getPhone: 22
+makeMember: SUCCESS
+getExpenses: DOESNT_EXISTS
+putOnTop: SUCCESS
+buyRecord: SUCCESS
+getExpenses: -65
+getPhone: 85
+buyRecord: DOESNT_EXISTS
+getPhone: INVALID_INPUT
+isMember: INVALID_INPUT
+addPrize: SUCCESS
+getPlace: column=15, hight=0
+getExpenses: DOESNT_EXISTS
+makeMember: ALREADY_EXISTS
