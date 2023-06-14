@@ -69,6 +69,7 @@ void RecordsPile::pileOnTop(int id1, int id2)
         root2->setParent(root1);
         root1->increaseHeightDelta(stackHeight2);
         root2->increaseHeightDelta(-stackHeight2);
+        root1->increaseHeightTotal(stackHeight2);
     }
 }
 
@@ -106,13 +107,13 @@ int RecordsPile::Record::getRecordHeight()
 {
     
     Record* temp = parent;
-    int sum = 0;
+    int height = 0;
     while(temp)
     {
-        sum+=temp->height_delta;
+        height+=temp->height_delta;
         temp = temp->parent;
     }
-    return sum;
+    return height;
 }
 
 int RecordsPile::Record::getStackHeight() 
