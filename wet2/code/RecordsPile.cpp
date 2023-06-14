@@ -50,27 +50,18 @@ void RecordsPile::pileOnTop(int id1, int id2)
         throw Failiure();
     }
     
+    Union(root1, root2);
 
     if(root1->stack_count < root2->stack_count)
     {
-        root1->delta+= root2->stack_height - root2->delta; //Increase the height of root 1's stack appropriately
-
-        root1->parent = root2;
-
-        //Update stackwide parameters for new root (root2)
-        root2->stack_count+=root1->stack_count;
+        root1->delta+= root2->stack_height - root2->delta;
         root2->stack_height+= root1->stack_height;
     }
     else
     {
         root1->delta += root2->stack_height; //increase the height of root 1's stack appropriately
         root2->delta -= root1->delta; //Without increasing the height of root 2's stack
-
-        root2->parent = root1;
-        
-        //Update stackwide parameters for new root (root1)
         root1->stack_column = root2->stack_column;
-        root1->stack_count+=root2->stack_count;
         root1->stack_height+=root2->stack_height;
     }
 }
@@ -101,6 +92,19 @@ int RecordsPile::getHeight(int id)
     }
     
     return m_pile[id].getRecordHeight();
+}
+void RecordsPile::Union(Record* root1, Record* root2)
+{
+    if(root1->stack_count < root2->stack_count)
+    {
+        Record* temp = root1;
+        root1 = root2;
+        root2 = temp;
+    }
+
+    root1->parent = root2;
+    root2->stack_count+=root1->stack_count;
+    root1->parent = root2;
 }
 
 RecordsPile::Record* RecordsPile::find(int id)
