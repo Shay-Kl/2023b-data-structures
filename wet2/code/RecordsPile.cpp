@@ -51,25 +51,21 @@ void RecordsPile::pileOnTop(int id1, int id2)
     }
     
 
-    int stackHeight1 = root1->getStackHeight();
-    int stackHeight2 = root2->getStackHeight();
-
-    int ogHeight2 = root2->getRecordCopies();
-
-    if(root1->getStackCount() < root2->getStackCount())
+    if(root1->stack_count < root2->stack_count)
     {
-        
+        root1->stack_count+=root2->stack_count;
+        root2->height_delta+= root2->height_total-root2->copies;
+        root1->height_total+=root2->height_total;
         root1->setParent(root2);
-        root1->increaseHeightDelta(stackHeight2 - ogHeight2);
-        root2->increaseHeightTotal(stackHeight1);
     }
     else
     {
-        root1->setColumn(root2->getColumn());
+        root1->column = root2->column;
+        root1->stack_count+=root2->stack_count;
+        root1->height_total+=root2->height_total;
         root2->setParent(root1);
-        root1->increaseHeightDelta(stackHeight2);
-        root2->increaseHeightDelta(-stackHeight2);
-        root1->increaseHeightTotal(stackHeight2);
+        root1->height_delta+= root2->height_total;
+        root2->height_delta-=root2->height_total;
     }
 }
 
@@ -88,7 +84,7 @@ int RecordsPile::getColumn(int id)
     {
         throw KeyMissing();
     }
-    return m_pile[id].getRoot().root->getColumn();
+    return m_pile[id].getRoot().root->column;
 }
 
 int RecordsPile::getHeight(int id)
@@ -116,44 +112,6 @@ int RecordsPile::Record::getRecordHeight()
     return height;
 }
 
-int RecordsPile::Record::getStackHeight() 
-{
-    if (parent)
-    {
-        return parent->getStackHeight();
-    }
-    return height_total;
-}
-
-int RecordsPile::Record::getStackCount() 
-{
-    if (parent)
-    {
-        return parent->getStackHeight();
-    }
-    return height_total;
-}
-
-int RecordsPile::Record::getRecordCopies()
-{
-    return copies;
-}
-
-int RecordsPile::Record::getColumn()
-{
-    if (parent)
-    {
-        return parent->getColumn();
-    }
-    return column;
-}
-
-void RecordsPile::Record::setColumn(int column)
-{
-    this->column = column;
-}
-
-
 RootDelta RecordsPile::Record::getRoot(){
     if (parent)
     {
@@ -168,16 +126,6 @@ RootDelta RecordsPile::Record::getRoot(){
 void RecordsPile::Record::setParent(Record* record)
 {
     parent = record;
-}
-
-void RecordsPile::Record::increaseHeightDelta(int height)
-{
-    height_delta+=height;
-}
-
-void RecordsPile::Record::increaseHeightTotal(int height)
-{
-    height_total+=height;
 }
 
 int RecordsPile::Record::purchase()
