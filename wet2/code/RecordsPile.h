@@ -1,7 +1,6 @@
 #ifndef __RECORDSPILE_H__
 #define __RECORDSPILE_H__
 
-
 class RecordsPile
 {
 public:
@@ -27,19 +26,13 @@ public:
 
     //Returns the current cost of the record (100+bought) and increment cost
     int purchase(int id);
-    class Record;
 
 private:
+    class Record;
     Record* m_pile;
     int m_count;
 };
 
-struct RootDelta //Struct for return root alongside delta height from root
-{
-    RootDelta(int delta, RecordsPile::Record* root): delta(delta), root(root) {}
-    int delta;
-    RecordsPile::Record* root;
-};
 
 class RecordsPile::Record
 {
@@ -67,7 +60,7 @@ public:
     int getColumn();
 
     //Returns the root of the node's reverse tree
-    RootDelta getRoot();
+    Record* getRoot();
 
     //Increase the record's height delta by a given amount
     void increaseHeightDelta(int height);
@@ -80,6 +73,7 @@ public:
 
     //Sets the node's parent to a given record
     void setParent(Record* record);
+    
 private:
     Record* parent; //Record's parent / next node in reverse tree
     int cost; // cost of the record (starts at 100 and goes up every time a record is bought)
@@ -91,8 +85,4 @@ private:
     int column; //Node's column, only active for root records
     int stack_count; //Number of records in stack, only active for root records
 };
-
-
-
 #endif // __RECORDSPILE_H__
-
