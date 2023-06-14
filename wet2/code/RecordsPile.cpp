@@ -51,13 +51,14 @@ void RecordsPile::pileOnTop(int id1, int id2)
     }
     
 
-    if(root1->stack_count < root2->stack_count)
+    //if(root1->stack_count < root2->stack_count)
     {
         root1->stack_count+=root2->stack_count;
         root2->height_delta+= root2->height_total-root2->copies;
         root1->height_total+=root2->height_total;
         root1->setParent(root2);
     }
+    /*
     else
     {
         root1->column = root2->column;
@@ -67,6 +68,7 @@ void RecordsPile::pileOnTop(int id1, int id2)
         root1->height_delta+= root2->height_total;
         root2->height_delta-=root1->height_delta;
     }
+    */
 }
 
 int RecordsPile::purchase(int id)
