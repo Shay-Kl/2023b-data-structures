@@ -65,7 +65,7 @@ void RecordsPile::pileOnTop(int id1, int id2)
         root1->height_total+=root2->height_total;
         root2->setParent(root1);
         root1->height_delta+= root2->height_total;
-        root2->height_delta-=root2->height_total;
+        root2->height_delta-=root2->height_delta;
     }
 }
 
