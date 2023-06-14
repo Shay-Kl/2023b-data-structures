@@ -65,10 +65,10 @@ void RecordsPile::pileOnTop(int id1, int id2)
     }
     else
     {
+        root1->setColumn(root2->getColumn());
         root2->setParent(root1);
         root1->increaseHeightDelta(stackHeight2);
         root2->increaseHeightDelta(-stackHeight2);
-        root1->setColumn(root2->getColumn());
     }
 }
 
@@ -87,7 +87,7 @@ int RecordsPile::getColumn(int id)
     {
         throw KeyMissing();
     }
-    return m_pile[id].getColumn();
+    return m_pile[id].getRoot().root->getColumn();
 }
 
 int RecordsPile::getHeight(int id)
@@ -106,7 +106,7 @@ int RecordsPile::Record::getRecordHeight()
 {
     
     Record* temp = parent;
-    int sum = height_delta - copies;
+    int sum = 0;
     while(temp)
     {
         sum+=temp->height_delta;
