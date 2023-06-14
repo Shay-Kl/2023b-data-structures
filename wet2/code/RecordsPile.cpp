@@ -116,8 +116,8 @@ RootDelta RecordsPile::Record::getRoot(){
     if (parent)
     {
         RootDelta rd = parent->getRoot();
-        parent = rd.root;
-        height_delta+=rd.delta;
+        //parent = rd.root;
+        //height_delta+=rd.delta;
         return RootDelta(height_delta, rd.root);
     }
     return RootDelta(0, this);
