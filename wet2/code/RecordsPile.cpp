@@ -54,8 +54,8 @@ void RecordsPile::pileOnTop(int id1, int id2)
     if(root1->stack_count < root2->stack_count)
     {
         root2->stack_count+=root1->stack_count;
-        root1->height_delta+= root2->height_total;
-        root2->height_total+= root1->height_total - root1->height_delta;
+        root1->height_delta+= root2->height_total - root2->height_delta;
+        root2->height_total+= root1->height_total;
         root1->parent = root2;
     }
     else
