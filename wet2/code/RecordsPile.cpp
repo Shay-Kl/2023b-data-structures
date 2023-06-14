@@ -107,7 +107,7 @@ int RecordsPile::Record::getRecordHeight()
 {
     
     Record* temp = parent;
-    int height = 0;
+    int height = height_delta-copies;
     while(temp)
     {
         height+=temp->height_delta;
