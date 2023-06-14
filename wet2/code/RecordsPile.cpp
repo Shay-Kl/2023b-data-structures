@@ -105,7 +105,7 @@ int RecordsPile::Record::getRecordHeight()
 {
     if(parent)
     {
-        return height_delta + parent->getRecordHeight();
+        return parent->height_delta + parent->getRecordHeight();
     }
     return 0;
 }
