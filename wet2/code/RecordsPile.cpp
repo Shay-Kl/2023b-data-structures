@@ -43,8 +43,8 @@ void RecordsPile::pileOnTop(int id1, int id2)
         throw KeyMissing();
     }
     
-    Record* root1 = m_pile[id1].getRoot();
-    Record* root2 = m_pile[id2].getRoot();
+    Record* root1 = m_pile[id1].getRoot().root;
+    Record* root2 = m_pile[id2].getRoot().root;
     if (root1==root2)
     {
         throw Failiure();
@@ -146,13 +146,16 @@ int RecordsPile::Record::getColumn()
     return column;
 }
 
-RecordsPile::Record* RecordsPile::Record::getRoot()
-{
+
+RootDelta RecordsPile::Record::getRoot(){
     if (parent)
     {
-        return parent->getRoot();
+        RootDelta rd = parent->getRoot();
+        parent = rd.root;
+        height_delta+=rd.delta;
+        return RootDelta(height_delta, rd.root);
     }
-    return this;   
+    return RootDelta(0, this);
 }
 
 void RecordsPile::Record::setParent(Record* record)
