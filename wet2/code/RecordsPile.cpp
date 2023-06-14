@@ -56,7 +56,7 @@ void RecordsPile::pileOnTop(int id1, int id2)
         root2->stack_count+=root1->stack_count;
         root1->height_delta+= root2->height_total-root2->copies;
         root2->height_total+=root1->height_total;
-        root1->setParent(root2);
+        root1->parent = root2;
     }
     /*
     else
@@ -77,7 +77,7 @@ int RecordsPile::purchase(int id)
     {
         throw KeyMissing();
     }
-    return m_pile[id].purchase();
+    return m_pile[id].cost++;
 }
 
 int RecordsPile::getColumn(int id)
@@ -99,19 +99,15 @@ int RecordsPile::getHeight(int id)
     return m_pile[id].getRecordHeight();
 }
 
-RecordsPile::Record::Record(int height, int id): parent(nullptr), cost(100), copies(height), height_delta(height), height_total(height), column(id), stack_count(1) {}
+RecordsPile::Record::Record(int height, int id): copies(height), height_delta(height), height_total(height), column(id), stack_count(1),  parent(nullptr), cost(100) {}
 
 int RecordsPile::Record::getRecordHeight() 
 {
-    
-    Record* temp = parent;
-    int height = height_delta-copies;
-    while(temp)
+    if(parent)
     {
-        height+=temp->height_delta;
-        temp = temp->parent;
+        return height_delta + parent->getRecordHeight();
     }
-    return height;
+    return 0;
 }
 
 RootDelta RecordsPile::Record::getRoot(){
@@ -123,14 +119,4 @@ RootDelta RecordsPile::Record::getRoot(){
         return RootDelta(height_delta, rd.root);
     }
     return RootDelta(0, this);
-}
-
-void RecordsPile::Record::setParent(Record* record)
-{
-    parent = record;
-}
-
-int RecordsPile::Record::purchase()
-{
-    return cost++;
 }

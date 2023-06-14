@@ -56,12 +56,6 @@ public:
 
     //Returns the root of the node's reverse tree
     RootDelta getRoot();
-    
-    //Returns the current cost of the record (100+bought) and increment cost
-    int purchase();
-
-    //Sets the node's parent to a given record
-    void setParent(Record* record);
 
     int copies; //The number of copies of the record, dictates how high the record is.
     int height_delta; //Height of the record relative to its parent's height
@@ -69,10 +63,11 @@ public:
     int height_total; //Height of the record's stack, only active for root records
     int column; //Node's column, only active for root records
     int stack_count; //Number of records in stack, only active for root records
-
-private:
+    
     Record* parent; //Record's parent / next node in reverse tree
     int cost; // cost of the record (starts at 100 and goes up every time a record is bought)
+
+private:
 };
 
 
