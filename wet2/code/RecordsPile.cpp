@@ -56,9 +56,19 @@ void RecordsPile::pileOnTop(int id1, int id2)
 
     int ogHeight2 = root2->getRecordCopies();
 
-    root1->setParent(root2);
-    root1->increaseHeightDelta(stackHeight2 - ogHeight2);
-    root2->increaseHeightTotal(stackHeight1);
+    if(root1->getStackCount() < root2->getStackCount())
+    {
+        
+        root1->setParent(root2);
+        root1->increaseHeightDelta(stackHeight2 - ogHeight2);
+        root2->increaseHeightTotal(stackHeight1);
+    }
+    else
+    {
+        root2->setParent(root1);
+        root1->increaseHeightDelta(stackHeight2);
+        root2->increaseHeightDelta(-stackHeight1);
+    }
 }
 
 int RecordsPile::purchase(int id)
@@ -89,7 +99,7 @@ int RecordsPile::getHeight(int id)
     return m_pile[id].getRecordHeight();
 }
 
-RecordsPile::Record::Record(int height, int id): parent(nullptr), cost(100), copies(height), height_delta(height), height_total(height), column(id) {}
+RecordsPile::Record::Record(int height, int id): parent(nullptr), cost(100), copies(height), height_delta(height), height_total(height), column(id), stack_count(1) {}
 
 int RecordsPile::Record::getRecordHeight() 
 {
@@ -105,6 +115,15 @@ int RecordsPile::Record::getRecordHeight()
 }
 
 int RecordsPile::Record::getStackHeight() 
+{
+    if (parent)
+    {
+        return parent->getStackHeight();
+    }
+    return height_total;
+}
+
+int RecordsPile::Record::getStackCount() 
 {
     if (parent)
     {

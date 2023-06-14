@@ -50,6 +50,9 @@ public:
     //Returns the total height of the record's stack
     int getStackHeight();
 
+    //Retursnt he number of nodes in the stack
+    int getStackCount();
+
     //Returns the number of copies of the record
     int getRecordCopies();
 
@@ -80,5 +83,6 @@ private:
 
     int height_total; //Height of the record's stack, only active for root records
     int column; //Node's column, only active for root records
+    int stack_count; //Number of records in stack, only active for root records
 };
 #endif // __RECORDSPILE_H__
