@@ -30,11 +30,12 @@ public:
     class Record;
 
 private:
+    Record* find(int id);
     Record* m_pile;
     int m_count;
 };
 
-struct RootDelta //Struct for return root alongside delta height from root
+struct RootDelta //Struct for return root alongside delta height from getRoot()
 {
     RootDelta(int delta, RecordsPile::Record* root): delta(delta), root(root) {}
     int delta;
@@ -51,22 +52,22 @@ public:
     //C'tor
     Record(int height, int id);
 
-    //Return the height of the record
+    //Return the height of the record by adding up the delta height on the path to the root.
     int getRecordHeight();
 
     //Returns the root of the node's reverse tree
+    //Shortens the path of all nodes along the way
     RootDelta getRoot();
     
 
-    int copies; //The number of copies of the record, dictates how high the record is.
-    int height_delta; //Height of the record relative to its parent's height
-
-    int height_total; //Height of the record's stack, only active for root records
-    int column; //Node's column, only active for root records
-    int stack_count; //Number of records in stack, only active for root records
-    
     Record* parent; //Record's parent / next node in reverse tree
+    int delta; //Height of the record relative to its parent's height for non root, absolute height for root
     int cost; // cost of the record (starts at 100 and goes up every time a record is bought)
+
+    //All 3 stack fields are only "active" (as in updated and relevant) for root records
+    int stack_height; //Stack's total height
+    int stack_column; //Stack's column
+    int stack_count; //Stack's total record count
 
 private:
 };
