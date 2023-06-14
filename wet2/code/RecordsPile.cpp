@@ -54,7 +54,7 @@ void RecordsPile::pileOnTop(int id1, int id2)
     //if(root1->stack_count < root2->stack_count)
     {
         root2->stack_count+=root1->stack_count;
-        root1->height_delta+= root2->height_total-root2->copies;
+        root1->height_delta = root2->height_total;
         root2->height_total+=root1->height_total;
         root1->parent = root2;
     }
@@ -99,15 +99,15 @@ int RecordsPile::getHeight(int id)
     return m_pile[id].getRecordHeight();
 }
 
-RecordsPile::Record::Record(int height, int id): copies(height), height_delta(height), height_total(height), column(id), stack_count(1),  parent(nullptr), cost(100) {}
+RecordsPile::Record::Record(int height, int id): copies(height), height_delta(0), height_total(height), column(id), stack_count(1),  parent(nullptr), cost(100) {}
 
 int RecordsPile::Record::getRecordHeight() 
 {
-    if(parent)
+    if (parent)
     {
-        return parent->height_delta + parent->getRecordHeight();
+        return height_delta + parent->getRecordHeight();
     }
-    return 0;
+    return height_delta;
 }
 
 RootDelta RecordsPile::Record::getRoot(){

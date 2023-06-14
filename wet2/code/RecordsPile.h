@@ -56,6 +56,7 @@ public:
 
     //Returns the root of the node's reverse tree
     RootDelta getRoot();
+    
 
     int copies; //The number of copies of the record, dictates how high the record is.
     int height_delta; //Height of the record relative to its parent's height
