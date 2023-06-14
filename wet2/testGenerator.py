@@ -1,6 +1,6 @@
 import random
 
-id_range = 250
+id_range = 300
 
 class Customer:
     def __init__(self, id,phone):
@@ -266,9 +266,6 @@ def generateTest(number, lines):
         file.write(input+"\n")
     with open("outFiles/test"+str(number)+".out", mode="w") as file:
         file.write(output+"\n")
-for i in range(10, 20):
-    generateTest(i, 100)
-for i in range(20, 50):
-    generateTest(i, 1000)
-for i in range(50, 100):
-    generateTest(i, 5000)
+        
+for i in range(637, 1000):
+    generateTest(i, 10000)

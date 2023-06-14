@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TESTS_TO_RUN=100
+TESTS_TO_RUN=1000
 EXECUTABLE=./prog
 
 RED='\033[0;31m'
@@ -52,4 +52,3 @@ if [ -z ${FAILED_TESTS} ]; then
 else
 	printf "\n${RED} Failed ${FAILED_TESTS}${NC} tests.\n\n"
 fi
-printf "incress TESTS_TO_RUN in tester.sh in order to run more tests (up to 500)\n"
